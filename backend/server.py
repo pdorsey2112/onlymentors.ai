@@ -309,6 +309,25 @@ async def get_me(current_user = Depends(get_current_user)):
         }
     }
 
+@app.get("/api/test-llm")
+async def test_llm():
+    """Test LLM integration directly"""
+    try:
+        system_prompt = "You are Warren Buffett. Give a brief investment tip."
+        session_id = str(uuid.uuid4())
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message=system_prompt
+        ).with_model("openai", "gpt-4o-mini")
+        
+        user_message = UserMessage(text="What's your best investment advice?")
+        response = await chat.send_message(user_message)
+        
+        return {"status": "success", "response": response}
+    except Exception as e:
+        return {"status": "error", "error": str(e), "error_type": str(type(e))}
+
 @app.post("/api/questions/ask")
 async def ask_question(question_data: QuestionRequest, current_user = Depends(get_current_user)):
     # Check if user can ask questions
