@@ -101,3 +101,48 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Fix LLM integration in OnlyMentors.ai to replace mock responses with actual AI responses using emergentintegrations library and EMERGENT_LLM_KEY"
+
+backend:
+  - task: "LLM Integration Fix"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Replaced mock create_mentor_response function with actual LLM integration using emergentintegrations.llm.chat.LlmChat. Using EMERGENT_LLM_KEY with gpt-4o-mini model. Added proper system messages for each mentor's personality and expertise."
+
+frontend:
+  - task: "Frontend Question Interface"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Frontend question interface already working, should continue to work with LLM integration changes"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "LLM Integration Fix"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Implemented LLM integration using emergentintegrations library. Replaced the create_mentor_response function with async LLM calls using gpt-4o-mini model. Each mentor gets a unique session ID and personalized system message. Need to test the /api/questions/ask endpoint to ensure LLM responses are working properly."
