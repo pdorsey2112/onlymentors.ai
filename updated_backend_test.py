@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class OnlyMentorsAPITester:
-    def __init__(self, base_url="https://2414547c-8918-403e-aee0-d4dcc447e05e.preview.emergentagent.com"):
+    def __init__(self, base_url="https://f2b0aa4c-4c6c-44c0-8e63-7550a30e04a0.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None
