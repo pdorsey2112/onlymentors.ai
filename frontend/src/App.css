@@ -1,34 +1,218 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Custom animations and effects */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+  }
 }
 
-.App-link {
-    color: #61dafb;
+/* Global styles */
+.App {
+  min-height: 100vh;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Card hover effects */
+.group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(139, 69, 193, 0.3), 0 10px 10px -5px rgba(139, 69, 193, 0.1);
+}
+
+/* Button animations */
+button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Custom gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Loading spinner animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 69, 193, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 69, 193, 0.7);
+}
+
+/* Backdrop blur support */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Improved focus states */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Avatar glow effect */
+.avatar-glow {
+  box-shadow: 0 0 20px rgba(139, 69, 193, 0.4);
+}
+
+/* Text selection styling */
+::selection {
+  background-color: rgba(139, 69, 193, 0.3);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: rgba(139, 69, 193, 0.3);
+  color: white;
+}
+
+/* Custom progress bar */
+.progress-bar {
+  background: linear-gradient(90deg, #8b5cf6 0%, #ec4899 100%);
+}
+
+/* Responsive text scaling */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Enhanced card shadows */
+.card-enhanced {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.card-enhanced:hover {
+  box-shadow: 
+    0 20px 25px -5px rgba(139, 69, 193, 0.2),
+    0 10px 10px -5px rgba(139, 69, 193, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Loading state animations */
+.loading-dots {
+  animation: loading-dots 1.4s ease-in-out infinite both;
+}
+
+.loading-dots:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.loading-dots:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes loading-dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Enhanced accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .border-white\/20 {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
 }
