@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Progress } from './components/ui/progress';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { Checkbox } from './components/ui/checkbox';
-import { Brain, Users, Heart, Atom, Crown, MessageSquare, Sparkles, Star, Lock, Zap, Search, Filter } from 'lucide-react';
+import { Brain, Users, Heart, Atom, Crown, MessageSquare, Sparkles, Star, Lock, Zap, Search, Filter, CheckCircle } from 'lucide-react';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -147,14 +147,24 @@ function App() {
   };
 
   const handleSelectAll = () => {
+    const filteredMentors = selectedCategory.mentors.filter(mentor =>
+      mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
     if (selectAll) {
-      setSelectedMentors([]);
+      // Deselect all
+      setSelectedMentors(prev => prev.filter(selected => 
+        !filteredMentors.some(filtered => filtered.id === selected.id)
+      ));
     } else {
-      const filteredMentors = selectedCategory.mentors.filter(mentor =>
-        mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setSelectedMentors(filteredMentors);
+      // Select all filtered mentors that aren't already selected
+      setSelectedMentors(prev => {
+        const newSelections = filteredMentors.filter(mentor => 
+          !prev.some(selected => selected.id === mentor.id)
+        );
+        return [...prev, ...newSelections];
+      });
     }
     setSelectAll(!selectAll);
   };
@@ -185,6 +195,7 @@ function App() {
       if (response.ok) {
         setResponses(data.responses);
         setQuestion('');
+        setCurrentView('responses');
         // Update user data to reflect new question count
         if (user) {
           setUser({
@@ -266,7 +277,7 @@ function App() {
       const data = await response.json();
 
       if (data.payment_status === 'paid') {
-        setSuccess('Payment successful! You now have unlimited access to all 400 mentors.');
+        setSuccess('Payment successful! You now have unlimited access to all mentors.');
         await fetchUserData(); // Refresh user data
         window.history.replaceState({}, document.title, "/");
         return;
@@ -286,15 +297,19 @@ function App() {
   const filteredMentors = selectedCategory ? 
     selectedCategory.mentors.filter(mentor =>
       mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase())
+      mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mentor.bio.toLowerCase().includes(searchTerm.toLowerCase())
     ) : [];
 
   // Update selectAll state when filtered mentors change
   useEffect(() => {
     if (filteredMentors.length > 0) {
-      setSelectAll(filteredMentors.every(mentor => 
+      const allFilteredSelected = filteredMentors.every(mentor => 
         selectedMentors.some(selected => selected.id === mentor.id)
-      ));
+      );
+      setSelectAll(allFilteredSelected);
+    } else {
+      setSelectAll(false);
     }
   }, [selectedMentors, filteredMentors]);
 
@@ -388,10 +403,10 @@ function App() {
             <Brain className="h-10 w-10 text-purple-400" />
             <h1 className="text-4xl font-bold text-white">OnlyMentors.ai</h1>
           </div>
-          <p className="text-xl text-gray-300 mb-6">Ask questions to 400+ history's greatest minds</p>
+          <p className="text-xl text-gray-300 mb-6">Ask questions to history's greatest minds</p>
           
           {user && (
-            <div className="flex items-center justify-center gap-6 mb-6">
+            <div className="flex items-center justify-center gap-6 mb-6 flex-wrap">
               <div className="text-sm text-gray-300">
                 Welcome back, <span className="text-purple-400 font-semibold">{user.full_name}</span>
               </div>
@@ -399,7 +414,7 @@ function App() {
                 {user.is_subscribed ? (
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
                     <Crown className="h-3 w-3 mr-1" />
-                    Unlimited Access to 400 Mentors
+                    Unlimited Access
                   </Badge>
                 ) : (
                   <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/50">
@@ -413,7 +428,7 @@ function App() {
             </div>
           )}
 
-          {!user.is_subscribed && (
+          {user && !user.is_subscribed && (
             <Progress value={(user?.questions_asked || 0) * 10} className="w-64 mx-auto mb-4" />
           )}
         </div>
@@ -445,7 +460,7 @@ function App() {
                 <CardContent>
                   <div className="text-center">
                     <Badge variant="secondary" className="bg-purple-500/20 text-purple-400">
-                      {category.count || category.mentors.length} mentors
+                      {category.count} mentors
                     </Badge>
                   </div>
                 </CardContent>
@@ -477,7 +492,7 @@ function App() {
   const renderMentors = () => (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-8 flex-wrap">
           <Button
             variant="outline"
             onClick={() => setCurrentView('categories')}
@@ -495,8 +510,8 @@ function App() {
 
         {/* Search and Controls */}
         <div className="mb-8 space-y-4">
-          <div className="flex gap-4 items-center">
-            <div className="relative flex-1">
+          <div className="flex gap-4 items-center flex-wrap">
+            <div className="relative flex-1 min-w-64">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
@@ -512,6 +527,7 @@ function App() {
                 checked={selectAll}
                 onCheckedChange={handleSelectAll}
                 className="border-white/20"
+                disabled={!user}
               />
               <Label htmlFor="selectAll" className="text-white text-sm">
                 Select All ({filteredMentors.length})
@@ -519,9 +535,9 @@ function App() {
             </div>
           </div>
 
-          {selectedMentors.length > 0 && (
+          {selectedMentors.length > 0 && user && (
             <div className="bg-purple-500/20 border border-purple-500/50 rounded-lg p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="text-white">
                   <span className="font-semibold">{selectedMentors.length} mentors selected</span>
                   <p className="text-sm text-gray-300">They will all answer your next question</p>
@@ -529,7 +545,6 @@ function App() {
                 <Button
                   onClick={() => setCurrentView('question')}
                   className="bg-gradient-to-r from-purple-500 to-pink-500"
-                  disabled={!user}
                 >
                   <Zap className="h-4 w-4 mr-2" />
                   Ask Question
@@ -554,12 +569,13 @@ function App() {
                 {/* Selection Checkbox */}
                 {user && (
                   <div className="absolute top-2 right-2 z-10">
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => handleMentorSelect(mentor)}
-                      className="border-white/50 bg-black/50"
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                    <div className="bg-black/50 rounded-full p-1">
+                      {isSelected ? (
+                        <CheckCircle className="h-5 w-5 text-purple-400" />
+                      ) : (
+                        <div className="h-5 w-5 border-2 border-white/50 rounded-full" />
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -581,13 +597,13 @@ function App() {
                     <div className="opacity-0 group-hover:opacity-100 transition-all duration-300">
                       {isSelected ? (
                         <div className="text-white text-center">
-                          <Star className="h-6 w-6 mx-auto mb-1" />
+                          <Star className="h-6 w-6 mx-auto mb-1 text-purple-400" />
                           <p className="text-sm">Selected</p>
                         </div>
                       ) : (
                         <div className="text-white text-center">
                           <MessageSquare className="h-6 w-6 mx-auto mb-1" />
-                          <p className="text-sm">Ask Question</p>
+                          <p className="text-sm">Select to Ask</p>
                         </div>
                       )}
                     </div>
@@ -653,7 +669,7 @@ function App() {
           {/* Selected Mentors Display */}
           <div className="mb-8">
             <h3 className="text-white text-lg mb-4">Selected Mentors ({selectedMentors.length})</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {selectedMentors.map((mentor) => (
                 <div key={mentor.id} className="text-center">
                   <Avatar className="h-16 w-16 mx-auto mb-2">
@@ -662,7 +678,7 @@ function App() {
                       {mentor.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
-                  <p className="text-white text-sm font-medium">{mentor.name}</p>
+                  <p className="text-white text-sm font-medium leading-tight">{mentor.name}</p>
                   <p className="text-purple-400 text-xs">{mentor.title}</p>
                 </div>
               ))}
@@ -731,38 +747,78 @@ function App() {
               )}
             </CardContent>
           </Card>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderResponses = () => (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentView('mentors')}
+              className="border-gray-600 text-gray-300"
+            >
+              ← Back to Mentors
+            </Button>
+            <h1 className="text-2xl font-bold text-white">Mentor Responses</h1>
+          </div>
 
           {/* Responses */}
-          {responses.length > 0 && (
-            <div className="space-y-6">
-              {responses.map((response, index) => (
-                <Card key={index} className="bg-white/10 backdrop-blur-md border-white/20">
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={response.mentor.image_url} alt={response.mentor.name} />
-                        <AvatarFallback className="bg-purple-500/20 text-purple-400 font-bold">
-                          {response.mentor.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <CardTitle className="text-white">{response.mentor.name}</CardTitle>
-                        <CardDescription className="text-purple-400">
-                          {response.mentor.title}
-                        </CardDescription>
-                      </div>
-                      <Star className="h-5 w-5 text-yellow-400 ml-auto" />
+          <div className="space-y-6">
+            {responses.map((response, index) => (
+              <Card key={index} className="bg-white/10 backdrop-blur-md border-white/20">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={response.mentor.image_url} alt={response.mentor.name} />
+                      <AvatarFallback className="bg-purple-500/20 text-purple-400 font-bold">
+                        {response.mentor.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <CardTitle className="text-white">{response.mentor.name}</CardTitle>
+                      <CardDescription className="text-purple-400">
+                        {response.mentor.title}
+                      </CardDescription>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="prose prose-gray max-w-none">
-                      <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">{response.response}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <Star className="h-5 w-5 text-yellow-400 ml-auto" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-gray max-w-none">
+                    <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">{response.response}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 justify-center pt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelectedMentors([]);
+                  setCurrentView('mentors');
+                }}
+                className="border-gray-600 text-gray-300"
+              >
+                Ask Different Mentors
+              </Button>
+              <Button
+                onClick={() => {
+                  setQuestion('');
+                  setCurrentView('question');
+                }}
+                className="bg-gradient-to-r from-purple-500 to-pink-500"
+              >
+                Ask Another Question
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -774,7 +830,7 @@ function App() {
         <Card className="bg-white/10 backdrop-blur-md border-white/20">
           <CardHeader className="text-center">
             <Crown className="h-16 w-16 mx-auto text-yellow-400 mb-4" />
-            <CardTitle className="text-3xl text-white mb-2">Unlock All 400 Mentors</CardTitle>
+            <CardTitle className="text-3xl text-white mb-2">Unlock All Mentors</CardTitle>
             <CardDescription className="text-gray-300 text-lg">
               Get unlimited access to history's greatest minds
             </CardDescription>
@@ -790,11 +846,11 @@ function App() {
                   <div className="space-y-3 text-left mb-6">
                     <div className="flex items-center gap-2 text-gray-300">
                       <Star className="h-4 w-4 text-yellow-400" />
-                      Unlimited questions to all 400 mentors
+                      Unlimited questions to all mentors
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <Star className="h-4 w-4 text-yellow-400" />
-                      Business, Sports, Health & Science categories
+                      All 4 categories (Business, Sports, Health, Science)
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <Star className="h-4 w-4 text-yellow-400" />
@@ -818,7 +874,7 @@ function App() {
               {/* Yearly Plan */}
               <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg p-6 border border-green-500/50 relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-green-500 text-white">Save $59.89</Badge>
+                  <Badge className="bg-green-500 text-white">Save $60</Badge>
                 </div>
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-white mb-2">Yearly</h3>
@@ -831,7 +887,7 @@ function App() {
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <Star className="h-4 w-4 text-yellow-400" />
-                      Save 2 months ($59.89 savings)
+                      Save 2 months ($60 savings)
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <Star className="h-4 w-4 text-yellow-400" />
@@ -946,6 +1002,8 @@ function App() {
       return renderMentors();
     case 'question':
       return renderQuestion();
+    case 'responses':
+      return renderResponses();
     case 'subscription':
       return renderSubscription();
     case 'history':
