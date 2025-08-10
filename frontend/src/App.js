@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Progress } from './components/ui/progress';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { Checkbox } from './components/ui/checkbox';
-import { Brain, Users, Heart, Atom, Crown, MessageSquare, Sparkles, Star, Lock, Zap, Search, Filter, CheckCircle } from 'lucide-react';
+import { Brain, Users, Heart, Atom, Crown, MessageSquare, Sparkles, Star, Lock, Zap, Search, Filter, CheckCircle, User } from 'lucide-react';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -21,7 +21,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedMentors, setSelectedMentors] = useState([]); // Multiple mentors
+  const [selectedMentors, setSelectedMentors] = useState([]);
   const [question, setQuestion] = useState('');
   const [responses, setResponses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -149,7 +149,8 @@ function App() {
   const handleSelectAll = () => {
     const filteredMentors = selectedCategory.mentors.filter(mentor =>
       mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase())
+      mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mentor.bio.toLowerCase().includes(searchTerm.toLowerCase())
     );
     
     if (selectAll) {
@@ -315,20 +316,20 @@ function App() {
 
   // Render functions
   const renderAuth = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Brain className="h-12 w-12 mx-auto text-purple-400 mb-4" />
-          <h1 className="text-3xl font-bold text-white mb-2">OnlyMentors.ai</h1>
-          <p className="text-gray-300">Ask questions to 400+ greatest minds</p>
+          <Brain className="h-12 w-12 mx-auto text-purple-600 mb-4" />
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">OnlyMentors.ai</h1>
+          <p className="text-gray-600">Ask questions to 400+ greatest minds</p>
         </div>
 
-        <Card className="bg-white/10 backdrop-blur-md border-white/20">
+        <Card className="bg-white border-gray-200 shadow-lg">
           <CardHeader>
             <Tabs value={authMode} onValueChange={setAuthMode}>
-              <TabsList className="grid w-full grid-cols-2 bg-black/20">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+                <TabsTrigger value="login" className="data-[state=active]:bg-white">Login</TabsTrigger>
+                <TabsTrigger value="signup" className="data-[state=active]:bg-white">Sign Up</TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
@@ -336,55 +337,59 @@ function App() {
             <form onSubmit={handleAuth} className="space-y-4">
               {authMode === 'signup' && (
                 <div>
-                  <Label htmlFor="name" className="text-white">Full Name</Label>
+                  <Label htmlFor="name" className="text-gray-700">Full Name</Label>
                   <Input
                     id="name"
                     type="text"
                     value={authForm.full_name}
                     onChange={(e) => setAuthForm({...authForm, full_name: e.target.value})}
-                    className="bg-black/20 border-white/20 text-white"
+                    className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
                     required
                   />
                 </div>
               )}
               
               <div>
-                <Label htmlFor="email" className="text-white">Email</Label>
+                <Label htmlFor="email" className="text-gray-700">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={authForm.email}
                   onChange={(e) => setAuthForm({...authForm, email: e.target.value})}
-                  className="bg-black/20 border-white/20 text-white"
+                  className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="password" className="text-white">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   value={authForm.password}
                   onChange={(e) => setAuthForm({...authForm, password: e.target.value})}
-                  className="bg-black/20 border-white/20 text-white"
+                  className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
                   required
                 />
               </div>
 
               {error && (
-                <Alert className="bg-red-500/20 border-red-500/50">
-                  <AlertDescription className="text-red-200">{error}</AlertDescription>
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-red-700">{error}</AlertDescription>
                 </Alert>
               )}
 
               {success && (
-                <Alert className="bg-green-500/20 border-green-500/50">
-                  <AlertDescription className="text-green-200">{success}</AlertDescription>
+                <Alert className="border-green-200 bg-green-50">
+                  <AlertDescription className="text-green-700">{success}</AlertDescription>
                 </Alert>
               )}
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full bg-purple-600 hover:bg-purple-700" 
+                disabled={isLoading}
+              >
                 {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account')}
               </Button>
             </form>
@@ -395,34 +400,34 @@ function App() {
   );
 
   const renderCategories = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Brain className="h-10 w-10 text-purple-400" />
-            <h1 className="text-4xl font-bold text-white">OnlyMentors.ai</h1>
+            <Brain className="h-10 w-10 text-purple-600" />
+            <h1 className="text-4xl font-bold text-gray-900">OnlyMentors.ai</h1>
           </div>
-          <p className="text-xl text-gray-300 mb-6">Ask questions to history's greatest minds</p>
+          <p className="text-xl text-gray-600 mb-6">Ask questions to history's greatest minds</p>
           
           {user && (
             <div className="flex items-center justify-center gap-6 mb-6 flex-wrap">
-              <div className="text-sm text-gray-300">
-                Welcome back, <span className="text-purple-400 font-semibold">{user.full_name}</span>
+              <div className="text-sm text-gray-700">
+                Welcome back, <span className="text-purple-600 font-semibold">{user.full_name}</span>
               </div>
               <div className="flex items-center gap-2">
                 {user.is_subscribed ? (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
+                  <Badge className="bg-green-100 text-green-800 border-green-200">
                     <Crown className="h-3 w-3 mr-1" />
                     Unlimited Access
                   </Badge>
                 ) : (
-                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/50">
+                  <Badge className="bg-purple-100 text-purple-800 border-purple-200">
                     {10 - user.questions_asked} free questions left
                   </Badge>
                 )}
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="border-gray-600 text-gray-300">
+              <Button variant="outline" size="sm" onClick={handleLogout} className="border-gray-300 text-gray-600 hover:bg-gray-50">
                 Logout
               </Button>
             </div>
@@ -440,7 +445,7 @@ function App() {
             return (
               <Card
                 key={category.id}
-                className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+                className="bg-white border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 cursor-pointer group"
                 onClick={() => {
                   setSelectedCategory(category);
                   setSelectedMentors([]);
@@ -449,17 +454,17 @@ function App() {
                 }}
               >
                 <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-3 bg-purple-500/20 rounded-full w-fit group-hover:bg-purple-500/30 transition-colors">
-                    <IconComponent className="h-8 w-8 text-purple-400" />
+                  <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full w-fit group-hover:bg-purple-200 transition-colors">
+                    <IconComponent className="h-8 w-8 text-purple-600" />
                   </div>
-                  <CardTitle className="text-white">{category.name}</CardTitle>
-                  <CardDescription className="text-gray-300 text-sm">
+                  <CardTitle className="text-gray-900">{category.name}</CardTitle>
+                  <CardDescription className="text-gray-600 text-sm">
                     {category.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <Badge variant="secondary" className="bg-purple-500/20 text-purple-400">
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-800">
                       {category.count} mentors
                     </Badge>
                   </div>
@@ -478,7 +483,7 @@ function App() {
                 fetchQuestionHistory();
                 setCurrentView('history');
               }}
-              className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20"
+              className="border-purple-300 text-purple-600 hover:bg-purple-50"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               View Question History ({user.questions_asked})
@@ -490,21 +495,21 @@ function App() {
   );
 
   const renderMentors = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-4 mb-8 flex-wrap">
           <Button
             variant="outline"
             onClick={() => setCurrentView('categories')}
-            className="border-gray-600 text-gray-300"
+            className="border-gray-300 text-gray-600 hover:bg-gray-50"
           >
             ← Back to Categories
           </Button>
           <div className="flex items-center gap-3">
             {React.createElement(categoryIcons[selectedCategory.id], {
-              className: "h-8 w-8 text-purple-400"
+              className: "h-8 w-8 text-purple-600"
             })}
-            <h1 className="text-3xl font-bold text-white">{selectedCategory.name} Mentors</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{selectedCategory.name} Mentors</h1>
           </div>
         </div>
 
@@ -518,7 +523,7 @@ function App() {
                 placeholder="Search mentors by name or expertise..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-black/20 border-white/20 text-white"
+                className="pl-10 border-gray-300 focus:border-purple-500 focus:ring-purple-500"
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -526,25 +531,25 @@ function App() {
                 id="selectAll"
                 checked={selectAll}
                 onCheckedChange={handleSelectAll}
-                className="border-white/20"
+                className="border-gray-300"
                 disabled={!user}
               />
-              <Label htmlFor="selectAll" className="text-white text-sm">
+              <Label htmlFor="selectAll" className="text-gray-700 text-sm">
                 Select All ({filteredMentors.length})
               </Label>
             </div>
           </div>
 
           {selectedMentors.length > 0 && user && (
-            <div className="bg-purple-500/20 border border-purple-500/50 rounded-lg p-4">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
               <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="text-white">
+                <div className="text-gray-900">
                   <span className="font-semibold">{selectedMentors.length} mentors selected</span>
-                  <p className="text-sm text-gray-300">They will all answer your next question</p>
+                  <p className="text-sm text-gray-600">They will all answer your next question</p>
                 </div>
                 <Button
                   onClick={() => setCurrentView('question')}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500"
+                  className="bg-purple-600 hover:bg-purple-700"
                 >
                   <Zap className="h-4 w-4 mr-2" />
                   Ask Question
@@ -554,26 +559,26 @@ function App() {
           )}
         </div>
 
-        {/* OnlyFans-style Mentors Grid */}
+        {/* OnlyFans-style White Mentors Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredMentors.map((mentor) => {
             const isSelected = selectedMentors.some(m => m.id === mentor.id);
             return (
               <Card
                 key={mentor.id}
-                className={`bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer group relative ${
-                  isSelected ? 'ring-2 ring-purple-400 bg-purple-500/20' : ''
+                className={`bg-white border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-300 cursor-pointer group relative ${
+                  isSelected ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' : ''
                 }`}
                 onClick={() => user && handleMentorSelect(mentor)}
               >
                 {/* Selection Checkbox */}
                 {user && (
                   <div className="absolute top-2 right-2 z-10">
-                    <div className="bg-black/50 rounded-full p-1">
+                    <div className="bg-white rounded-full p-1 shadow-sm border border-gray-200">
                       {isSelected ? (
-                        <CheckCircle className="h-5 w-5 text-purple-400" />
+                        <CheckCircle className="h-5 w-5 text-purple-600" />
                       ) : (
-                        <div className="h-5 w-5 border-2 border-white/50 rounded-full" />
+                        <div className="h-5 w-5 border-2 border-gray-300 rounded-full" />
                       )}
                     </div>
                   </div>
@@ -582,18 +587,21 @@ function App() {
                 {/* Mentor Image */}
                 <div className="relative">
                   <Avatar className="w-full h-48 rounded-t-lg rounded-none">
-                    <AvatarImage 
-                      src={mentor.image_url} 
-                      alt={mentor.name}
-                      className="object-cover w-full h-full"
-                    />
-                    <AvatarFallback className="bg-purple-500/20 text-purple-400 text-xl font-bold w-full h-full rounded-t-lg rounded-none">
-                      {mentor.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
+                    {mentor.image_url ? (
+                      <AvatarImage 
+                        src={mentor.image_url} 
+                        alt={mentor.name}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <AvatarFallback className="bg-gray-100 text-gray-600 text-xl font-bold w-full h-full rounded-t-lg rounded-none flex items-center justify-center">
+                        <User className="h-12 w-12" />
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 rounded-t-lg flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-t-lg flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-all duration-300">
                       {isSelected ? (
                         <div className="text-white text-center">
@@ -612,14 +620,14 @@ function App() {
 
                 {/* Mentor Info */}
                 <CardContent className="p-3 space-y-2">
-                  <h3 className="text-white font-semibold text-sm leading-tight">{mentor.name}</h3>
-                  <p className="text-purple-400 text-xs">{mentor.title}</p>
-                  <p className="text-gray-300 text-xs leading-tight line-clamp-2">{mentor.bio}</p>
+                  <h3 className="text-gray-900 font-semibold text-sm leading-tight">{mentor.name}</h3>
+                  <p className="text-purple-600 text-xs">{mentor.title}</p>
+                  <p className="text-gray-600 text-xs leading-tight line-clamp-2">{mentor.bio}</p>
                   
                   {/* Expertise Tags */}
                   <div className="flex flex-wrap gap-1">
                     {mentor.expertise.split(', ').slice(0, 2).map((skill, index) => (
-                      <Badge key={index} variant="secondary" className="bg-purple-500/20 text-purple-400 text-xs px-1 py-0">
+                      <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-700 text-xs px-1 py-0">
                         {skill}
                       </Badge>
                     ))}
@@ -627,10 +635,10 @@ function App() {
                 </CardContent>
 
                 {!user && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+                  <div className="absolute inset-0 bg-white/90 flex items-center justify-center rounded-lg">
                     <div className="text-center">
-                      <Lock className="h-6 w-6 mx-auto mb-2 text-white" />
-                      <p className="text-white text-sm">Login to Ask</p>
+                      <Lock className="h-6 w-6 mx-auto mb-2 text-gray-600" />
+                      <p className="text-gray-600 text-sm">Login to Ask</p>
                     </div>
                   </div>
                 )}
@@ -641,8 +649,8 @@ function App() {
 
         {filteredMentors.length === 0 && searchTerm && (
           <div className="text-center py-12">
-            <Search className="h-16 w-16 mx-auto text-gray-600 mb-4" />
-            <p className="text-gray-400">No mentors found matching "{searchTerm}"</p>
+            <Search className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+            <p className="text-gray-600">No mentors found matching "{searchTerm}"</p>
           </div>
         )}
       </div>
@@ -650,77 +658,80 @@ function App() {
   );
 
   const renderQuestion = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <Button
               variant="outline"
               onClick={() => setCurrentView('mentors')}
-              className="border-gray-600 text-gray-300"
+              className="border-gray-300 text-gray-600 hover:bg-gray-50"
             >
               ← Back to Mentors
             </Button>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-gray-900">
               Ask {selectedMentors.length} {selectedMentors.length === 1 ? 'Mentor' : 'Mentors'}
             </h1>
           </div>
 
           {/* Selected Mentors Display */}
           <div className="mb-8">
-            <h3 className="text-white text-lg mb-4">Selected Mentors ({selectedMentors.length})</h3>
+            <h3 className="text-gray-900 text-lg mb-4">Selected Mentors ({selectedMentors.length})</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {selectedMentors.map((mentor) => (
                 <div key={mentor.id} className="text-center">
                   <Avatar className="h-16 w-16 mx-auto mb-2">
-                    <AvatarImage src={mentor.image_url} alt={mentor.name} />
-                    <AvatarFallback className="bg-purple-500/20 text-purple-400 font-bold">
-                      {mentor.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
+                    {mentor.image_url ? (
+                      <AvatarImage src={mentor.image_url} alt={mentor.name} />
+                    ) : (
+                      <AvatarFallback className="bg-purple-100 text-purple-600 font-bold">
+                        <User className="h-8 w-8" />
+                      </AvatarFallback>
+                    )}
                   </Avatar>
-                  <p className="text-white text-sm font-medium leading-tight">{mentor.name}</p>
-                  <p className="text-purple-400 text-xs">{mentor.title}</p>
+                  <p className="text-gray-900 text-sm font-medium leading-tight">{mentor.name}</p>
+                  <p className="text-purple-600 text-xs">{mentor.title}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Question Form */}
-          <Card className="bg-white/10 backdrop-blur-md border-white/20 mb-8">
+          <Card className="bg-white border-gray-200 shadow-lg mb-8">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-gray-900 flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
                 Ask Your Question
               </CardTitle>
-              <CardDescription className="text-gray-300">
+              <CardDescription className="text-gray-600">
                 Get personalized wisdom from {selectedMentors.length} legendary {selectedMentors.length === 1 ? 'mind' : 'minds'}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label className="text-white mb-2 block">Your Question</Label>
+                <Label className="text-gray-700 mb-2 block">Your Question</Label>
                 <Textarea
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="What would you like to ask these mentors?"
-                  className="bg-black/20 border-white/20 text-white min-h-[100px]"
+                  className="border-gray-300 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
                   maxLength={500}
                 />
-                <div className="text-right text-sm text-gray-400 mt-1">
+                <div className="text-right text-sm text-gray-500 mt-1">
                   {question.length}/500
                 </div>
               </div>
 
               {error && (
-                <Alert className="bg-red-500/20 border-red-500/50">
-                  <AlertDescription className="text-red-200">{error}</AlertDescription>
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-red-700">{error}</AlertDescription>
                 </Alert>
               )}
 
               <Button
                 onClick={askQuestion}
                 disabled={!question.trim() || isLoading || selectedMentors.length === 0 || (!user?.is_subscribed && user?.questions_asked >= 10)}
-                className="w-full"
+                className="w-full bg-purple-600 hover:bg-purple-700"
               >
                 {isLoading ? (
                   <>
@@ -737,10 +748,10 @@ function App() {
               </Button>
 
               {!user?.is_subscribed && user?.questions_asked >= 10 && (
-                <div className="text-center p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
-                  <Lock className="h-8 w-8 mx-auto text-yellow-400 mb-2" />
-                  <p className="text-yellow-200 mb-3">You've used all your free questions!</p>
-                  <Button onClick={() => setCurrentView('subscription')} className="bg-gradient-to-r from-purple-500 to-pink-500">
+                <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <Lock className="h-8 w-8 mx-auto text-yellow-600 mb-2" />
+                  <p className="text-yellow-700 mb-3">You've used all your free questions!</p>
+                  <Button onClick={() => setCurrentView('subscription')} className="bg-purple-600 hover:bg-purple-700">
                     Upgrade for Unlimited Access
                   </Button>
                 </div>
@@ -753,44 +764,47 @@ function App() {
   );
 
   const renderResponses = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <Button
               variant="outline"
               onClick={() => setCurrentView('mentors')}
-              className="border-gray-600 text-gray-300"
+              className="border-gray-300 text-gray-600 hover:bg-gray-50"
             >
               ← Back to Mentors
             </Button>
-            <h1 className="text-2xl font-bold text-white">Mentor Responses</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Mentor Responses</h1>
           </div>
 
           {/* Responses */}
           <div className="space-y-6">
             {responses.map((response, index) => (
-              <Card key={index} className="bg-white/10 backdrop-blur-md border-white/20">
+              <Card key={index} className="bg-white border-gray-200 shadow-lg">
                 <CardHeader>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={response.mentor.image_url} alt={response.mentor.name} />
-                      <AvatarFallback className="bg-purple-500/20 text-purple-400 font-bold">
-                        {response.mentor.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
+                      {response.mentor.image_url ? (
+                        <AvatarImage src={response.mentor.image_url} alt={response.mentor.name} />
+                      ) : (
+                        <AvatarFallback className="bg-purple-100 text-purple-600 font-bold">
+                          <User className="h-6 w-6" />
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                     <div>
-                      <CardTitle className="text-white">{response.mentor.name}</CardTitle>
-                      <CardDescription className="text-purple-400">
+                      <CardTitle className="text-gray-900">{response.mentor.name}</CardTitle>
+                      <CardDescription className="text-purple-600">
                         {response.mentor.title}
                       </CardDescription>
                     </div>
-                    <Star className="h-5 w-5 text-yellow-400 ml-auto" />
+                    <Star className="h-5 w-5 text-yellow-500 ml-auto" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-gray max-w-none">
-                    <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">{response.response}</p>
+                    <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{response.response}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -804,7 +818,7 @@ function App() {
                   setSelectedMentors([]);
                   setCurrentView('mentors');
                 }}
-                className="border-gray-600 text-gray-300"
+                className="border-gray-300 text-gray-600 hover:bg-gray-50"
               >
                 Ask Different Mentors
               </Button>
@@ -813,7 +827,7 @@ function App() {
                   setQuestion('');
                   setCurrentView('question');
                 }}
-                className="bg-gradient-to-r from-purple-500 to-pink-500"
+                className="bg-purple-600 hover:bg-purple-700"
               >
                 Ask Another Question
               </Button>
@@ -825,46 +839,46 @@ function App() {
   );
 
   const renderSubscription = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="max-w-4xl w-full">
-        <Card className="bg-white/10 backdrop-blur-md border-white/20">
+        <Card className="bg-white border-gray-200 shadow-lg">
           <CardHeader className="text-center">
-            <Crown className="h-16 w-16 mx-auto text-yellow-400 mb-4" />
-            <CardTitle className="text-3xl text-white mb-2">Unlock All Mentors</CardTitle>
-            <CardDescription className="text-gray-300 text-lg">
+            <Crown className="h-16 w-16 mx-auto text-yellow-500 mb-4" />
+            <CardTitle className="text-3xl text-gray-900 mb-2">Unlock All Mentors</CardTitle>
+            <CardDescription className="text-gray-600 text-lg">
               Get unlimited access to history's greatest minds
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               {/* Monthly Plan */}
-              <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-6 border border-purple-500/50">
+              <div className="bg-purple-50 rounded-lg p-6 border border-purple-200">
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-white mb-2">Monthly</h3>
-                  <div className="text-4xl font-bold text-white mb-1">$29.99</div>
-                  <div className="text-purple-400 text-sm mb-6">per month</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Monthly</h3>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">$29.99</div>
+                  <div className="text-purple-600 text-sm mb-6">per month</div>
                   <div className="space-y-3 text-left mb-6">
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       Unlimited questions to all mentors
                     </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       All 4 categories (Business, Sports, Health, Science)
                     </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       Multiple mentor responses per question
                     </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       Complete question history
                     </div>
                   </div>
                   <Button 
                     onClick={() => initiateSubscription('monthly')}
                     disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                    className="w-full bg-purple-600 hover:bg-purple-700"
                   >
                     {isLoading ? 'Processing...' : 'Start Monthly Plan'}
                   </Button>
@@ -872,36 +886,36 @@ function App() {
               </div>
 
               {/* Yearly Plan */}
-              <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg p-6 border border-green-500/50 relative">
+              <div className="bg-green-50 rounded-lg p-6 border border-green-200 relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-green-500 text-white">Save $60</Badge>
+                  <Badge className="bg-green-600 text-white">Save $60</Badge>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-white mb-2">Yearly</h3>
-                  <div className="text-4xl font-bold text-white mb-1">$299.99</div>
-                  <div className="text-green-400 text-sm mb-6">per year ($24.99/month)</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Yearly</h3>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">$299.99</div>
+                  <div className="text-green-600 text-sm mb-6">per year ($24.99/month)</div>
                   <div className="space-y-3 text-left mb-6">
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       Everything in Monthly plan
                     </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       Save 2 months ($60 savings)
                     </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       Priority support
                     </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Star className="h-4 w-4 text-yellow-400" />
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Star className="h-4 w-4 text-yellow-500" />
                       Early access to new mentors
                     </div>
                   </div>
                   <Button 
                     onClick={() => initiateSubscription('yearly')}
                     disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+                    className="w-full bg-green-600 hover:bg-green-700"
                   >
                     {isLoading ? 'Processing...' : 'Start Yearly Plan'}
                   </Button>
@@ -910,8 +924,8 @@ function App() {
             </div>
 
             {error && (
-              <Alert className="bg-red-500/20 border-red-500/50 mb-6">
-                <AlertDescription className="text-red-200">{error}</AlertDescription>
+              <Alert className="border-red-200 bg-red-50 mb-6">
+                <AlertDescription className="text-red-700">{error}</AlertDescription>
               </Alert>
             )}
 
@@ -919,7 +933,7 @@ function App() {
               <Button
                 variant="outline"
                 onClick={() => setCurrentView('categories')}
-                className="border-gray-600 text-gray-300"
+                className="border-gray-300 text-gray-600 hover:bg-gray-50"
               >
                 Back to Categories
               </Button>
@@ -931,45 +945,48 @@ function App() {
   );
 
   const renderHistory = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <Button
               variant="outline"
               onClick={() => setCurrentView('categories')}
-              className="border-gray-600 text-gray-300"
+              className="border-gray-300 text-gray-600 hover:bg-gray-50"
             >
               ← Back to Categories
             </Button>
-            <h1 className="text-3xl font-bold text-white">Question History</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Question History</h1>
           </div>
 
           <div className="space-y-6">
             {questionHistory.map((item, index) => (
-              <Card key={item.question_id} className="bg-white/10 backdrop-blur-md border-white/20">
+              <Card key={item.question_id} className="bg-white border-gray-200 shadow-lg">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <MessageSquare className="h-5 w-5 text-purple-400" />
-                    <div className="text-purple-400 text-sm">{new Date(item.created_at).toLocaleDateString()}</div>
+                    <MessageSquare className="h-5 w-5 text-purple-600" />
+                    <div className="text-purple-600 text-sm">{new Date(item.created_at).toLocaleDateString()}</div>
                   </div>
-                  <div className="bg-black/20 rounded-lg p-3">
-                    <p className="text-gray-300 italic text-sm">"{item.question}"</p>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-gray-700 italic text-sm">"{item.question}"</p>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {item.responses && item.responses.map((response, idx) => (
-                    <div key={idx} className="border-l-2 border-purple-500/50 pl-4">
+                    <div key={idx} className="border-l-2 border-purple-300 pl-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={response.mentor?.image_url} alt={response.mentor?.name} />
-                          <AvatarFallback className="bg-purple-500/20 text-purple-400 text-xs">
-                            {response.mentor?.name?.split(' ').map(n => n[0]).join('') || 'GM'}
-                          </AvatarFallback>
+                          {response.mentor?.image_url ? (
+                            <AvatarImage src={response.mentor?.image_url} alt={response.mentor?.name} />
+                          ) : (
+                            <AvatarFallback className="bg-purple-100 text-purple-600 text-xs">
+                              <User className="h-3 w-3" />
+                            </AvatarFallback>
+                          )}
                         </Avatar>
-                        <div className="text-white font-medium text-sm">{response.mentor?.name}</div>
+                        <div className="text-gray-900 font-medium text-sm">{response.mentor?.name}</div>
                       </div>
-                      <p className="text-gray-200 text-sm leading-relaxed">{response.response}</p>
+                      <p className="text-gray-800 text-sm leading-relaxed">{response.response}</p>
                     </div>
                   ))}
                 </CardContent>
@@ -977,10 +994,10 @@ function App() {
             ))}
             
             {questionHistory.length === 0 && (
-              <Card className="bg-white/10 backdrop-blur-md border-white/20">
+              <Card className="bg-white border-gray-200 shadow-lg">
                 <CardContent className="text-center py-12">
-                  <MessageSquare className="h-16 w-16 mx-auto text-gray-600 mb-4" />
-                  <p className="text-gray-400">No questions asked yet. Start your journey!</p>
+                  <MessageSquare className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600">No questions asked yet. Start your journey!</p>
                 </CardContent>
               </Card>
             )}

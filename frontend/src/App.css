@@ -1,42 +1,15 @@
-/* Custom animations and effects */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* OnlyFans-style White Theme for OnlyMentors.ai */
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes sparkle {
-  0%, 100% {
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    transform: scale(1.1) rotate(180deg);
-  }
-}
-
-/* Global styles */
+/* Global white theme styles */
 .App {
   min-height: 100vh;
+  background-color: white;
 }
 
-/* Card hover effects */
+/* Card hover effects - subtle for white theme */
 .group:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(139, 69, 193, 0.3), 0 10px 10px -5px rgba(139, 69, 193, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Button animations */
@@ -50,14 +23,6 @@ button:hover {
 
 button:active {
   transform: translateY(0);
-}
-
-/* Custom gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 /* Loading spinner animation */
@@ -74,70 +39,46 @@ button:active {
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - white theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(243, 244, 246, 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 69, 193, 0.5);
+  background: rgba(156, 163, 175, 0.5);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 69, 193, 0.7);
+  background: rgba(156, 163, 175, 0.7);
 }
 
-/* Backdrop blur support */
-.backdrop-blur-md {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* Glass morphism effect */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Improved focus states */
+/* Improved focus states - purple theme */
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #8b5cf6;
+  outline: 2px solid #7c3aed;
   outline-offset: 2px;
 }
 
-/* Smooth transitions for all interactive elements */
-.transition-smooth {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Avatar glow effect */
-.avatar-glow {
-  box-shadow: 0 0 20px rgba(139, 69, 193, 0.4);
-}
-
-/* Text selection styling */
+/* Text selection styling - purple theme */
 ::selection {
-  background-color: rgba(139, 69, 193, 0.3);
-  color: white;
+  background-color: rgba(124, 58, 237, 0.2);
+  color: #1f2937;
 }
 
 ::-moz-selection {
-  background-color: rgba(139, 69, 193, 0.3);
-  color: white;
+  background-color: rgba(124, 58, 237, 0.2);
+  color: #1f2937;
 }
 
-/* Custom progress bar */
-.progress-bar {
-  background: linear-gradient(90deg, #8b5cf6 0%, #ec4899 100%);
+/* Avatar glow effect - subtle for white theme */
+.avatar-glow {
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
 }
 
 /* Responsive text scaling */
@@ -151,19 +92,17 @@ textarea:focus-visible {
   }
 }
 
-/* Enhanced card shadows */
+/* Enhanced card shadows - subtle white theme */
 .card-enhanced {
   box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .card-enhanced:hover {
   box-shadow: 
-    0 20px 25px -5px rgba(139, 69, 193, 0.2),
-    0 10px 10px -5px rgba(139, 69, 193, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Loading state animations */
@@ -190,6 +129,46 @@ textarea:focus-visible {
   }
 }
 
+/* Line clamp utility for mentor bio */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* OnlyFans-style mentor card effects */
+.mentor-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mentor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Selection animation for mentors */
+.mentor-selected {
+  animation: selectPulse 0.3s ease-in-out;
+}
+
+@keyframes selectPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Custom progress bar styling */
+.progress-bar {
+  background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
+}
+
 /* Enhanced accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -208,11 +187,112 @@ textarea:focus-visible {
 
 /* High contrast mode */
 @media (prefers-contrast: high) {
-  .bg-white\/10 {
-    background-color: rgba(255, 255, 255, 0.2);
+  .bg-white {
+    background-color: white;
   }
   
-  .border-white\/20 {
-    border-color: rgba(255, 255, 255, 0.4);
+  .border-gray-200 {
+    border-color: #6b7280;
+  }
+}
+
+/* Grid layout improvements */
+.mentor-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .mentor-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .mentor-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+/* Badge styling improvements */
+.badge-purple {
+  background-color: rgb(243 232 255);
+  color: rgb(124 58 237);
+  border: 1px solid rgb(221 214 254);
+}
+
+.badge-green {
+  background-color: rgb(240 253 244);
+  color: rgb(22 163 74);
+  border: 1px solid rgb(187 247 208);
+}
+
+/* Smooth transitions for interactive elements */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* White theme specific overrides */
+body {
+  background-color: white;
+  color: #1f2937;
+}
+
+/* Ensure white backgrounds throughout */
+.bg-gradient-to-br {
+  background: white !important;
+}
+
+/* Custom white theme input styles */
+input, textarea, select {
+  background-color: white;
+  border-color: #d1d5db;
+  color: #1f2937;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #7c3aed;
+  ring-color: #7c3aed;
+}
+
+/* White theme card styles */
+.card-white {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-white:hover {
+  border-color: #7c3aed;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Mentor selection indicator */
+.mentor-selection-ring {
+  box-shadow: 0 0 0 2px #7c3aed;
+}
+
+/* OnlyFans-style layout adjustments */
+.onlyfans-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .onlyfans-layout {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .onlyfans-layout {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+    padding: 24px;
   }
 }
