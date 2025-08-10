@@ -311,7 +311,7 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
         # Create responses from all selected mentors
         responses = []
         for mentor in selected_mentors:
-            response_text = create_mentor_response(mentor, question_data.question)
+            response_text = await create_mentor_response(mentor, question_data.question)
             responses.append({
                 "mentor": mentor,
                 "response": response_text
