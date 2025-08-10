@@ -100,53 +100,47 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def create_mentor_response(mentor, question):
-    """Create personality-based response for a mentor"""
-    
-    # Enhanced responses with more personality variation
-    personality_responses = {
-        "warren_buffett": f"Well, that's an excellent question about '{question}'. You know, in my many decades of investing, I've learned that the most important thing is to invest in businesses you understand. As I always say, 'Rule No. 1: Never lose money. Rule No. 2: Never forget rule No. 1.' The key is to find wonderful companies at fair prices, not fair companies at wonderful prices. Think long-term, stay patient, and remember that time is the friend of the wonderful business. What you're asking touches on something fundamental - success in investing isn't about making perfect decisions, it's about avoiding big mistakes and letting compound interest work its magic over time.",
+async def create_mentor_response(mentor, question):
+    """Create AI-powered response from a mentor using their personality and expertise"""
+    try:
+        # Create a unique session ID for this mentor-question combination
+        session_id = f"mentor_{mentor['id']}_{hash(question) % 10000}"
         
-        "steve_jobs": f"That's a fascinating question: '{question}'. You know, I've always believed that innovation distinguishes between a leader and a follower. When we were building Apple, we didn't just think about making computers - we thought about creating tools that would amplify human intelligence. The key is to start with the user experience and work backward to the technology. Stay hungry, stay foolish. Don't settle for anything less than excellence. And remember, your work is going to fill a large part of your life, so make sure you're doing something you're passionate about.",
+        # Build system message based on mentor's personality and expertise
+        system_message = f"""You are {mentor['name']}, {mentor['expertise']}. {mentor['wiki_description']}
+
+Personality and Communication Style:
+- Respond as if you are actually {mentor['name']}
+- Use your authentic voice, personality, and speaking patterns
+- Draw from your real-life experiences, achievements, and philosophy
+- Provide practical, actionable advice based on your expertise
+- Keep responses conversational yet insightful (2-3 paragraphs)
+- Use "I" statements and personal anecdotes where appropriate
+- Reflect your known values, beliefs, and approach to life/work
+
+Areas of Expertise: {mentor['expertise']}
+
+Your response should feel authentic to who you are as a person and thought leader."""
+
+        # Initialize LLM chat
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message=system_message
+        ).with_model("openai", "gpt-4o-mini")
         
-        "elon_musk": f"Interesting question: '{question}'. I think the key is to approach problems from first principles rather than by analogy. Most people go through life using reasoning by analogy - they do things because that's how things have always been done. But first principles thinking means you boil things down to their fundamental truths and reason up from there. At Tesla and SpaceX, we're always asking: what are the physics of this problem? What's actually possible? Don't be afraid to think big and take calculated risks. The worst that can happen is you learn something valuable.",
+        # Create user message
+        user_message = UserMessage(text=question)
         
-        "michael_jordan": f"Great question: '{question}'. You know, talent wins games, but teamwork and intelligence win championships. I've always believed that obstacles don't have to stop you. If you run into a wall, don't turn around and give up. Figure out how to climb it, go through it, or work around it. The mental aspect is huge. I never looked at the consequences of missing a big shot... When you think about fear and failure, you're beaten before you even start. You have to believe in yourself when no one else does - that makes you a winner right there.",
+        # Get AI response
+        response = await chat.send_message(user_message)
         
-        "andrew_huberman": f"Excellent question: '{question}'. From a neuroscience perspective, what's fascinating is how our brains are constantly adapting based on our behaviors and environment. The key principles I always emphasize are: get quality sleep (7-9 hours), get morning sunlight exposure to set your circadian rhythm, and engage in regular physical activity. Your nervous system is the foundation for everything - mood, focus, performance. Simple protocols like cold exposure, breathwork, and meditation can dramatically shift your state. Remember, small consistent actions compound over time.",
+        return response.strip()
         
-        "albert_einstein": f"Ah, what a thoughtful question: '{question}'. You know, I have always believed that imagination is more important than knowledge. Knowledge is limited, but imagination embraces the entire world. When I was developing the theory of relativity, I didn't start with complex mathematics - I started with thought experiments, imagining what it would be like to ride alongside a beam of light. The most beautiful thing we can experience is the mysterious. Curiosity is more important than intelligence. Ask questions, challenge assumptions, and don't be afraid to think differently.",
-        
-        "marie_curie": f"What a wonderful question: '{question}'. In my work with radioactivity, I learned that discovery requires both passion and persistence. When Pierre and I were isolating radium, we worked in a freezing shed with primitive equipment, but our curiosity drove us forward. Science taught me that nothing in life is to be feared, only understood. I encourage you to let neither praise nor criticism divert you from the path you feel called to follow. Work with patience and persistence - great discoveries don't happen overnight.",
-        
-        "usain_bolt": f"Great question: '{question}'. You know, I've always believed in having fun while pursuing excellence. When I step on the track, I'm not just running for myself - I'm running to inspire others to chase their dreams. The key is preparation meets opportunity. I trained for years, focusing on technique, speed, and mental preparation. But confidence is everything - you have to believe you're the best before anyone else will. Stay relaxed under pressure, enjoy the moment, and remember that champions are made in training, not on race day."
-    }
-    
-    # Get specific response or create generic one based on expertise
-    if mentor["id"] in personality_responses:
-        return personality_responses[mentor["id"]]
-    else:
-        # Create response based on mentor's expertise and category
-        expertise_keywords = mentor['expertise'].lower()
-        response_templates = {
-            "business": f"Thank you for asking about '{question}'. In my experience in {mentor['expertise']}, I've learned that success comes from understanding your market, staying persistent, and always putting your customers first. {mentor['wiki_description']} My advice is to focus on solving real problems, build strong relationships, and never stop learning. Remember, every setback is a setup for a comeback.",
-            
-            "sports": f"That's a great question: '{question}'. In my athletic career focused on {mentor['expertise']}, I've discovered that physical talent is just the starting point. Mental toughness, consistent training, and the ability to perform under pressure are what separate good athletes from champions. {mentor['wiki_description']} My advice is to set clear goals, embrace the grind, and never give up when things get tough. Champions are made when nobody is watching.",
-            
-            "health": f"Excellent question about '{question}'. Based on my expertise in {mentor['expertise']}, I believe that health is our most valuable asset. {mentor['wiki_description']} The key principles I focus on are prevention over treatment, understanding the root causes of health issues, and taking a holistic approach to wellness. My advice is to prioritize sleep, nutrition, exercise, and stress management. Small consistent changes lead to remarkable transformations over time.",
-            
-            "science": f"What a fascinating question: '{question}'. In my work with {mentor['expertise']}, I've learned that scientific discovery requires both rigorous methodology and creative thinking. {mentor['wiki_description']} The most important thing is to remain curious and question everything. My advice is to observe carefully, form hypotheses, test them systematically, and be prepared to have your assumptions challenged. Science progresses when we embrace uncertainty and keep asking 'why?'"
-        }
-        
-        # Determine category from mentor data (this would be passed in real implementation)
-        category = "business"  # Default
-        for cat, mentors in ALL_MENTORS.items():
-            if any(m["id"] == mentor["id"] for m in mentors):
-                category = cat
-                break
-                
-        return response_templates.get(category, 
-            f"Thank you for your thoughtful question: '{question}'. Based on my experience and expertise in {mentor['expertise']}, I believe the key is to approach this with both wisdom and practical action. Remember that every challenge is an opportunity for growth, and success comes to those who persist through difficulties while staying true to their values.")
+    except Exception as e:
+        # Fallback to a generic response if LLM fails
+        print(f"LLM API Error for {mentor['name']}: {str(e)}")
+        return f"Thank you for your question about '{question}'. Based on my experience in {mentor['expertise']}, I believe this is an important topic that requires thoughtful consideration. While I'd love to provide a detailed response right now, I encourage you to explore this further and perhaps rephrase your question for the best guidance. {mentor['wiki_description']}"
 
 # Routes
 @app.get("/")
