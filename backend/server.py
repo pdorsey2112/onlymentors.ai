@@ -313,20 +313,35 @@ async def get_me(current_user = Depends(get_current_user)):
 async def test_llm():
     """Test LLM integration directly"""
     try:
-        system_prompt = "You are Warren Buffett. Give a brief investment tip."
-        session_id = str(uuid.uuid4())
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=session_id,
-            system_message=system_prompt
-        ).with_model("openai", "gpt-4o-mini")
+        # Test different configurations
+        tests = [
+            ("gpt-4o-mini", "openai"),
+            ("claude-3-5-haiku-20241022", "anthropic"),
+            ("gemini-2.0-flash", "gemini")
+        ]
         
-        user_message = UserMessage(text="What's your best investment advice?")
-        response = await chat.send_message(user_message)
+        results = {}
+        for model, provider in tests:
+            try:
+                system_prompt = "You are Warren Buffett. Give a brief investment tip."
+                session_id = str(uuid.uuid4())
+                chat = LlmChat(
+                    api_key=EMERGENT_LLM_KEY,
+                    session_id=session_id,
+                    system_message=system_prompt
+                ).with_model(provider, model)
+                
+                user_message = UserMessage(text="What's your best investment advice?")
+                response = await chat.send_message(user_message)
+                
+                results[f"{provider}-{model}"] = {"status": "success", "response": response[:100]}
+            except Exception as e:
+                results[f"{provider}-{model}"] = {"status": "error", "error": str(e)}
         
-        return {"status": "success", "response": response}
+        return results
+        
     except Exception as e:
-        return {"status": "error", "error": str(e), "error_type": str(type(e))}
+        return {"status": "global_error", "error": str(e), "error_type": str(type(e))}
 
 @app.post("/api/questions/ask")
 async def ask_question(question_data: QuestionRequest, current_user = Depends(get_current_user)):
