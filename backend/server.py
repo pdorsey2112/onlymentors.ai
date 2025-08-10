@@ -11,6 +11,7 @@ import uuid
 import os
 from complete_mentors_database import ALL_MENTORS, TOTAL_MENTORS
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
