@@ -107,15 +107,18 @@ user_problem_statement: "Fix LLM integration in OnlyMentors.ai to replace mock r
 backend:
   - task: "LLM Integration Fix"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Replaced mock create_mentor_response function with actual LLM integration using emergentintegrations.llm.chat.LlmChat. Using EMERGENT_LLM_KEY with gpt-4o-mini model. Added proper system messages for each mentor's personality and expertise."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE: LLM integration is not working. The emergentintegrations library is failing with 'litellm.InternalServerError: OpenAIException - Connection error'. Root cause analysis shows that the API key 'sk-emergent-281F003Ed3fEf9c052' appears to be invalid or placeholder. Real OpenAI API keys are longer and have different format. All API calls are falling back to mock responses. The backend API endpoints work correctly, authentication works, but LLM calls consistently fail. Network connectivity to OpenAI API is confirmed working (can reach api.openai.com). Issue is specifically with the API key configuration."
 
 frontend:
   - task: "Frontend Question Interface"
@@ -133,16 +136,19 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 test_plan:
   current_focus:
     - "LLM Integration Fix"
-  stuck_tasks: []
+  stuck_tasks:
+    - "LLM Integration Fix"
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
     message: "Implemented LLM integration using emergentintegrations library. Replaced the create_mentor_response function with async LLM calls using gpt-4o-mini model. Each mentor gets a unique session ID and personalized system message. Need to test the /api/questions/ask endpoint to ensure LLM responses are working properly."
+  - agent: "testing"
+    message: "CRITICAL FINDING: LLM integration is completely non-functional due to invalid API key. Comprehensive testing shows: 1) Backend APIs work perfectly (auth, categories, question submission) 2) Network connectivity to OpenAI is confirmed 3) emergentintegrations library is properly installed and configured 4) The issue is the API key 'sk-emergent-281F003Ed3fEf9c052' which appears to be a placeholder/test key, not a valid OpenAI API key 5) All LLM calls fail with connection errors and fall back to mock responses 6) Need valid OpenAI API key to make LLM integration functional. This is a high-priority issue requiring immediate attention."
