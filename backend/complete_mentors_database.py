@@ -520,6 +520,150 @@ SCIENCE_MENTORS = [
     # Note: This continues to 100 science mentors
 ]
 
+# Relationships & Dating Mentors (20 mentors) - Based on FeedSpot top influencers
+RELATIONSHIPS_MENTORS = [
+    {
+        "id": "jay_shetty", "name": "Jay Shetty", "title": "Author, Podcaster, Life Coach",
+        "bio": "Former monk turned bestselling author and podcast host helping millions find purpose and meaning",
+        "expertise": "Mindfulness, relationships, purpose, personal growth, meditation",
+        "image_url": get_wikipedia_image_url("Jay Shetty"),
+        "wiki_description": "Jay Shetty is a British author, podcaster, and former monk who focuses on mindfulness and personal development."
+    },
+    {
+        "id": "nicole_lepera", "name": "Dr. Nicole LePera", "title": "The Holistic Psychologist",
+        "bio": "Licensed psychologist teaching holistic healing and conscious relationship creation", 
+        "expertise": "Holistic psychology, trauma healing, conscious relationships, self-healing",
+        "image_url": get_wikipedia_image_url("Nicole LePera"),
+        "wiki_description": "Dr. Nicole LePera is a licensed psychologist and author known for her holistic approach to mental health."
+    },
+    {
+        "id": "stephan_labossiere", "name": "Stephan Labossiere", "title": "Certified Dating & Relationship Coach",
+        "bio": "Bestselling author and certified relationship coach helping people receive real love",
+        "expertise": "Dating advice, relationship coaching, love psychology, communication",
+        "image_url": get_wikipedia_image_url("Stephan Labossiere"),
+        "wiki_description": "Stephan Labossiere is a certified dating and relationship coach and bestselling author."
+    },
+    {
+        "id": "nedra_tawwab", "name": "Nedra Glover Tawwab", "title": "Licensed Therapist & Boundaries Expert",
+        "bio": "2x NYT Bestselling Author and licensed therapist specializing in boundaries and relationships",
+        "expertise": "Boundaries, relationship therapy, mental health, communication skills",
+        "image_url": get_wikipedia_image_url("Nedra Tawwab"),
+        "wiki_description": "Nedra Glover Tawwab is a licensed therapist and New York Times bestselling author specializing in boundaries."
+    },
+    {
+        "id": "esther_perel", "name": "Esther Perel", "title": "Psychotherapist & Author",
+        "bio": "World-renowned psychotherapist and NYT bestselling author revolutionizing relationship therapy",
+        "expertise": "Couples therapy, intimacy, infidelity recovery, relationship dynamics",
+        "image_url": get_wikipedia_image_url("Esther Perel"),
+        "wiki_description": "Esther Perel is a Belgian-American psychotherapist known for her work on human relationships."
+    },
+    {
+        "id": "sara_kuburic", "name": "Sara Kuburic", "title": "Existential Analyst",
+        "bio": "Millennial Therapist helping people navigate modern relationships and identity",
+        "expertise": "Existential analysis, millennial relationships, identity, authenticity",
+        "image_url": get_wikipedia_image_url("Sara Kuburic"),
+        "wiki_description": "Sara Kuburic is an existential analyst and therapist known for her work with millennials."
+    },
+    {
+        "id": "julie_menanno", "name": "Julie Menanno", "title": "Couples Therapist",
+        "bio": "Licensed couples therapist and author of 'Secure Love' specializing in attachment theory",
+        "expertise": "Attachment theory, couples therapy, secure relationships, EFT",
+        "image_url": get_wikipedia_image_url("Julie Menanno"),
+        "wiki_description": "Julie Menanno is a licensed couples therapist and author specializing in attachment-based therapy."
+    },
+    {
+        "id": "mark_groves", "name": "Mark Groves", "title": "Relationship Coach",
+        "bio": "No-BS relationship and life advice expert, podcast host, and human connection specialist",
+        "expertise": "Relationship coaching, human connection, personal development, communication",
+        "image_url": get_wikipedia_image_url("Mark Groves"),
+        "wiki_description": "Mark Groves is a relationship coach and podcast host focused on human connection."
+    },
+    {
+        "id": "lysa_terkeurst", "name": "Lysa TerKeurst", "title": "Author & Speaker",
+        "bio": "New York Times bestselling author and president of Proverbs 31 Ministries",
+        "expertise": "Faith-based relationships, healing from betrayal, forgiveness, spiritual growth",
+        "image_url": get_wikipedia_image_url("Lysa TerKeurst"),
+        "wiki_description": "Lysa TerKeurst is an American author and president of Proverbs 31 Ministries."
+    },
+    {
+        "id": "vienna_pharaon", "name": "Vienna Pharaon", "title": "Licensed Marriage & Family Therapist",
+        "bio": "Licensed therapist, bestselling author, and podcast host breaking generational patterns",
+        "expertise": "Family therapy, generational patterns, trauma healing, relationship therapy",
+        "image_url": get_wikipedia_image_url("Vienna Pharaon"),
+        "wiki_description": "Vienna Pharaon is a licensed marriage and family therapist and bestselling author."
+    },
+    {
+        "id": "whitney_goodman", "name": "Whitney Goodman", "title": "Licensed Mental Health Counselor",
+        "bio": "Licensed therapist and author of 'Toxic Positivity' helping people build authentic relationships",
+        "expertise": "Mental health, toxic positivity, authentic communication, relationship therapy",
+        "image_url": get_wikipedia_image_url("Whitney Goodman"),
+        "wiki_description": "Whitney Goodman is a licensed mental health counselor and author known for her work on toxic positivity."
+    },
+    {
+        "id": "susanne_wolf", "name": "Dr. Susanne Wolf", "title": "Psychologist",
+        "bio": "Psychologist specializing in overcoming self-abandonment and emotional abuse",
+        "expertise": "Self-abandonment, emotional abuse recovery, self-trust, inner wisdom",
+        "image_url": get_wikipedia_image_url("Susanne Wolf"),
+        "wiki_description": "Dr. Susanne Wolf is a psychologist specializing in emotional abuse recovery and self-empowerment."
+    },
+    {
+        "id": "matthew_hussey", "name": "Matthew Hussey", "title": "Dating Coach",
+        "bio": "World-renowned dating coach and bestselling author helping people find lasting love",
+        "expertise": "Dating strategy, confidence building, relationship psychology, communication",
+        "image_url": get_wikipedia_image_url("Matthew Hussey"),
+        "wiki_description": "Matthew Hussey is a British dating coach, author, and speaker."
+    },
+    {
+        "id": "maria_sosa", "name": "Maria G. Sosa", "title": "Divorced Couples Therapist",
+        "bio": "Licensed therapist helping women work through heartbreak and life transitions",
+        "expertise": "Divorce recovery, heartbreak healing, women's empowerment, life transitions",
+        "image_url": get_wikipedia_image_url("Maria Sosa"),
+        "wiki_description": "Maria G. Sosa is a licensed therapist specializing in divorce recovery and women's healing."
+    },
+    {
+        "id": "amanda_white", "name": "Amanda E White", "title": "Licensed Therapist",
+        "bio": "Realistic therapist and podcast host specializing in women's mental health",
+        "expertise": "Women's therapy, realistic mental health, podcast hosting, therapy practice",
+        "image_url": get_wikipedia_image_url("Amanda White"),
+        "wiki_description": "Amanda E White is a licensed therapist known for her realistic approach to mental health."
+    },
+    {
+        "id": "john_kim", "name": "John Kim", "title": "The Angry Therapist",
+        "bio": "Licensed therapist, author, and dad sharing authentic insights on relationships and life",
+        "expertise": "Men's therapy, authentic relationships, personal growth, life rebuilding",
+        "image_url": get_wikipedia_image_url("John Kim therapist"),
+        "wiki_description": "John Kim is a licensed therapist known as 'The Angry Therapist' for his unconventional approach."
+    },
+    {
+        "id": "tracy_dalgleish", "name": "Dr. Tracy Dalgleish", "title": "Couples Therapist",
+        "bio": "Couples therapist, author, and founder helping couples break old patterns",
+        "expertise": "Couples therapy, relationship patterns, communication, relationship joy",
+        "image_url": get_wikipedia_image_url("Tracy Dalgleish"),
+        "wiki_description": "Dr. Tracy Dalgleish is a couples therapist and author specializing in relationship transformation."
+    },
+    {
+        "id": "silvy_khoucasian", "name": "Silvy Khoucasian", "title": "Psychotherapist & Relationship Coach",
+        "bio": "Psychotherapist teaching internal fulfillment and practical relationship skills",
+        "expertise": "Psychotherapy, relationship coaching, internal fulfillment, practical skills",
+        "image_url": get_wikipedia_image_url("Silvy Khoucasian"),
+        "wiki_description": "Silvy Khoucasian is a psychotherapist and relationship coach based in LA and NY."
+    },
+    {
+        "id": "elizabeth_earnshaw", "name": "Elizabeth Earnshaw", "title": "Licensed Marriage Therapist",
+        "bio": "Licensed therapist and author helping people have better relationships with themselves and others",
+        "expertise": "Marriage therapy, self-relationship, couples communication, relationship building",
+        "image_url": get_wikipedia_image_url("Elizabeth Earnshaw"),
+        "wiki_description": "Elizabeth Earnshaw is a licensed marriage and family therapist and author."
+    },
+    {
+        "id": "sheleana_aiyana", "name": "Sheleana Aiyana", "title": "International Bestselling Author",
+        "bio": "Founder of Rising Woman and international bestselling author on conscious relationships",
+        "expertise": "Conscious relationships, feminine empowerment, spiritual growth, personal transformation",
+        "image_url": get_wikipedia_image_url("Sheleana Aiyana"),
+        "wiki_description": "Sheleana Aiyana is an international bestselling author and founder of Rising Woman."
+    }
+]
+
 # Combine all mentors
 ALL_MENTORS = {
     "business": BUSINESS_MENTORS,
