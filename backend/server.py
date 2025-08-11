@@ -53,6 +53,13 @@ from payout_system import (
     calculate_creator_pending_earnings, process_creator_payout, calculate_payout_analytics,
     create_default_payout_settings, calculate_next_payout_date, PLATFORM_FEE_PERCENTAGE
 )
+from ai_agent_framework import (
+    AIAgentType, AITaskStatus, AITaskPriority, AIAgentStatus,
+    AIAgentConfig, AITaskRequest, AITaskResult,
+    generate_agent_id, generate_task_id, AITaskProcessor,
+    ContentModerationAI, CustomerServiceAI, SalesAnalyticsAI, MarketingAnalyticsAI,
+    DEFAULT_AI_AGENTS, create_default_ai_agent
+)
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
