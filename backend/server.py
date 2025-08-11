@@ -625,6 +625,10 @@ async def creator_signup(creator_data: CreatorSignupRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create creator account: {str(e)}")
 
+class CreatorLoginRequest(BaseModel):
+    email: str
+    password: str
+
 @app.post("/api/creators/login")
 async def creator_login(email: str, password: str):
     """Creator login"""
