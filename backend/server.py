@@ -40,6 +40,19 @@ from admin_system import (
     calculate_user_metrics, calculate_mentor_metrics, calculate_financial_metrics,
     has_permission, INITIAL_SUPER_ADMIN
 )
+from content_moderation_system import (
+    ContentType, ModerationStatus, ModerationAction, ModerationPriority,
+    ModerationRequest, ContentModerationFilter, get_content_moderation_schema,
+    generate_moderation_id, calculate_moderation_stats, process_creator_video_for_moderation,
+    process_mentor_profile_for_moderation, create_moderation_activity_log
+)
+from payout_system import (
+    PayoutStatus, PayoutFrequency, PayoutMethod, EarningsType,
+    PayoutRequest, PayoutScheduleUpdate, EarningsEntry,
+    generate_payout_id, calculate_platform_fee, create_earnings_entry,
+    calculate_creator_pending_earnings, process_creator_payout, calculate_payout_analytics,
+    create_default_payout_settings, PLATFORM_FEE_PERCENTAGE
+)
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
