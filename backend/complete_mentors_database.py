@@ -199,8 +199,176 @@ BUSINESS_MENTORS = [
         "expertise": "Animation, entertainment, theme parks, storytelling",
         "image_url": get_wikipedia_image_url("Walt Disney"),
         "wiki_description": "Walter Elias Disney was an American animator, film producer, and entrepreneur."
+    },
+    {
+        "id": "oprah_winfrey", "name": "Oprah Winfrey", "title": "Media Mogul",
+        "bio": "Media executive, actress, talk show host, and philanthropist",
+        "expertise": "Media, communication, leadership, philanthropy",
+        "image_url": get_wikipedia_image_url("Oprah Winfrey"),
+        "wiki_description": "Oprah Gail Winfrey is an American talk show host, television producer, actress, and philanthropist."
+    },
+    {
+        "id": "richard_branson", "name": "Richard Branson", "title": "Virgin Group Founder",
+        "bio": "British entrepreneur known for Virgin brand and adventurous lifestyle",
+        "expertise": "Entrepreneurship, branding, customer service, adventure",
+        "image_url": get_wikipedia_image_url("Richard Branson"),
+        "wiki_description": "Sir Richard Charles Nicholas Branson is a British billionaire entrepreneur."
+    },
+    {
+        "id": "howard_schultz", "name": "Howard Schultz", "title": "Starbucks CEO",
+        "bio": "Transformed coffee culture and built global Starbucks empire",
+        "expertise": "Retail, brand building, customer experience, culture",
+        "image_url": get_wikipedia_image_url("Howard Schultz"),
+        "wiki_description": "Howard Schultz is an American businessman and author who served as chairman and CEO of Starbucks."
+    },
+    {
+        "id": "sara_blakely", "name": "Sara Blakely", "title": "Spanx Founder",
+        "bio": "Self-made billionaire who revolutionized women's undergarments",
+        "expertise": "Product innovation, women's entrepreneurship, retail",
+        "image_url": get_wikipedia_image_url("Sara Blakely"),
+        "wiki_description": "Sara Treleaven Blakely is an American entrepreneur and philanthropist who founded Spanx."
+    },
+    {
+        "id": "jack_welch", "name": "Jack Welch", "title": "Former GE CEO",
+        "bio": "Legendary business executive known for management philosophy",
+        "expertise": "Management, leadership, corporate strategy, performance",
+        "image_url": get_wikipedia_image_url("Jack Welch"),
+        "wiki_description": "John Francis Welch Jr. was an American business executive, chemical engineer, and writer."
+    },
+    {
+        "id": "peter_drucker", "name": "Peter Drucker", "title": "Management Guru",
+        "bio": "Father of modern management theory and consultant",
+        "expertise": "Management theory, organizational behavior, strategy",
+        "image_url": get_wikipedia_image_url("Peter Drucker"),
+        "wiki_description": "Peter Ferdinand Drucker was an Austrian-American management consultant, educator, and author."
+    },
+    {
+        "id": "ray_kroc", "name": "Ray Kroc", "title": "McDonald's Builder",
+        "bio": "Transformed McDonald's into global fast-food empire",
+        "expertise": "Franchising, systems, quality control, scaling",
+        "image_url": get_wikipedia_image_url("Ray Kroc"),
+        "wiki_description": "Raymond Albert Kroc was an American businessman who purchased the fast food company McDonald's."
+    },
+    {
+        "id": "sam_walton", "name": "Sam Walton", "title": "Walmart Founder",
+        "bio": "Created world's largest retail chain with customer-first philosophy",
+        "expertise": "Retail, logistics, customer service, cost management",
+        "image_url": get_wikipedia_image_url("Sam Walton"),
+        "wiki_description": "Samuel Moore Walton was an American business magnate best known for founding Walmart."
+    },
+    {
+        "id": "mary_barra", "name": "Mary Barra", "title": "GM CEO",
+        "bio": "First female CEO of a major automaker, leading electric transformation",
+        "expertise": "Automotive industry, leadership, electric vehicles, manufacturing",
+        "image_url": get_wikipedia_image_url("Mary Barra"),
+        "wiki_description": "Mary Teresa Barra is an American businesswoman who has been the CEO of General Motors Company."
+    },
+    {
+        "id": "ginni_rometty", "name": "Ginni Rometty", "title": "Former IBM CEO",
+        "bio": "Led IBM's transformation into cloud and AI company",
+        "expertise": "Technology transformation, AI, cloud computing, leadership",
+        "image_url": get_wikipedia_image_url("Ginni Rometty"),
+        "wiki_description": "Virginia Marie Rometty is an American business executive who was chairman and CEO of IBM."
+    },
+    {
+        "id": "indra_nooyi", "name": "Indra Nooyi", "title": "Former PepsiCo CEO",
+        "bio": "Transformed PepsiCo with focus on healthier products and sustainability",
+        "expertise": "Consumer goods, sustainability, global business, leadership",
+        "image_url": get_wikipedia_image_url("Indra Nooyi"),
+        "wiki_description": "Indra Nooyi is an Indian-American business executive and former CEO of PepsiCo."
+    },
+    {
+        "id": "sheryl_sandberg", "name": "Sheryl Sandberg", "title": "Meta COO",
+        "bio": "Built Facebook's advertising business and authored 'Lean In'",
+        "expertise": "Digital advertising, women's leadership, business operations",
+        "image_url": get_wikipedia_image_url("Sheryl Sandberg"),
+        "wiki_description": "Sheryl Kara Sandberg is an American business executive, billionaire, and philanthropist."
+    },
+    {
+        "id": "melinda_gates", "name": "Melinda Gates", "title": "Philanthropist & Advocate",
+        "bio": "Co-chair of Gates Foundation, advancing global health and women's equality",
+        "expertise": "Philanthropy, global health, women's empowerment, social impact",
+        "image_url": get_wikipedia_image_url("Melinda Gates"),
+        "wiki_description": "Melinda French Gates is an American philanthropist and former general manager at Microsoft."
+    },
+    {
+        "id": "michael_bloomberg", "name": "Michael Bloomberg", "title": "Bloomberg LP Founder",
+        "bio": "Built financial information empire and served as NYC mayor",
+        "expertise": "Financial services, media, public service, philanthropy",
+        "image_url": get_wikipedia_image_url("Michael Bloomberg"),
+        "wiki_description": "Michael Rubens Bloomberg is an American businessman, politician, philanthropist, and author."
+    },
+    {
+        "id": "rupert_murdoch", "name": "Rupert Murdoch", "title": "Media Magnate",
+        "bio": "Built global media empire including Fox News and Wall Street Journal",
+        "expertise": "Media, publishing, global business, acquisitions",
+        "image_url": get_wikipedia_image_url("Rupert Murdoch"),
+        "wiki_description": "Keith Rupert Murdoch is an Australian-born American media mogul."
+    },
+    {
+        "id": "john_mackey", "name": "John Mackey", "title": "Whole Foods Co-founder",
+        "bio": "Pioneer of organic food retail and conscious capitalism",
+        "expertise": "Organic retail, conscious capitalism, corporate culture",
+        "image_url": get_wikipedia_image_url("John Mackey"),
+        "wiki_description": "Walter John Mackey is an American businessman and writer who co-founded Whole Foods Market."
+    },
+    {
+        "id": "travis_kalanick", "name": "Travis Kalanick", "title": "Uber Co-founder",
+        "bio": "Co-founded ride-sharing company that transformed transportation",
+        "expertise": "Sharing economy, disruption, scaling, mobile technology",
+        "image_url": get_wikipedia_image_url("Travis Kalanick"),
+        "wiki_description": "Travis Cordell Kalanick is an American businessman best known as the co-founder and former CEO of Uber."
+    },
+    {
+        "id": "brian_chesky", "name": "Brian Chesky", "title": "Airbnb CEO",
+        "bio": "Co-founded home-sharing platform that revolutionized travel",
+        "expertise": "Sharing economy, hospitality, design thinking, community building",
+        "image_url": get_wikipedia_image_url("Brian Chesky"),
+        "wiki_description": "Brian Joseph Chesky is an American billionaire businessman and industrial designer."
+    },
+    {
+        "id": "daniel_ek", "name": "Daniel Ek", "title": "Spotify CEO",
+        "bio": "Founded music streaming service that transformed music industry",
+        "expertise": "Digital music, streaming, technology, content licensing",
+        "image_url": get_wikipedia_image_url("Daniel Ek"),
+        "wiki_description": "Daniel Ek is a Swedish entrepreneur and technologist, best known as the co-founder and CEO of Spotify."
+    },
+    {
+        "id": "patrick_collison", "name": "Patrick Collison", "title": "Stripe CEO",
+        "bio": "Co-founded payment processing company serving internet businesses",
+        "expertise": "Fintech, payments, internet infrastructure, scaling",
+        "image_url": get_wikipedia_image_url("Patrick Collison"),
+        "wiki_description": "Patrick Collison is an Irish entrepreneur who co-founded and is CEO of Stripe."
+    },
+    {
+        "id": "john_collison", "name": "John Collison", "title": "Stripe President",
+        "bio": "Co-founded Stripe and youngest self-made billionaire",
+        "expertise": "Fintech, payments, product development, entrepreneurship",
+        "image_url": get_wikipedia_image_url("John Collison"),
+        "wiki_description": "John Collison is an Irish entrepreneur who co-founded and is president of Stripe."
+    },
+    {
+        "id": "evan_spiegel", "name": "Evan Spiegel", "title": "Snapchat CEO",
+        "bio": "Co-founded multimedia messaging app with disappearing messages",
+        "expertise": "Social media, mobile technology, augmented reality, youth marketing",
+        "image_url": get_wikipedia_image_url("Evan Spiegel"),
+        "wiki_description": "Evan Thomas Spiegel is an American businessman who is the co-founder and CEO of Snap Inc."
+    },
+    {
+        "id": "stewart_butterfield", "name": "Stewart Butterfield", "title": "Slack Co-founder",
+        "bio": "Created workplace communication platform that transformed team collaboration",
+        "expertise": "Workplace technology, team communication, product design, SaaS",
+        "image_url": get_wikipedia_image_url("Stewart Butterfield"),
+        "wiki_description": "Daniel Stewart Butterfield is a Canadian entrepreneur and businessman."
+    },
+    {
+        "id": "garrett_camp", "name": "Garrett Camp", "title": "Uber Co-founder",
+        "bio": "Co-founded Uber and StumbleUpon, pioneer in internet discovery",
+        "expertise": "Internet platforms, mobile apps, discovery engines, venture capital",
+        "image_url": get_wikipedia_image_url("Garrett Camp"),
+        "wiki_description": "Garrett Camp is a Canadian entrepreneur and computer programmer."
     }
-    # Note: This continues to 100 business mentors
+    # Continue with more business mentors to reach 100 total
 ]
 
 # Sports Champions (100 mentors) - Including NFL coaches and athletes
