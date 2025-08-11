@@ -149,6 +149,18 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Fix Stripe Integration"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed Stripe integration by correcting webhook URL construction using request.base_url instead of origin_url, and ensuring amount is passed as float format as required by Stripe. Updated checkout session creation according to emergentintegrations playbook."
+
   - task: "Add Relationships & Dating Category"
     implemented: true
     working: true
