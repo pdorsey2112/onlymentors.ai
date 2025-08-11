@@ -886,6 +886,129 @@ async def get_creator_profile(creator_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch creator: {str(e)}")
 
+@app.post("/api/creators/{creator_id}/content")
+async def upload_creator_content(
+    creator_id: str,
+    title: str = Form(...),
+    description: str = Form(...),
+    content_type: str = Form(...),
+    category: str = Form(None),
+    tags: str = Form("[]"),
+    content_file: UploadFile = File(None)
+):
+    """Upload content for creator"""
+    try:
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        # Parse tags
+        import json
+        try:
+            tag_list = json.loads(tags) if tags != "[]" else []
+        except:
+            tag_list = []
+        
+        # Validate content type
+        if content_type not in ["video", "document", "article_link"]:
+            raise HTTPException(status_code=400, detail="Invalid content type")
+        
+        # Handle file upload
+        file_url = None
+        file_size = None
+        file_type = None
+        
+        if content_file and content_type != "article_link":
+            # Validate file based on content type
+            if content_type == "video":
+                allowed_types = ["video/mp4", "video/avi", "video/mov", "video/wmv", "video/x-flv", "video/webm", "video/x-msvideo"]
+                max_size = 200 * 1024 * 1024  # 200MB
+                if content_file.content_type not in allowed_types:
+                    raise HTTPException(status_code=400, detail="Invalid video file type")
+            elif content_type == "document":
+                allowed_types = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"]
+                max_size = 50 * 1024 * 1024  # 50MB
+                if content_file.content_type not in allowed_types:
+                    raise HTTPException(status_code=400, detail="Invalid document file type")
+            
+            if content_file.size > max_size:
+                raise HTTPException(status_code=400, detail=f"File too large. Maximum size is {max_size / 1024 / 1024}MB")
+            
+            # Save file (in production, save to cloud storage)
+            import os
+            upload_dir = f"/app/uploads/content/{creator_id}"
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            file_path = f"{upload_dir}/{content_file.filename}"
+            with open(file_path, "wb") as buffer:
+                content = await content_file.read()
+                buffer.write(content)
+            
+            file_url = file_path
+            file_size = content_file.size
+            file_type = content_file.content_type
+        
+        # Create content document
+        content_id = generate_content_id()
+        content_doc = {
+            "content_id": content_id,
+            "creator_id": creator_id,
+            "title": title,
+            "description": description,
+            "content_type": content_type,
+            "file_url": file_url,
+            "file_size": file_size,
+            "file_type": file_type,
+            "thumbnail_url": None,
+            "category": category,
+            "tags": tag_list,
+            "view_count": 0,
+            "like_count": 0,
+            "is_featured": False,
+            "is_public": True,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Save to database
+        await db.creator_content.insert_one(content_doc)
+        
+        # Update creator content count
+        await db.creators.update_one(
+            {"creator_id": creator_id},
+            {"$inc": {"stats.content_count": 1}}
+        )
+        
+        return {"message": "Content uploaded successfully", "content_id": content_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload content: {str(e)}")
+
+@app.get("/api/creators/{creator_id}/content")
+async def get_creator_content(creator_id: str, limit: int = 20, offset: int = 0):
+    """Get creator's content"""
+    try:
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        content_list = await db.creator_content.find(
+            {"creator_id": creator_id}
+        ).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+        
+        # Convert ObjectId to string for JSON serialization
+        for content in content_list:
+            content["_id"] = str(content["_id"]) if "_id" in content else None
+        
+        return {"content": content_list, "total": len(content_list)}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get content: {str(e)}")
+
 @app.get("/api/creators/{creator_id}/verification-status")
 async def get_verification_status(creator_id: str):
     """Get creator verification status"""
