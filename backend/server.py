@@ -127,7 +127,7 @@ Your response should feel authentic to who you are as a person and thought leade
         
         # Initialize LLM chat with additional debugging
         chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
+            api_key=OPENAI_API_KEY,
             session_id=session_id,
             system_message=system_message
         ).with_model("openai", "gpt-4o-mini")
