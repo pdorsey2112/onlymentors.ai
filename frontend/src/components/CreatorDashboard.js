@@ -47,6 +47,22 @@ const CreatorDashboard = () => {
     }
   };
 
+  const handleViewPublicProfile = () => {
+    // Open creator's public profile in new tab
+    if (creator && creator.creator_id) {
+      window.open(`${window.location.origin}/?creator=${creator.creator_id}`, '_blank');
+    }
+  };
+
+  const handleUploadContent = () => {
+    setShowContentUpload(true);
+  };
+
+  const handleSaveSettings = async () => {
+    // TODO: Implement settings save functionality
+    alert('Settings saved successfully!');
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
