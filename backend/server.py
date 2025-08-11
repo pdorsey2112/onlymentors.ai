@@ -733,8 +733,8 @@ async def upgrade_user_to_creator(creator_data: CreatorSignupRequest, current_us
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upgrade account: {str(e)}")
 
-@app.post("/api/creators/banking")
-async def submit_banking_info(banking_data: BankingInfoRequest, creator_id: str):
+@app.post("/api/creators/{creator_id}/banking")
+async def submit_banking_info(creator_id: str, banking_data: BankingInfoRequest):
     """Submit banking information for creator verification"""
     try:
         creator = await db.creators.find_one({"creator_id": creator_id})
@@ -756,25 +756,42 @@ async def submit_banking_info(banking_data: BankingInfoRequest, creator_id: str)
             {
                 "$set": {
                     "banking_info": banking_info,
+                    "verification.submitted_at": datetime.utcnow(),
                     "updated_at": datetime.utcnow()
                 }
             }
         )
         
-        # TODO: Implement bank verification logic here
-        # For now, auto-approve after submission
-        await db.creators.update_one(
-            {"creator_id": creator_id},
-            {
-                "$set": {
-                    "banking_info.verified": True,
-                    "verification.bank_verified": True,
-                    "updated_at": datetime.utcnow()
+        # Simulate bank verification process (in production, integrate with bank verification API)
+        # For demo purposes, auto-approve if basic validation passes
+        if (len(banking_data.bank_account_number) >= 8 and 
+            len(banking_data.routing_number) == 9 and 
+            len(banking_data.tax_id) >= 9):
+            
+            await db.creators.update_one(
+                {"creator_id": creator_id},
+                {
+                    "$set": {
+                        "banking_info.verified": True,
+                        "verification.bank_verified": True,
+                        "verification.bank_verified_at": datetime.utcnow(),
+                        "updated_at": datetime.utcnow()
+                    }
                 }
-            }
-        )
-        
-        return {"message": "Banking information submitted and verified successfully"}
+            )
+            
+            # Check if fully verified and update status
+            updated_creator = await db.creators.find_one({"creator_id": creator_id})
+            if (updated_creator["verification"]["id_verified"] and 
+                updated_creator["verification"]["bank_verified"]):
+                await db.creators.update_one(
+                    {"creator_id": creator_id},
+                    {"$set": {"status": CreatorStatus.APPROVED}}
+                )
+            
+            return {"message": "Banking information submitted and verified successfully", "verified": True}
+        else:
+            return {"message": "Banking information submitted for review", "verified": False}
         
     except HTTPException:
         raise
