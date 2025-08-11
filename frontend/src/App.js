@@ -54,15 +54,34 @@ function App() {
     relationships: Heart  // Added icon for relationships category
   };
 
-  // Load user data on app start
+  // Initialize app and check authentication
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      fetchUserData();
-      fetchCategories();
-    } else {
-      fetchCategories();
-    }
+    const checkAuth = async () => {
+      try {
+        // Check for regular user token
+        const token = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('user');
+        
+        // Check for creator token
+        const creatorToken = localStorage.getItem('creatorToken');
+        const creatorData = localStorage.getItem('creator');
+        
+        if (creatorToken && creatorData) {
+          setIsCreator(true);
+          setCreator(JSON.parse(creatorData));
+        } else if (token && userData) {
+          setUser(JSON.parse(userData));
+        }
+        
+        await fetchCategories();
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   // API functions
