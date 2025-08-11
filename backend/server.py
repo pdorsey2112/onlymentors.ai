@@ -657,7 +657,7 @@ async def creator_login(login_data: CreatorLoginRequest):
         raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
 
 @app.post("/api/creators/upgrade")
-async def upgrade_user_to_creator(creator_data: CreatorSignupRequest, current_user = Depends(get_current_user)):
+async def upgrade_user_to_mentor(creator_data: CreatorSignupRequest, current_user = Depends(get_current_user)):
     """Upgrade existing user account to creator"""
     try:
         # Check if user already has creator account
