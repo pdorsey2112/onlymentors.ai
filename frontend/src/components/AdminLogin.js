@@ -37,7 +37,7 @@ const AdminLogin = ({ onLogin, onError }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-red-500 via-purple-600 to-indigo-700 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-red-500 via-purple-600 to-indigo-700 admin-login-bg flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
                     <div className="text-center mb-8">
