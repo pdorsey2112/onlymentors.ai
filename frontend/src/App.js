@@ -39,7 +39,8 @@ function App() {
     business: Users,
     sports: Crown,
     health: Heart,
-    science: Atom
+    science: Atom,
+    relationships: Heart  // Added icon for relationships category
   };
 
   // Load user data on app start
