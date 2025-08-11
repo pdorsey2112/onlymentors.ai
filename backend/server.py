@@ -131,6 +131,23 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Admin authentication middleware"""
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=["HS256"])
+        admin_id = payload.get("admin_id")
+        admin_type = payload.get("type")
+        
+        if admin_id is None or admin_type != "admin":
+            raise HTTPException(status_code=401, detail="Invalid admin token")
+        
+        admin = await admin_db.admins.find_one({"admin_id": admin_id})
+        if not admin or admin["status"] != AdminStatus.ACTIVE:
+            raise HTTPException(status_code=401, detail="Admin not found or inactive")
+        return admin
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+
 async def create_mentor_response(mentor, question):
     """Create AI-powered response from a mentor using their personality and expertise"""
     try:
