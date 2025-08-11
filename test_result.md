@@ -243,7 +243,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "LLM Integration Fix"
+    - "Creator Verification Process Fix"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
