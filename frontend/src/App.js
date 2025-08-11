@@ -1112,10 +1112,10 @@ function App() {
               <>
                 <span className="text-gray-700">Welcome, {user.full_name}</span>
                 <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">
-                  {questionCount} questions left
+                  {user.is_subscribed ? 'Unlimited' : `${Math.max(0, 10 - user.questions_asked)} questions left`}
                 </span>
                 <Button 
-                  onClick={logout} 
+                  onClick={handleLogout} 
                   variant="outline"
                   className="text-gray-600 hover:text-gray-800"
                 >
