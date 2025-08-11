@@ -84,6 +84,30 @@ function App() {
     checkAuth();
   }, []);
 
+  // Creator auth handlers
+  const handleCreatorLoginSuccess = (creatorData) => {
+    setIsCreator(true);
+    setCreator(creatorData);
+    setShowCreatorAuth(false);
+  };
+
+  const handleCreatorSignupSuccess = (creatorData) => {
+    setIsCreator(true);
+    setCreator(creatorData);
+    setShowCreatorAuth(false);
+  };
+
+  const handleCreatorLogout = () => {
+    setIsCreator(false);
+    setCreator(null);
+    localStorage.removeItem('creatorToken');
+    localStorage.removeItem('creator');
+  };
+
+  const switchCreatorAuthMode = (mode) => {
+    setCreatorAuthMode(mode);
+  };
+
   // API functions
   const fetchCategories = async () => {
     try {
