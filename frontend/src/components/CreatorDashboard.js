@@ -286,7 +286,10 @@ const CreatorDashboard = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Content Management</h2>
-                  <button className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700">
+                  <button 
+                    onClick={handleUploadContent}
+                    className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700"
+                  >
                     Upload New Content
                   </button>
                 </div>
