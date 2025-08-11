@@ -150,5 +150,7 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented LLM integration using emergentintegrations library. Replaced the create_mentor_response function with async LLM calls using gpt-4o-mini model. Each mentor gets a unique session ID and personalized system message. Need to test the /api/questions/ask endpoint to ensure LLM responses are working properly."
+  - agent: "main"
+    message: "Updated LLM integration to use user's OpenAI API key instead of EMERGENT_LLM_KEY. Backend restarted with new configuration. Ready for retesting."
   - agent: "testing"
     message: "CRITICAL FINDING: LLM integration is completely non-functional due to invalid API key. Comprehensive testing shows: 1) Backend APIs work perfectly (auth, categories, question submission) 2) Network connectivity to OpenAI is confirmed 3) emergentintegrations library is properly installed and configured 4) The issue is the API key 'sk-emergent-281F003Ed3fEf9c052' which appears to be a placeholder/test key, not a valid OpenAI API key 5) All LLM calls fail with connection errors and fall back to mock responses 6) Need valid OpenAI API key to make LLM integration functional. This is a high-priority issue requiring immediate attention."
