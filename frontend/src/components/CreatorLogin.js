@@ -103,7 +103,7 @@ const CreatorLogin = ({ onSuccess, onSwitchToSignup }) => {
 
           <div className="text-center mt-6">
             <p className="text-gray-600 text-sm">
-              Don't have a creator account?{' '}
+              Don't have a mentor account?{' '}
               <button
                 onClick={onSwitchToSignup}
                 className="text-purple-600 font-medium hover:text-purple-500"
