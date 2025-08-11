@@ -314,10 +314,7 @@ const CreatorDashboard = () => {
             {activeTab === 'messages' && (
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Direct Messages</h2>
-                <div className="text-center py-8 text-gray-500">
-                  <p>No messages yet</p>
-                  <p className="text-sm mt-1">Messages from your subscribers will appear here</p>
-                </div>
+                <MessagingInterface creatorId={creator.creator_id} />
               </div>
             )}
 
