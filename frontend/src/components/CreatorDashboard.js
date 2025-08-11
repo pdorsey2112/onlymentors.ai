@@ -119,6 +119,14 @@ const CreatorDashboard = () => {
     );
   }
 
+  const handleContentUploadSuccess = (result) => {
+    // Refresh content count or reload data
+    setStats(prev => ({
+      ...prev,
+      content_count: prev.content_count + 1
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
