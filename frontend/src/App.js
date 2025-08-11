@@ -41,9 +41,7 @@ function App() {
   const [authForm, setAuthForm] = useState({ email: '', password: '', full_name: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [success, setSuccess] = useState('');
   const [questionHistory, setQuestionHistory] = useState([]);
-  const [currentView, setCurrentView] = useState('categories');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectAll, setSelectAll] = useState(false);
 
