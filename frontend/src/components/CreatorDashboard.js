@@ -23,8 +23,27 @@ const CreatorDashboard = () => {
       setCreator(creatorData);
       setStats(creatorData.stats || stats);
       setIsVerified(creatorData.is_verified || false);
+      
+      // If not verified, show verification process
+      if (!creatorData.is_verified) {
+        setShowVerification(true);
+      }
     }
   }, []);
+
+  const handleVerificationComplete = () => {
+    setShowVerification(false);
+    setIsVerified(true);
+    
+    // Update stored creator data
+    const storedCreator = localStorage.getItem('creator');
+    if (storedCreator) {
+      const creatorData = JSON.parse(storedCreator);
+      creatorData.is_verified = true;
+      localStorage.setItem('creator', JSON.stringify(creatorData));
+      setCreator(creatorData);
+    }
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
