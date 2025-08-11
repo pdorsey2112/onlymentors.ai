@@ -241,7 +241,11 @@ const AdminDashboard = ({ admin, onLogout }) => {
         </div>
     );
 
-    const renderUsers = () => (
+    const renderUsers = () => {
+        console.log('🎨 Rendering users tab, users array length:', users.length);
+        console.log('👥 Users array:', users);
+        
+        return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-white">User Management</h2>
