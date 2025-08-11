@@ -388,7 +388,7 @@ function App() {
                 variant="outline"
                 className="text-purple-600 border-purple-600 hover:bg-purple-50"
               >
-                Become a Creator
+                Become a Mentor
               </Button>
             </div>
           </div>
