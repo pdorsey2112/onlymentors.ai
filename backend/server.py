@@ -617,7 +617,7 @@ async def creator_signup(creator_data: CreatorSignupRequest):
         return {
             "token": token,
             "creator": get_creator_public_profile(creator_doc),
-            "message": "Creator account created successfully. Please complete verification."
+            "message": "Mentor account created successfully. Please complete verification."
         }
         
     except HTTPException:
