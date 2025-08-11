@@ -548,10 +548,10 @@ if __name__ == "__main__":
 async def creator_signup(creator_data: CreatorSignupRequest):
     """Sign up as a new creator"""
     try:
-        # Check if email is already registered as creator
+        # Check if email is already registered as mentor
         existing_creator = await db.creators.find_one({"email": creator_data.email})
         if existing_creator:
-            raise HTTPException(status_code=400, detail="Email already registered as creator")
+            raise HTTPException(status_code=400, detail="Email already registered as mentor")
         
         # Check if account name is taken
         existing_name = await db.creators.find_one({"account_name": creator_data.account_name})
