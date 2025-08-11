@@ -725,7 +725,7 @@ async def upgrade_user_to_creator(creator_data: CreatorSignupRequest, current_us
         
         return {
             "creator": get_creator_public_profile(creator_doc),
-            "message": "Successfully upgraded to creator account. Please complete verification."
+            "message": "Successfully upgraded to mentor account. Please complete verification."
         }
         
     except HTTPException:
