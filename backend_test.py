@@ -264,6 +264,145 @@ class OnlyMentorsAPITester:
             return True
         return False
 
+    def test_stripe_checkout_monthly(self):
+        """Test Stripe checkout for monthly subscription"""
+        print(f"\n💳 Testing Stripe Checkout - Monthly Package")
+        
+        success, response = self.run_test(
+            "Stripe Checkout - Monthly",
+            "POST",
+            "api/payments/checkout",
+            200,
+            data={
+                "package_id": "monthly",
+                "origin_url": "https://f2b0aa4c-4c6c-44c0-8e63-7550a30e04a0.preview.emergentagent.com"
+            }
+        )
+        
+        if success:
+            if 'url' in response and 'session_id' in response:
+                print(f"✅ Checkout session created successfully")
+                print(f"   Session ID: {response['session_id']}")
+                print(f"   Checkout URL: {response['url'][:100]}...")
+                
+                # Validate URL format
+                if response['url'].startswith('https://checkout.stripe.com/'):
+                    print("✅ Valid Stripe checkout URL format")
+                else:
+                    print("⚠️  Unexpected checkout URL format")
+                
+                # Validate session ID format
+                if response['session_id'].startswith('cs_'):
+                    print("✅ Valid Stripe session ID format")
+                else:
+                    print("⚠️  Unexpected session ID format")
+                
+                return True, response
+            else:
+                print("❌ Missing url or session_id in response")
+        return False, {}
+
+    def test_stripe_checkout_yearly(self):
+        """Test Stripe checkout for yearly subscription"""
+        print(f"\n💳 Testing Stripe Checkout - Yearly Package")
+        
+        success, response = self.run_test(
+            "Stripe Checkout - Yearly",
+            "POST",
+            "api/payments/checkout",
+            200,
+            data={
+                "package_id": "yearly",
+                "origin_url": "https://f2b0aa4c-4c6c-44c0-8e63-7550a30e04a0.preview.emergentagent.com"
+            }
+        )
+        
+        if success:
+            if 'url' in response and 'session_id' in response:
+                print(f"✅ Checkout session created successfully")
+                print(f"   Session ID: {response['session_id']}")
+                print(f"   Checkout URL: {response['url'][:100]}...")
+                
+                # Validate URL format
+                if response['url'].startswith('https://checkout.stripe.com/'):
+                    print("✅ Valid Stripe checkout URL format")
+                else:
+                    print("⚠️  Unexpected checkout URL format")
+                
+                # Validate session ID format
+                if response['session_id'].startswith('cs_'):
+                    print("✅ Valid Stripe session ID format")
+                else:
+                    print("⚠️  Unexpected session ID format")
+                
+                return True, response
+            else:
+                print("❌ Missing url or session_id in response")
+        return False, {}
+
+    def test_stripe_invalid_package(self):
+        """Test Stripe checkout with invalid package"""
+        print(f"\n💳 Testing Stripe Checkout - Invalid Package")
+        
+        success, response = self.run_test(
+            "Stripe Checkout - Invalid Package",
+            "POST",
+            "api/payments/checkout",
+            400,
+            data={
+                "package_id": "invalid_package",
+                "origin_url": "https://f2b0aa4c-4c6c-44c0-8e63-7550a30e04a0.preview.emergentagent.com"
+            }
+        )
+        
+        return success
+
+    def test_stripe_checkout_without_auth(self):
+        """Test Stripe checkout without authentication"""
+        print(f"\n💳 Testing Stripe Checkout - No Authentication")
+        
+        # Temporarily remove token
+        original_token = self.token
+        self.token = None
+        
+        success, response = self.run_test(
+            "Stripe Checkout - No Auth",
+            "POST",
+            "api/payments/checkout",
+            401,
+            data={
+                "package_id": "monthly",
+                "origin_url": "https://f2b0aa4c-4c6c-44c0-8e63-7550a30e04a0.preview.emergentagent.com"
+            }
+        )
+        
+        # Restore token
+        self.token = original_token
+        
+        return success
+
+    def verify_payment_transaction_stored(self, session_id):
+        """Verify that payment transaction is stored in database"""
+        print(f"\n💾 Verifying Payment Transaction Storage")
+        
+        # We can't directly access the database, but we can test the payment status endpoint
+        success, response = self.run_test(
+            "Payment Status Check",
+            "GET",
+            f"api/payments/status/{session_id}",
+            200
+        )
+        
+        if success:
+            if 'status' in response:
+                print(f"✅ Payment transaction found in database")
+                print(f"   Status: {response.get('status')}")
+                print(f"   Payment Status: {response.get('payment_status')}")
+                return True
+            else:
+                print("❌ Payment transaction not found or invalid response")
+        return False
+
     def test_error_handling(self):
         """Test error handling scenarios"""
         print(f"\n🚨 Testing Error Handling")
