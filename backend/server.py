@@ -630,11 +630,11 @@ class CreatorLoginRequest(BaseModel):
     password: str
 
 @app.post("/api/creators/login")
-async def creator_login(email: str, password: str):
+async def creator_login(login_data: CreatorLoginRequest):
     """Creator login"""
     try:
-        creator = await db.creators.find_one({"email": email})
-        if not creator or not verify_password(password, creator["password_hash"]):
+        creator = await db.creators.find_one({"email": login_data.email})
+        if not creator or not verify_password(login_data.password, creator["password_hash"]):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         # Update last active
