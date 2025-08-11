@@ -75,11 +75,13 @@ class CreatorMarketplaceAPITester:
         """Test creator signup with provided test data"""
         print(f"\n🎯 Testing Creator Signup")
         
+        # Use unique email to avoid conflicts
+        unique_email = f"creator-test-{datetime.now().strftime('%H%M%S')}@onlymentors.ai"
         creator_data = {
-            "email": "creator-test@onlymentors.ai",
+            "email": unique_email,
             "password": "CreatorPass123!",
             "full_name": "Test Creator",
-            "account_name": "test_creator_123",
+            "account_name": f"test_creator_{datetime.now().strftime('%H%M%S')}",
             "description": "Expert in business strategy and leadership",
             "monthly_price": 49.99,
             "category": "business",
