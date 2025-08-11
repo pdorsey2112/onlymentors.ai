@@ -239,8 +239,8 @@ body {
   color: #1f2937;
 }
 
-/* Ensure white backgrounds throughout */
-.bg-gradient-to-br {
+/* Ensure white backgrounds throughout - but exclude admin login */
+.bg-gradient-to-br:not(.admin-login-bg) {
   background: white !important;
 }
 
