@@ -26,6 +26,13 @@ TOTAL_MENTORS = sum(len(mentors) for mentors in ALL_MENTORS.values())
 load_dotenv()
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from creator_system import (
+    CreatorSignupRequest, CreatorProfileUpdate, BankingInfoRequest, ContentUploadRequest, MessageRequest,
+    CreatorStatus, ContentType, validate_file_upload, calculate_creator_earnings,
+    generate_creator_id, generate_content_id, generate_message_id, generate_conversation_id,
+    get_creator_public_profile, integrate_with_existing_mentors,
+    ALLOWED_VIDEO_TYPES, ALLOWED_DOCUMENT_TYPES, MAX_VIDEO_SIZE, MAX_DOCUMENT_SIZE
+)
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
