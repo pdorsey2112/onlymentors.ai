@@ -100,6 +100,7 @@ class CreatorMarketplaceAPITester:
             self.creator_token = response['token']
             self.creator_data = response['creator']
             self.creator_id = response['creator']['creator_id']
+            self.signup_email = creator_data['email']  # Store for login test
             print(f"✅ Creator signup successful")
             print(f"   Creator ID: {self.creator_id}")
             print(f"   Account Name: {response['creator']['account_name']}")
