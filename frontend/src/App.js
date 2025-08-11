@@ -66,15 +66,22 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check for regular user token
-        const token = localStorage.getItem('authToken');
-        const userData = localStorage.getItem('user');
+        // Check for admin token first (highest priority)
+        const adminToken = localStorage.getItem('adminToken');
+        const adminData = localStorage.getItem('adminData');
         
         // Check for creator token
         const creatorToken = localStorage.getItem('creatorToken');
         const creatorData = localStorage.getItem('creator');
         
-        if (creatorToken && creatorData) {
+        // Check for regular user token
+        const token = localStorage.getItem('authToken');
+        const userData = localStorage.getItem('user');
+        
+        if (adminToken && adminData) {
+          setIsAdmin(true);
+          setAdmin(JSON.parse(adminData));
+        } else if (creatorToken && creatorData) {
           setIsCreator(true);
           setCreator(JSON.parse(creatorData));
         } else if (token && userData) {
