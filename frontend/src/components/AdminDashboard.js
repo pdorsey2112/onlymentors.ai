@@ -159,8 +159,11 @@ const AdminDashboard = ({ admin, onLogout }) => {
         { id: 'overview', name: 'Overview', icon: '📊' },
         { id: 'users', name: 'Users', icon: '👥' },
         { id: 'mentors', name: 'Mentors', icon: '🎓' },
+        { id: 'content-moderation', name: 'Content Moderation', icon: '🔍' },
+        { id: 'payouts', name: 'Payouts', icon: '💰' },
         { id: 'user-reports', name: 'User Reports', icon: '📈' },
-        { id: 'financial-reports', name: 'Financial Reports', icon: '💰' }
+        { id: 'financial-reports', name: 'Financial Reports', icon: '💵' },
+        { id: 'ai-agents', name: 'AI Agents', icon: '🤖' }
     ];
 
     if (loading) {
