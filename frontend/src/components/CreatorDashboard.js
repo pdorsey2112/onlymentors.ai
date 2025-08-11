@@ -385,6 +385,15 @@ const CreatorDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Content Upload Modal */}
+      {showContentUpload && (
+        <ContentUpload
+          creatorId={creator.creator_id}
+          onClose={() => setShowContentUpload(false)}
+          onUploadSuccess={handleContentUploadSuccess}
+        />
+      )}
     </div>
   );
 };
