@@ -5,6 +5,7 @@ import { Input } from './components/ui/input';
 import CreatorSignup from './components/CreatorSignup';
 import CreatorLogin from './components/CreatorLogin';
 import CreatorDashboard from './components/CreatorDashboard';
+import CreatorVerification from './components/CreatorVerification';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
