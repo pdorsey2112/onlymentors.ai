@@ -60,6 +60,8 @@ security = HTTPBearer()
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 client = AsyncIOMotorClient(MONGO_URL)
 db = client.onlymentors_db
+# Separate admin database
+admin_db = client.onlymentors_admin_db
 
 # Environment variables
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "sk-emergent-281F003Ed3fEf9c052")
