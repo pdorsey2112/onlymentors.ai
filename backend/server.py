@@ -10,7 +10,14 @@ import jwt
 import uuid
 import os
 from dotenv import load_dotenv
-from complete_mentors_database import ALL_MENTORS, TOTAL_MENTORS
+from complete_mentors_database import ALL_MENTORS, TOTAL_MENTORS, BUSINESS_MENTORS, SPORTS_MENTORS, HEALTH_MENTORS, SCIENCE_MENTORS
+from expanded_mentors import ADDITIONAL_BUSINESS_MENTORS, ADDITIONAL_SPORTS_MENTORS, ADDITIONAL_HEALTH_MENTORS, ADDITIONAL_SCIENCE_MENTORS
+
+# Merge additional mentors with existing ones
+BUSINESS_MENTORS.extend(ADDITIONAL_BUSINESS_MENTORS)
+SPORTS_MENTORS.extend(ADDITIONAL_SPORTS_MENTORS) 
+HEALTH_MENTORS.extend(ADDITIONAL_HEALTH_MENTORS)
+SCIENCE_MENTORS.extend(ADDITIONAL_SCIENCE_MENTORS)
 
 # Load environment variables from .env file
 load_dotenv()
