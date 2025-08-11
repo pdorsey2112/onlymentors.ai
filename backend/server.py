@@ -35,6 +35,7 @@ db = client.onlymentors_db
 
 # Environment variables
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "sk-emergent-281F003Ed3fEf9c052")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
 JWT_SECRET = os.getenv("JWT_SECRET", "onlymentors-jwt-secret-key-2024")
 
