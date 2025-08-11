@@ -539,3 +539,328 @@ async def stripe_webhook(request: Request):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
+
+# =============================================================================
+# CREATOR MARKETPLACE ENDPOINTS
+# =============================================================================
+
+@app.post("/api/creators/signup")
+async def creator_signup(creator_data: CreatorSignupRequest):
+    """Sign up as a new creator"""
+    try:
+        # Check if email is already registered as creator
+        existing_creator = await db.creators.find_one({"email": creator_data.email})
+        if existing_creator:
+            raise HTTPException(status_code=400, detail="Email already registered as creator")
+        
+        # Check if account name is taken
+        existing_name = await db.creators.find_one({"account_name": creator_data.account_name})
+        if existing_name:
+            raise HTTPException(status_code=400, detail="Account name already taken")
+        
+        # Create creator document
+        creator_id = generate_creator_id()
+        creator_doc = {
+            "creator_id": creator_id,
+            "user_id": None,  # Will be set if upgrading from user
+            "email": creator_data.email,
+            "password_hash": hash_password(creator_data.password),
+            "full_name": creator_data.full_name,
+            "account_name": creator_data.account_name,
+            "description": creator_data.description,
+            "bio": "",
+            "monthly_price": float(creator_data.monthly_price),
+            "category": creator_data.category,
+            "expertise_areas": creator_data.expertise_areas,
+            "status": CreatorStatus.PENDING,
+            "profile_image_url": None,
+            "cover_image_url": None,
+            "social_links": {},
+            "verification": {
+                "id_verified": False,
+                "bank_verified": False,
+                "id_document_url": None,
+                "submitted_at": None,
+                "verified_at": None
+            },
+            "banking_info": {
+                "bank_account_number": "",
+                "routing_number": "",
+                "tax_id": "",
+                "account_holder_name": "",
+                "bank_name": "",
+                "verified": False
+            },
+            "stats": {
+                "total_earnings": 0.0,
+                "monthly_earnings": 0.0,
+                "subscriber_count": 0,
+                "content_count": 0,
+                "total_questions": 0,
+                "average_rating": 5.0
+            },
+            "settings": {
+                "auto_approve_messages": True,
+                "allow_tips": True,
+                "response_time": "24 hours"
+            },
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+            "last_active": datetime.utcnow()
+        }
+        
+        await db.creators.insert_one(creator_doc)
+        
+        # Create access token
+        token = create_access_token({"creator_id": creator_id, "type": "creator"})
+        
+        return {
+            "token": token,
+            "creator": get_creator_public_profile(creator_doc),
+            "message": "Creator account created successfully. Please complete verification."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create creator account: {str(e)}")
+
+@app.post("/api/creators/login")
+async def creator_login(email: str, password: str):
+    """Creator login"""
+    try:
+        creator = await db.creators.find_one({"email": email})
+        if not creator or not verify_password(password, creator["password_hash"]):
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Update last active
+        await db.creators.update_one(
+            {"creator_id": creator["creator_id"]},
+            {"$set": {"last_active": datetime.utcnow()}}
+        )
+        
+        # Create access token
+        token = create_access_token({"creator_id": creator["creator_id"], "type": "creator"})
+        
+        return {
+            "token": token,
+            "creator": get_creator_public_profile(creator)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+
+@app.post("/api/creators/upgrade")
+async def upgrade_user_to_creator(creator_data: CreatorSignupRequest, current_user = Depends(get_current_user)):
+    """Upgrade existing user account to creator"""
+    try:
+        # Check if user already has creator account
+        existing_creator = await db.creators.find_one({"user_id": current_user["user_id"]})
+        if existing_creator:
+            raise HTTPException(status_code=400, detail="User already has creator account")
+        
+        # Check if account name is taken
+        existing_name = await db.creators.find_one({"account_name": creator_data.account_name})
+        if existing_name:
+            raise HTTPException(status_code=400, detail="Account name already taken")
+        
+        # Create creator document linked to user
+        creator_id = generate_creator_id()
+        creator_doc = {
+            "creator_id": creator_id,
+            "user_id": current_user["user_id"],
+            "email": current_user["email"],
+            "password_hash": current_user["password_hash"],
+            "full_name": creator_data.full_name,
+            "account_name": creator_data.account_name,
+            "description": creator_data.description,
+            "bio": "",
+            "monthly_price": float(creator_data.monthly_price),
+            "category": creator_data.category,
+            "expertise_areas": creator_data.expertise_areas,
+            "status": CreatorStatus.PENDING,
+            "profile_image_url": None,
+            "cover_image_url": None,
+            "social_links": {},
+            "verification": {
+                "id_verified": False,
+                "bank_verified": False,
+                "id_document_url": None,
+                "submitted_at": None,
+                "verified_at": None
+            },
+            "banking_info": {
+                "bank_account_number": "",
+                "routing_number": "",
+                "tax_id": "",
+                "account_holder_name": "",
+                "bank_name": "",
+                "verified": False
+            },
+            "stats": {
+                "total_earnings": 0.0,
+                "monthly_earnings": 0.0,
+                "subscriber_count": 0,
+                "content_count": 0,
+                "total_questions": 0,
+                "average_rating": 5.0
+            },
+            "settings": {
+                "auto_approve_messages": True,
+                "allow_tips": True,
+                "response_time": "24 hours"
+            },
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+            "last_active": datetime.utcnow()
+        }
+        
+        await db.creators.insert_one(creator_doc)
+        
+        return {
+            "creator": get_creator_public_profile(creator_doc),
+            "message": "Successfully upgraded to creator account. Please complete verification."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upgrade account: {str(e)}")
+
+@app.post("/api/creators/banking")
+async def submit_banking_info(banking_data: BankingInfoRequest, creator_id: str):
+    """Submit banking information for creator verification"""
+    try:
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        # Update banking information (in production, encrypt sensitive data)
+        banking_info = {
+            "bank_account_number": banking_data.bank_account_number,
+            "routing_number": banking_data.routing_number,
+            "tax_id": banking_data.tax_id,
+            "account_holder_name": banking_data.account_holder_name,
+            "bank_name": banking_data.bank_name,
+            "verified": False  # Will be verified by automated system
+        }
+        
+        await db.creators.update_one(
+            {"creator_id": creator_id},
+            {
+                "$set": {
+                    "banking_info": banking_info,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        # TODO: Implement bank verification logic here
+        # For now, auto-approve after submission
+        await db.creators.update_one(
+            {"creator_id": creator_id},
+            {
+                "$set": {
+                    "banking_info.verified": True,
+                    "verification.bank_verified": True,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {"message": "Banking information submitted and verified successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to submit banking info: {str(e)}")
+
+@app.post("/api/creators/{creator_id}/id-verification")
+async def upload_id_verification(creator_id: str, id_document: UploadFile = File(...)):
+    """Upload ID document for creator verification"""
+    try:
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        # Validate file type (should be image or PDF)
+        allowed_types = ["image/jpeg", "image/png", "image/jpg", "application/pdf"]
+        if id_document.content_type not in allowed_types:
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload JPG, PNG, or PDF")
+        
+        # Validate file size (max 10MB)
+        if id_document.size > 10 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File too large. Maximum size is 10MB")
+        
+        # Save file (in production, save to cloud storage)
+        file_path = f"/app/uploads/id_documents/{creator_id}_{id_document.filename}"
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        
+        with open(file_path, "wb") as buffer:
+            content = await id_document.read()
+            buffer.write(content)
+        
+        # Update creator with ID document info
+        await db.creators.update_one(
+            {"creator_id": creator_id},
+            {
+                "$set": {
+                    "verification.id_document_url": file_path,
+                    "verification.submitted_at": datetime.utcnow(),
+                    "verification.id_verified": True,  # Auto-approve for demo
+                    "verification.verified_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Check if fully verified (ID + bank)
+        updated_creator = await db.creators.find_one({"creator_id": creator_id})
+        if updated_creator["verification"]["id_verified"] and updated_creator["verification"]["bank_verified"]:
+            await db.creators.update_one(
+                {"creator_id": creator_id},
+                {"$set": {"status": CreatorStatus.APPROVED}}
+            )
+        
+        return {"message": "ID document uploaded and verified successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload ID: {str(e)}")
+
+@app.get("/api/creators")
+async def get_creators(category: Optional[str] = None, limit: int = 50, offset: int = 0):
+    """Get list of approved creators"""
+    try:
+        query = {"status": CreatorStatus.APPROVED}
+        if category:
+            query["category"] = category
+        
+        creators = await db.creators.find(query).skip(offset).limit(limit).to_list(limit)
+        creator_profiles = [get_creator_public_profile(creator) for creator in creators]
+        
+        return {
+            "creators": creator_profiles,
+            "total": len(creator_profiles)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch creators: {str(e)}")
+
+@app.get("/api/creators/{creator_id}")
+async def get_creator_profile(creator_id: str):
+    """Get individual creator profile"""
+    try:
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        return get_creator_public_profile(creator)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch creator: {str(e)}")
