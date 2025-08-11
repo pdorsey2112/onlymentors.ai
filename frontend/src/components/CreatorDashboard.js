@@ -90,6 +90,16 @@ const CreatorDashboard = () => {
     );
   }
 
+  // Show verification flow if not verified
+  if (showVerification && !isVerified) {
+    return (
+      <CreatorVerification 
+        creatorId={creator.creator_id} 
+        onVerificationComplete={handleVerificationComplete}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
