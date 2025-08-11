@@ -113,8 +113,14 @@ class CreatorMarketplaceAPITester:
         """Test creator login with the same credentials"""
         print(f"\n🔐 Testing Creator Login")
         
+        # Use the same email from signup if available, otherwise use a known working one
+        if hasattr(self, 'signup_email'):
+            login_email = self.signup_email
+        else:
+            login_email = "creator-test@onlymentors.ai"  # Fallback to existing creator
+        
         login_data = {
-            "email": "creator-test@onlymentors.ai",
+            "email": login_email,
             "password": "CreatorPass123!"
         }
         
