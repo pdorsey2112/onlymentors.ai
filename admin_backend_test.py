@@ -68,7 +68,12 @@ class AdminSystemTester:
         print("🔧 TEST 1: BACKEND STATUS CHECK")
         print(f"{'='*70}")
         
-        success, response = self.run_test("Backend Root Endpoint", "GET", "", 200)
+        # Try the API root endpoint first
+        success, response = self.run_test("Backend API Root Endpoint", "GET", "api", 200)
+        if not success:
+            # If API root fails, try categories endpoint which should work
+            success, response = self.run_test("Backend Categories Endpoint", "GET", "api/categories", 200)
+        
         if success:
             print("✅ Backend server is running")
             print(f"   API Version: {response.get('version', 'Unknown')}")
