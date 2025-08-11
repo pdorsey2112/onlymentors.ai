@@ -1205,6 +1205,13 @@ function App() {
                   Become a Mentor
                 </Button>
                 <Button 
+                  onClick={() => setShowAdminAuth(true)} 
+                  variant="outline"
+                  className="text-red-600 border-red-600 hover:bg-red-50"
+                >
+                  Admin Console
+                </Button>
+                <Button 
                   onClick={() => setAuthMode('login')} 
                   variant="outline"
                   className="text-gray-600 hover:text-gray-800"
