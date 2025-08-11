@@ -70,12 +70,13 @@ class CreatorVerificationTester:
         """Test creator signup with valid data"""
         print(f"\n👤 Testing Creator Signup")
         
-        creator_email = f"creator_test_{datetime.now().strftime('%H%M%S')}@onlymentors.ai"
+        timestamp = datetime.now().strftime('%H%M%S%f')  # Include microseconds for uniqueness
+        creator_email = f"creator_test_{timestamp}@onlymentors.ai"
         creator_data = {
             "email": creator_email,
             "password": "CreatorPass123!",
             "full_name": "Test Creator",
-            "account_name": f"test_creator_{datetime.now().strftime('%H%M%S')}",
+            "account_name": f"test_creator_{timestamp}",
             "description": "Expert in business strategy and leadership development",
             "monthly_price": 49.99,
             "category": "business",
