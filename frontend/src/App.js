@@ -1062,6 +1062,96 @@ function App() {
     </div>
   );
 
+  // Render loading screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading OnlyMentors.ai...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render creator authentication
+  if (showCreatorAuth) {
+    return (
+      <>
+        {creatorAuthMode === 'login' ? (
+          <CreatorLogin 
+            onSuccess={handleCreatorLoginSuccess}
+            onSwitchToSignup={() => switchCreatorAuthMode('signup')}
+          />
+        ) : (
+          <CreatorSignup 
+            onSuccess={handleCreatorSignupSuccess}
+          />
+        )}
+      </>
+    );
+  }
+
+  // Render creator dashboard
+  if (isCreator && creator) {
+    return <CreatorDashboard />;
+  }
+
+  // Main app header with creator options
+  const renderHeader = () => (
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-purple-600">OnlyMentors.ai</h1>
+            <p className="ml-4 text-gray-600 hidden sm:block">Ask questions to 400+ greatest minds</p>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                <span className="text-gray-700">Welcome, {user.full_name}</span>
+                <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">
+                  {questionCount} questions left
+                </span>
+                <Button 
+                  onClick={logout} 
+                  variant="outline"
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  onClick={() => setShowCreatorAuth(true)} 
+                  variant="outline"
+                  className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                >
+                  Become a Creator
+                </Button>
+                <Button 
+                  onClick={() => setAuthMode('login')} 
+                  variant="outline"
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Login
+                </Button>
+                <Button 
+                  onClick={() => setAuthMode('signup')} 
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+
   // Main render logic
   if (!user) {
     return renderAuth();
