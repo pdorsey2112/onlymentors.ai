@@ -1979,3 +1979,344 @@ async def get_payout_analytics(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get payout analytics: {str(e)}")
+
+# =============================================================================
+# PHASE 4: AI AGENT FRAMEWORK ENDPOINTS
+# =============================================================================
+
+@app.on_event("startup")
+async def initialize_ai_agents():
+    """Initialize default AI agents if they don't exist"""
+    try:
+        existing_agents = await admin_db.ai_agents.count_documents({})
+        if existing_agents == 0:
+            print("🤖 Initializing AI Agent Framework...")
+            for agent_config in DEFAULT_AI_AGENTS:
+                agent_doc = create_default_ai_agent(agent_config)
+                await admin_db.ai_agents.insert_one(agent_doc)
+            print(f"✅ Initialized {len(DEFAULT_AI_AGENTS)} AI agents")
+    except Exception as e:
+        print(f"❌ Error initializing AI agents: {str(e)}")
+
+@app.get("/api/admin/ai-agents")
+async def get_ai_agents(current_admin = Depends(get_current_admin)):
+    """Get all AI agents and their status"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_system"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        agents = await admin_db.ai_agents.find({}).to_list(None)
+        
+        # Get recent task statistics for each agent
+        for agent in agents:
+            recent_tasks = await admin_db.ai_tasks.find({
+                "agent_id": agent["agent_id"],
+                "created_at": {"$gte": datetime.utcnow() - timedelta(days=7)}
+            }).to_list(None)
+            
+            agent["recent_stats"] = {
+                "tasks_this_week": len(recent_tasks),
+                "successful_tasks": len([t for t in recent_tasks if t["status"] == AITaskStatus.COMPLETED]),
+                "failed_tasks": len([t for t in recent_tasks if t["status"] == AITaskStatus.FAILED]),
+                "avg_processing_time": sum(t.get("processing_time_ms", 0) for t in recent_tasks) / len(recent_tasks) if recent_tasks else 0
+            }
+        
+        return {
+            "agents": agents,
+            "framework_status": "active",
+            "total_agents": len(agents)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get AI agents: {str(e)}")
+
+@app.post("/api/admin/ai-agents/{agent_id}/toggle")
+async def toggle_ai_agent(
+    agent_id: str,
+    current_admin = Depends(get_current_admin)
+):
+    """Toggle AI agent active/inactive status"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_system"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        agent = await admin_db.ai_agents.find_one({"agent_id": agent_id})
+        if not agent:
+            raise HTTPException(status_code=404, detail="AI agent not found")
+        
+        new_status = AIAgentStatus.INACTIVE if agent["status"] == AIAgentStatus.ACTIVE else AIAgentStatus.ACTIVE
+        
+        await admin_db.ai_agents.update_one(
+            {"agent_id": agent_id},
+            {
+                "$set": {
+                    "status": new_status,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "agent_id": agent_id,
+            "previous_status": agent["status"],
+            "new_status": new_status,
+            "message": f"AI agent {new_status.value}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to toggle AI agent: {str(e)}")
+
+@app.post("/api/admin/ai-tasks/submit")
+async def submit_ai_task(
+    task_request: AITaskRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Submit new AI task for processing"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_system"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Find appropriate agent
+        agent = await admin_db.ai_agents.find_one({
+            "agent_type": task_request.agent_type,
+            "status": AIAgentStatus.ACTIVE
+        })
+        
+        if not agent:
+            raise HTTPException(status_code=404, detail=f"No active AI agent found for type: {task_request.agent_type}")
+        
+        # Create task document
+        task_doc = {
+            "task_id": generate_task_id(),
+            "agent_id": agent["agent_id"],
+            "agent_type": task_request.agent_type,
+            "task_data": task_request.task_data,
+            "priority": task_request.priority,
+            "status": AITaskStatus.QUEUED,
+            "result_data": None,
+            "confidence_score": None,
+            "processing_time_ms": None,
+            "error_message": None,
+            "retry_count": 0,
+            "scheduled_for": task_request.scheduled_for or datetime.utcnow(),
+            "started_at": None,
+            "completed_at": None,
+            "created_at": datetime.utcnow(),
+            "created_by": current_admin["admin_id"]
+        }
+        
+        await admin_db.ai_tasks.insert_one(task_doc)
+        
+        # Process task immediately if not scheduled for later
+        if not task_request.scheduled_for or task_request.scheduled_for <= datetime.utcnow():
+            try:
+                processor = AITaskProcessor()
+                result = processor.process_task({
+                    "agent_type": task_request.agent_type,
+                    "task_data": task_request.task_data
+                })
+                
+                # Update task with results
+                await admin_db.ai_tasks.update_one(
+                    {"task_id": task_doc["task_id"]},
+                    {
+                        "$set": {
+                            "status": result["status"],
+                            "result_data": result["result_data"],
+                            "processing_time_ms": result["processing_time_ms"],
+                            "error_message": result["error_message"],
+                            "started_at": datetime.utcnow(),
+                            "completed_at": datetime.utcnow()
+                        }
+                    }
+                )
+                
+                # Update agent statistics
+                await admin_db.ai_agents.update_one(
+                    {"agent_id": agent["agent_id"]},
+                    {
+                        "$set": {"last_activity": datetime.utcnow()},
+                        "$inc": {"total_tasks_processed": 1}
+                    }
+                )
+                
+                task_doc.update(result)
+                
+            except Exception as processing_error:
+                # Update task as failed
+                await admin_db.ai_tasks.update_one(
+                    {"task_id": task_doc["task_id"]},
+                    {
+                        "$set": {
+                            "status": AITaskStatus.FAILED,
+                            "error_message": str(processing_error),
+                            "started_at": datetime.utcnow(),
+                            "completed_at": datetime.utcnow()
+                        }
+                    }
+                )
+        
+        return {
+            "task_id": task_doc["task_id"],
+            "status": task_doc["status"],
+            "message": "AI task submitted successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to submit AI task: {str(e)}")
+
+@app.get("/api/admin/ai-tasks")
+async def get_ai_tasks(
+    current_admin = Depends(get_current_admin),
+    agent_type: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0
+):
+    """Get AI tasks with filtering"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_system"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        query = {}
+        if agent_type:
+            query["agent_type"] = agent_type
+        if status:
+            query["status"] = status
+        
+        tasks = await admin_db.ai_tasks.find(query).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+        total_count = await admin_db.ai_tasks.count_documents(query)
+        
+        return {
+            "tasks": tasks,
+            "total": total_count,
+            "limit": limit,
+            "offset": offset
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get AI tasks: {str(e)}")
+
+@app.get("/api/admin/ai-tasks/{task_id}")
+async def get_ai_task_details(
+    task_id: str,
+    current_admin = Depends(get_current_admin)
+):
+    """Get detailed AI task information"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_system"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        task = await admin_db.ai_tasks.find_one({"task_id": task_id})
+        if not task:
+            raise HTTPException(status_code=404, detail="AI task not found")
+        
+        # Get associated agent info
+        agent = await admin_db.ai_agents.find_one({"agent_id": task["agent_id"]})
+        
+        return {
+            "task": task,
+            "agent": agent,
+            "task_details": {
+                "duration_ms": task.get("processing_time_ms"),
+                "success": task["status"] == AITaskStatus.COMPLETED,
+                "confidence": task.get("confidence_score"),
+                "has_results": bool(task.get("result_data"))
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get AI task details: {str(e)}")
+
+@app.post("/api/admin/ai-agents/test-content-moderation")
+async def test_content_moderation_ai(
+    content_data: Dict[str, Any],
+    current_admin = Depends(get_current_admin)
+):
+    """Test content moderation AI with sample data"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_system"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Submit test task
+        task_request = AITaskRequest(
+            agent_type=AIAgentType.CONTENT_MODERATOR,
+            task_data=content_data,
+            priority=AITaskPriority.HIGH
+        )
+        
+        result = await submit_ai_task(task_request, current_admin)
+        
+        return {
+            "test_result": result,
+            "message": "Content moderation AI test completed",
+            "demo_mode": True
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to test content moderation AI: {str(e)}")
+
+@app.get("/api/admin/ai-analytics")
+async def get_ai_analytics(current_admin = Depends(get_current_admin)):
+    """Get AI system analytics and performance metrics"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_system"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Get all agents and tasks
+        agents = await admin_db.ai_agents.find({}).to_list(None)
+        tasks = await admin_db.ai_tasks.find({}).to_list(None)
+        
+        # Calculate system metrics
+        total_tasks = len(tasks)
+        completed_tasks = len([t for t in tasks if t["status"] == AITaskStatus.COMPLETED])
+        failed_tasks = len([t for t in tasks if t["status"] == AITaskStatus.FAILED])
+        
+        # Performance by agent type
+        agent_performance = {}
+        for agent in agents:
+            agent_tasks = [t for t in tasks if t["agent_id"] == agent["agent_id"]]
+            agent_performance[agent["agent_type"]] = {
+                "total_tasks": len(agent_tasks),
+                "success_rate": len([t for t in agent_tasks if t["status"] == AITaskStatus.COMPLETED]) / len(agent_tasks) * 100 if agent_tasks else 0,
+                "avg_processing_time": sum(t.get("processing_time_ms", 0) for t in agent_tasks) / len(agent_tasks) if agent_tasks else 0,
+                "last_activity": agent.get("last_activity")
+            }
+        
+        # Recent activity (last 24 hours)
+        recent_cutoff = datetime.utcnow() - timedelta(hours=24)
+        recent_tasks = [t for t in tasks if t["created_at"] >= recent_cutoff]
+        
+        return {
+            "system_overview": {
+                "total_agents": len(agents),
+                "active_agents": len([a for a in agents if a["status"] == AIAgentStatus.ACTIVE]),
+                "total_tasks_processed": total_tasks,
+                "overall_success_rate": completed_tasks / total_tasks * 100 if total_tasks > 0 else 0,
+                "failed_task_rate": failed_tasks / total_tasks * 100 if total_tasks > 0 else 0
+            },
+            "agent_performance": agent_performance,
+            "recent_activity": {
+                "tasks_last_24h": len(recent_tasks),
+                "success_rate_24h": len([t for t in recent_tasks if t["status"] == AITaskStatus.COMPLETED]) / len(recent_tasks) * 100 if recent_tasks else 0
+            },
+            "framework_status": "operational",
+            "generated_at": datetime.utcnow()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get AI analytics: {str(e)}")
