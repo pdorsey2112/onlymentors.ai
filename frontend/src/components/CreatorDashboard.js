@@ -4,6 +4,7 @@ import CreatorVerification from './CreatorVerification';
 const CreatorDashboard = () => {
   const [creator, setCreator] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [showVerification, setShowVerification] = useState(false);
   const [stats, setStats] = useState({
     total_earnings: 0,
     monthly_earnings: 0,
