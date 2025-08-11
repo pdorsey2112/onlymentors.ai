@@ -371,85 +371,110 @@ function App() {
 
   // Render functions
   const renderAuth = () => (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Brain className="h-12 w-12 mx-auto text-purple-600 mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">OnlyMentors.ai</h1>
-          <p className="text-gray-600">Ask questions to 400+ greatest minds</p>
+    <div className="min-h-screen bg-white">
+      {/* Header with Become a Creator button for non-logged-in users */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-purple-600">OnlyMentors.ai</h1>
+              <p className="ml-4 text-gray-600 hidden sm:block">Ask questions to 400+ greatest minds</p>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <Button 
+                onClick={() => setShowCreatorAuth(true)} 
+                variant="outline"
+                className="text-purple-600 border-purple-600 hover:bg-purple-50"
+              >
+                Become a Creator
+              </Button>
+            </div>
+          </div>
         </div>
+      </header>
 
-        <Card className="bg-white border-gray-200 shadow-lg">
-          <CardHeader>
-            <Tabs value={authMode} onValueChange={setAuthMode}>
-              <TabsList className="grid w-full grid-cols-2 bg-gray-100">
-                <TabsTrigger value="login" className="data-[state=active]:bg-white">Login</TabsTrigger>
-                <TabsTrigger value="signup" className="data-[state=active]:bg-white">Sign Up</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAuth} className="space-y-4">
-              {authMode === 'signup' && (
+      {/* Main auth content */}
+      <div className="flex items-center justify-center p-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <Brain className="h-12 w-12 mx-auto text-purple-600 mb-4" />
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">OnlyMentors.ai</h1>
+            <p className="text-gray-600">Ask questions to 400+ greatest minds</p>
+          </div>
+
+          <Card className="bg-white border-gray-200 shadow-lg">
+            <CardHeader>
+              <Tabs value={authMode} onValueChange={setAuthMode}>
+                <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+                  <TabsTrigger value="login" className="data-[state=active]:bg-white">Login</TabsTrigger>
+                  <TabsTrigger value="signup" className="data-[state=active]:bg-white">Sign Up</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleAuth} className="space-y-4">
+                {authMode === 'signup' && (
+                  <div>
+                    <Label htmlFor="name" className="text-gray-700">Full Name</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={authForm.full_name}
+                      onChange={(e) => setAuthForm({...authForm, full_name: e.target.value})}
+                      className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+                )}
+                
                 <div>
-                  <Label htmlFor="name" className="text-gray-700">Full Name</Label>
+                  <Label htmlFor="email" className="text-gray-700">Email</Label>
                   <Input
-                    id="name"
-                    type="text"
-                    value={authForm.full_name}
-                    onChange={(e) => setAuthForm({...authForm, full_name: e.target.value})}
+                    id="email"
+                    type="email"
+                    value={authForm.email}
+                    onChange={(e) => setAuthForm({...authForm, email: e.target.value})}
                     className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
                     required
                   />
                 </div>
-              )}
-              
-              <div>
-                <Label htmlFor="email" className="text-gray-700">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={authForm.email}
-                  onChange={(e) => setAuthForm({...authForm, email: e.target.value})}
-                  className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                  required
-                />
-              </div>
 
-              <div>
-                <Label htmlFor="password" className="text-gray-700">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={authForm.password}
-                  onChange={(e) => setAuthForm({...authForm, password: e.target.value})}
-                  className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                  required
-                />
-              </div>
+                <div>
+                  <Label htmlFor="password" className="text-gray-700">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={authForm.password}
+                    onChange={(e) => setAuthForm({...authForm, password: e.target.value})}
+                    className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                    required
+                  />
+                </div>
 
-              {error && (
-                <Alert className="border-red-200 bg-red-50">
-                  <AlertDescription className="text-red-700">{error}</AlertDescription>
-                </Alert>
-              )}
+                {error && (
+                  <Alert className="border-red-200 bg-red-50">
+                    <AlertDescription className="text-red-700">{error}</AlertDescription>
+                  </Alert>
+                )}
 
-              {success && (
-                <Alert className="border-green-200 bg-green-50">
-                  <AlertDescription className="text-green-700">{success}</AlertDescription>
-                </Alert>
-              )}
+                {success && (
+                  <Alert className="border-green-200 bg-green-50">
+                    <AlertDescription className="text-green-700">{success}</AlertDescription>
+                  </Alert>
+                )}
 
-              <Button 
-                type="submit" 
-                className="w-full bg-purple-600 hover:bg-purple-700" 
-                disabled={isLoading}
-              >
-                {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account')}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-purple-600 hover:bg-purple-700" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account')}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
