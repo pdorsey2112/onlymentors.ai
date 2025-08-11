@@ -654,7 +654,8 @@ const AdminDashboard = ({ admin, onLogout }) => {
                 {renderContent()}
             </div>
         </div>
-    );
+        );
+    };
 };
 
 export default AdminDashboard;
