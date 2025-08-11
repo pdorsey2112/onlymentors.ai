@@ -146,7 +146,10 @@ const CreatorDashboard = () => {
               </div>
             </div>
             
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
+            <button 
+              onClick={handleViewPublicProfile}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+            >
               View Public Profile
             </button>
           </div>
