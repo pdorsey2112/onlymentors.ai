@@ -33,6 +33,13 @@ from creator_system import (
     get_creator_public_profile, integrate_with_existing_mentors,
     ALLOWED_VIDEO_TYPES, ALLOWED_DOCUMENT_TYPES, MAX_VIDEO_SIZE, MAX_DOCUMENT_SIZE
 )
+from admin_system import (
+    AdminRole, AdminStatus, UserAction, MentorAction,
+    AdminSignupRequest, AdminLoginRequest, UserManagementRequest, MentorManagementRequest,
+    generate_admin_id, get_admin_public_profile, create_initial_super_admin_doc,
+    calculate_user_metrics, calculate_mentor_metrics, calculate_financial_metrics,
+    has_permission, INITIAL_SUPER_ADMIN
+)
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
