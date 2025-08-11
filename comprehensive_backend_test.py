@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class ComprehensiveAIMentorshipTester:
-    def __init__(self, base_url="https://f2b0aa4c-4c6c-44c0-8e63-7550a30e04a0.preview.emergentagent.com"):
+    def __init__(self, base_url="https://a94005b4-7a36-4d7b-a85f-af72d45040b9.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None

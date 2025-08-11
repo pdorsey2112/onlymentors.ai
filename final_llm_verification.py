@@ -5,7 +5,7 @@ import json
 
 def test_llm_quality():
     """Test LLM response quality and personality differences"""
-    base_url = "https://f2b0aa4c-4c6c-44c0-8e63-7550a30e04a0.preview.emergentagent.com"
+    base_url = "https://a94005b4-7a36-4d7b-a85f-af72d45040b9.preview.emergentagent.com"
     
     # Login
     login_data = {"email": "test@test.com", "password": "password123"}
