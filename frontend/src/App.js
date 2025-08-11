@@ -20,14 +20,22 @@ import './App.css';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 function App() {
-  // State management
+  // User states
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Creator states
+  const [isCreator, setIsCreator] = useState(false);
+  const [creator, setCreator] = useState(null);
+  const [showCreatorAuth, setShowCreatorAuth] = useState(false);
+  const [creatorAuthMode, setCreatorAuthMode] = useState('login'); // 'login' or 'signup'
+  
+  // Main app states
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedMentors, setSelectedMentors] = useState([]);
   const [question, setQuestion] = useState('');
   const [responses, setResponses] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [authForm, setAuthForm] = useState({ email: '', password: '', full_name: '' });
   const [error, setError] = useState('');
