@@ -183,14 +183,50 @@ class CreatorMarketplaceAPITester:
             print("❌ No creator ID available, skipping ID verification test")
             return False
         
-        # Create a dummy file for testing
-        test_file_path = "/tmp/test_id_document.txt"
-        with open(test_file_path, "w") as f:
-            f.write("This is a test ID document for verification purposes.")
+        # Create a dummy PDF file for testing (valid file type)
+        test_file_path = "/tmp/test_id_document.pdf"
+        with open(test_file_path, "wb") as f:
+            # Create a minimal PDF content
+            pdf_content = b"""%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+>>
+endobj
+xref
+0 4
+0000000000 65535 f 
+0000000010 00000 n 
+0000000053 00000 n 
+0000000125 00000 n 
+trailer
+<<
+/Size 4
+/Root 1 0 R
+>>
+startxref
+173
+%%EOF"""
+            f.write(pdf_content)
         
         try:
             with open(test_file_path, "rb") as f:
-                files = {"id_document": ("test_id.txt", f, "text/plain")}
+                files = {"id_document": ("test_id.pdf", f, "application/pdf")}
                 
                 success, response = self.run_test(
                     "ID Document Upload",
