@@ -114,12 +114,12 @@ const CreatorDashboard = () => {
               </div>
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  {creator.account_name || 'Creator Dashboard'}
+                  {creator.account_name || 'Mentor Dashboard'}
                 </h1>
                 <p className="text-sm text-gray-600">
                   {isVerified ? (
                     <span className="text-green-600 flex items-center">
-                      <span className="mr-1">✓</span> Verified Creator
+                      <span className="mr-1">✓</span> Verified Mentor
                     </span>
                   ) : (
                     <span className="text-amber-600">Pending Verification</span>
