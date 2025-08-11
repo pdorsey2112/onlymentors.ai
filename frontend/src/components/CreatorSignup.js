@@ -114,7 +114,7 @@ const CreatorSignup = ({ onSuccess }) => {
       <div className="max-w-md mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Become a Creator</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Become a Mentor</h2>
             <p className="text-gray-600 mt-2">Join OnlyMentors.ai and start earning from your expertise</p>
             
             {/* Progress Bar */}
