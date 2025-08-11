@@ -600,11 +600,236 @@ const AdminDashboard = ({ admin, onLogout }) => {
             case 'overview': return renderOverview();
             case 'users': return renderUsers();
             case 'mentors': return renderMentors();
+            case 'content-moderation': return renderContentModeration();
+            case 'payouts': return renderPayouts();
             case 'user-reports': return renderUserReports();
             case 'financial-reports': return renderFinancialReports();
+            case 'ai-agents': return renderAIAgents();
             default: return renderOverview();
         }
     };
+
+    const renderContentModeration = () => (
+        <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Content Moderation</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Pending Review</h3>
+                    <p className="text-2xl font-bold text-yellow-400">10</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Approved Today</h3>
+                    <p className="text-2xl font-bold text-green-400">25</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Rejected</h3>
+                    <p className="text-2xl font-bold text-red-400">3</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Flagged</h3>
+                    <p className="text-2xl font-bold text-orange-400">2</p>
+                </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                <h3 className="text-xl font-bold text-white mb-4">Recent Content for Review</h3>
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white">🎥</span>
+                            </div>
+                            <div>
+                                <p className="text-white font-medium">Sample Video Content 1</p>
+                                <p className="text-white/60 text-sm">Video • Creator • High Priority</p>
+                            </div>
+                        </div>
+                        <div className="flex space-x-2">
+                            <button className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700">
+                                Approve
+                            </button>
+                            <button className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700">
+                                Reject
+                            </button>
+                            <button className="px-3 py-1 bg-yellow-600 text-white text-sm rounded-lg hover:bg-yellow-700">
+                                Flag
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderPayouts = () => (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-white">Creator Payouts</h2>
+                <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    Process Payouts
+                </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Pending Payouts</h3>
+                    <p className="text-2xl font-bold text-yellow-400">$2,450.80</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Paid This Month</h3>
+                    <p className="text-2xl font-bold text-green-400">$18,920.30</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Total Creators</h3>
+                    <p className="text-2xl font-bold text-blue-400">25</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Success Rate</h3>
+                    <p className="text-2xl font-bold text-purple-400">98.5%</p>
+                </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                <h3 className="text-xl font-bold text-white mb-4">Recent Payouts</h3>
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm">✓</span>
+                            </div>
+                            <div>
+                                <p className="text-white font-medium">creator1@test.com</p>
+                                <p className="text-white/60 text-sm">Processed • Stripe Connect</p>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-green-400 font-medium">$285.60</p>
+                            <p className="text-white/60 text-sm">2 hours ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderAIAgents = () => (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-white">AI Agent Framework</h2>
+                <div className="px-3 py-1 bg-green-600/20 text-green-400 text-sm rounded-lg">
+                    Framework Active
+                </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Active Agents</h3>
+                    <p className="text-2xl font-bold text-green-400">4</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Tasks Today</h3>
+                    <p className="text-2xl font-bold text-blue-400">127</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Success Rate</h3>
+                    <p className="text-2xl font-bold text-purple-400">94.2%</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                    <h3 className="text-white/70 text-sm font-medium">Avg Processing</h3>
+                    <p className="text-2xl font-bold text-yellow-400">850ms</p>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <h3 className="text-xl font-bold text-white mb-4">AI Agents Status</h3>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs">🔍</span>
+                                </div>
+                                <div>
+                                    <p className="text-white font-medium">Content Moderation AI</p>
+                                    <p className="text-white/60 text-sm">Processing content automatically</p>
+                                </div>
+                            </div>
+                            <div className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded">Active</div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs">💬</span>
+                                </div>
+                                <div>
+                                    <p className="text-white font-medium">Customer Service AI</p>
+                                    <p className="text-white/60 text-sm">Analyzing support tickets</p>
+                                </div>
+                            </div>
+                            <div className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded">Active</div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs">📊</span>
+                                </div>
+                                <div>
+                                    <p className="text-white font-medium">Sales Analytics AI</p>
+                                    <p className="text-white/60 text-sm">Generating insights</p>
+                                </div>
+                            </div>
+                            <div className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded">Active</div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs">🎯</span>
+                                </div>
+                                <div>
+                                    <p className="text-white font-medium">Marketing Analytics AI</p>
+                                    <p className="text-white/60 text-sm">Optimizing campaigns</p>
+                                </div>
+                            </div>
+                            <div className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded">Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <h3 className="text-xl font-bold text-white mb-4">Recent AI Tasks</h3>
+                    <div className="space-y-3">
+                        <div className="bg-white/5 p-3 rounded-lg">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-white text-sm font-medium">Content Analysis</p>
+                                    <p className="text-white/60 text-xs">Video content reviewed</p>
+                                </div>
+                                <div className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded">Completed</div>
+                            </div>
+                            <div className="mt-2 text-white/60 text-xs">Processing time: 1.2s • Confidence: 94%</div>
+                        </div>
+                        <div className="bg-white/5 p-3 rounded-lg">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-white text-sm font-medium">Sales Prediction</p>
+                                    <p className="text-white/60 text-xs">Revenue forecast generated</p>
+                                </div>
+                                <div className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded">Completed</div>
+                            </div>
+                            <div className="mt-2 text-white/60 text-xs">Processing time: 2.1s • Confidence: 87%</div>
+                        </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                        <button className="w-full px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+                            View All AI Tasks
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
