@@ -212,7 +212,7 @@ const CreatorSignup = ({ onSuccess }) => {
 
             {step === 2 && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Creator Profile</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Mentor Profile</h3>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
