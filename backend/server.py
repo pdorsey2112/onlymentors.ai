@@ -885,3 +885,75 @@ async def get_creator_profile(creator_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch creator: {str(e)}")
+
+@app.get("/api/creators/{creator_id}/verification-status")
+async def get_verification_status(creator_id: str):
+    """Get creator verification status"""
+    try:
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        verification = creator.get("verification", {})
+        banking_info = creator.get("banking_info", {})
+        
+        return {
+            "creator_id": creator_id,
+            "status": creator.get("status"),
+            "verification": {
+                "id_verified": verification.get("id_verified", False),
+                "bank_verified": verification.get("bank_verified", False),
+                "id_submitted": verification.get("id_document_url") is not None,
+                "bank_submitted": bool(banking_info.get("bank_account_number")),
+                "submitted_at": verification.get("submitted_at"),
+                "verified_at": verification.get("verified_at"),
+                "bank_verified_at": verification.get("bank_verified_at")
+            },
+            "is_fully_verified": (verification.get("id_verified", False) and 
+                                verification.get("bank_verified", False)),
+            "next_steps": get_next_verification_steps(verification, banking_info)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get verification status: {str(e)}")
+
+def get_next_verification_steps(verification, banking_info):
+    """Get list of next steps needed for verification"""
+    steps = []
+    
+    if not banking_info.get("bank_account_number"):
+        steps.append({
+            "step": "banking_info",
+            "title": "Submit Banking Information", 
+            "description": "Provide your bank account details for payments"
+        })
+    elif not verification.get("bank_verified", False):
+        steps.append({
+            "step": "banking_pending",
+            "title": "Banking Verification Pending",
+            "description": "Your banking information is being verified"
+        })
+    
+    if not verification.get("id_document_url"):
+        steps.append({
+            "step": "id_upload",
+            "title": "Upload ID Document",
+            "description": "Upload a government-issued ID for verification"
+        })
+    elif not verification.get("id_verified", False):
+        steps.append({
+            "step": "id_pending", 
+            "title": "ID Verification Pending",
+            "description": "Your ID document is being reviewed"
+        })
+    
+    if not steps:
+        steps.append({
+            "step": "complete",
+            "title": "Verification Complete",
+            "description": "Your account is fully verified and approved"
+        })
+    
+    return steps
