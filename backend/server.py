@@ -660,10 +660,10 @@ async def creator_login(login_data: CreatorLoginRequest):
 async def upgrade_user_to_mentor(creator_data: CreatorSignupRequest, current_user = Depends(get_current_user)):
     """Upgrade existing user account to mentor"""
     try:
-        # Check if user already has creator account
+        # Check if user already has mentor account
         existing_creator = await db.creators.find_one({"user_id": current_user["user_id"]})
         if existing_creator:
-            raise HTTPException(status_code=400, detail="User already has creator account")
+            raise HTTPException(status_code=400, detail="User already has mentor account")
         
         # Check if account name is taken
         existing_name = await db.creators.find_one({"account_name": creator_data.account_name})
