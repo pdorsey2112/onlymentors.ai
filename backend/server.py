@@ -1106,3 +1106,485 @@ def get_next_verification_steps(verification, banking_info):
         })
     
     return steps
+
+# =============================================================================
+# ADMINISTRATOR CONSOLE ENDPOINTS
+# =============================================================================
+
+@app.on_event("startup")
+async def create_initial_admin():
+    """Create initial super admin account if it doesn't exist"""
+    try:
+        existing_admin = await admin_db.admins.find_one({"email": INITIAL_SUPER_ADMIN["email"]})
+        if not existing_admin:
+            print("🔧 Creating initial super admin account...")
+            admin_doc = create_initial_super_admin_doc(hash_password(INITIAL_SUPER_ADMIN["password"]))
+            await admin_db.admins.insert_one(admin_doc)
+            print(f"✅ Initial super admin created: {INITIAL_SUPER_ADMIN['email']}")
+            print(f"🔑 Password: {INITIAL_SUPER_ADMIN['password']}")
+            print("⚠️  Please change the password after first login!")
+    except Exception as e:
+        print(f"❌ Error creating initial admin: {str(e)}")
+
+@app.post("/api/admin/login")
+async def admin_login(login_data: AdminLoginRequest):
+    """Admin login endpoint"""
+    try:
+        admin = await admin_db.admins.find_one({"email": login_data.email})
+        if not admin or not verify_password(login_data.password, admin["password_hash"]):
+            raise HTTPException(status_code=401, detail="Invalid admin credentials")
+        
+        if admin["status"] != AdminStatus.ACTIVE:
+            raise HTTPException(status_code=401, detail="Admin account is not active")
+        
+        # Update last login
+        await admin_db.admins.update_one(
+            {"admin_id": admin["admin_id"]},
+            {"$set": {"last_login": datetime.utcnow()}}
+        )
+        
+        # Create admin token
+        token = create_access_token({"admin_id": admin["admin_id"], "type": "admin"})
+        
+        return {
+            "token": token,
+            "admin": get_admin_public_profile(admin)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Admin login failed: {str(e)}")
+
+@app.get("/api/admin/dashboard")
+async def get_admin_dashboard(current_admin = Depends(get_current_admin)):
+    """Get admin dashboard metrics"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_reports"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Get platform data
+        users = await db.users.find({}).to_list(None)
+        mentors = await db.creators.find({}).to_list(None)
+        payments = await db.payment_transactions.find({"payment_status": "paid"}).to_list(None)
+        questions = await db.questions.find({}).to_list(None)
+        
+        # Calculate metrics
+        user_metrics = calculate_user_metrics(users)
+        mentor_metrics = calculate_mentor_metrics(mentors)
+        financial_metrics = calculate_financial_metrics(payments, [])
+        
+        # Platform summary
+        platform_stats = {
+            "total_users": len(users),
+            "total_mentors": len(mentors),
+            "total_questions": len(questions),
+            "total_revenue": sum(p.get('amount', 0) for p in payments),
+            "active_subscriptions": sum(1 for u in users if u.get('is_subscribed', False))
+        }
+        
+        return {
+            "platform_stats": platform_stats,
+            "user_metrics": user_metrics,
+            "mentor_metrics": mentor_metrics,
+            "financial_metrics": financial_metrics,
+            "updated_at": datetime.utcnow()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get dashboard: {str(e)}")
+
+@app.get("/api/admin/users")
+async def get_all_users(
+    current_admin = Depends(get_current_admin),
+    limit: int = 50,
+    offset: int = 0,
+    search: Optional[str] = None,
+    status: Optional[str] = None
+):
+    """Get all users with pagination and filtering"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Build query
+        query = {}
+        if search:
+            query["$or"] = [
+                {"email": {"$regex": search, "$options": "i"}},
+                {"full_name": {"$regex": search, "$options": "i"}}
+            ]
+        if status:
+            if status == "subscribed":
+                query["is_subscribed"] = True
+            elif status == "free":
+                query["is_subscribed"] = False
+        
+        # Get users
+        users = await db.users.find(query).skip(offset).limit(limit).to_list(limit)
+        total_count = await db.users.count_documents(query)
+        
+        # Clean user data for admin view
+        user_data = []
+        for user in users:
+            user_data.append({
+                "user_id": user["user_id"],
+                "email": user["email"],
+                "full_name": user["full_name"],
+                "questions_asked": user.get("questions_asked", 0),
+                "is_subscribed": user.get("is_subscribed", False),
+                "subscription_expires": user.get("subscription_expires"),
+                "created_at": user["created_at"],
+                "last_active": user.get("last_active")
+            })
+        
+        return {
+            "users": user_data,
+            "total": total_count,
+            "limit": limit,
+            "offset": offset
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get users: {str(e)}")
+
+@app.get("/api/admin/mentors")
+async def get_all_mentors(
+    current_admin = Depends(get_current_admin),
+    limit: int = 50,
+    offset: int = 0,
+    search: Optional[str] = None,
+    status: Optional[str] = None
+):
+    """Get all mentors with pagination and filtering"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_mentors"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Build query
+        query = {}
+        if search:
+            query["$or"] = [
+                {"email": {"$regex": search, "$options": "i"}},
+                {"full_name": {"$regex": search, "$options": "i"}},
+                {"account_name": {"$regex": search, "$options": "i"}}
+            ]
+        if status:
+            query["status"] = status
+        
+        # Get mentors
+        mentors = await db.creators.find(query).skip(offset).limit(limit).to_list(limit)
+        total_count = await db.creators.count_documents(query)
+        
+        # Clean mentor data for admin view
+        mentor_data = []
+        for mentor in mentors:
+            mentor_data.append({
+                "creator_id": mentor["creator_id"],
+                "email": mentor["email"],
+                "full_name": mentor["full_name"],
+                "account_name": mentor["account_name"],
+                "category": mentor["category"],
+                "monthly_price": mentor["monthly_price"],
+                "status": mentor["status"],
+                "subscriber_count": mentor["stats"]["subscriber_count"],
+                "total_earnings": mentor["stats"]["total_earnings"],
+                "verification": {
+                    "id_verified": mentor["verification"]["id_verified"],
+                    "bank_verified": mentor["verification"]["bank_verified"]
+                },
+                "created_at": mentor["created_at"],
+                "last_active": mentor.get("last_active")
+            })
+        
+        return {
+            "mentors": mentor_data,
+            "total": total_count,
+            "limit": limit,
+            "offset": offset
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get mentors: {str(e)}")
+
+@app.post("/api/admin/users/manage")
+async def manage_users(
+    request: UserManagementRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Manage users (suspend, reactivate, delete)"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        results = []
+        
+        for user_id in request.user_ids:
+            user = await db.users.find_one({"user_id": user_id})
+            if not user:
+                results.append({"user_id": user_id, "status": "error", "message": "User not found"})
+                continue
+            
+            try:
+                if request.action == UserAction.SUSPEND:
+                    await db.users.update_one(
+                        {"user_id": user_id},
+                        {"$set": {"is_suspended": True, "suspended_at": datetime.utcnow()}}
+                    )
+                    results.append({"user_id": user_id, "status": "success", "message": "User suspended"})
+                    
+                elif request.action == UserAction.REACTIVATE:
+                    await db.users.update_one(
+                        {"user_id": user_id},
+                        {"$set": {"is_suspended": False}, "$unset": {"suspended_at": ""}}
+                    )
+                    results.append({"user_id": user_id, "status": "success", "message": "User reactivated"})
+                    
+                elif request.action == UserAction.DELETE:
+                    # Delete user data (be careful with this!)
+                    await db.users.delete_one({"user_id": user_id})
+                    await db.questions.delete_many({"user_id": user_id})
+                    await db.payment_transactions.delete_many({"user_id": user_id})
+                    results.append({"user_id": user_id, "status": "success", "message": "User deleted"})
+                    
+            except Exception as e:
+                results.append({"user_id": user_id, "status": "error", "message": str(e)})
+        
+        return {"results": results}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to manage users: {str(e)}")
+
+@app.post("/api/admin/mentors/manage")
+async def manage_mentors(
+    request: MentorManagementRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Manage mentors (approve, reject, suspend, delete)"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_mentors"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        results = []
+        
+        for creator_id in request.creator_ids:
+            mentor = await db.creators.find_one({"creator_id": creator_id})
+            if not mentor:
+                results.append({"creator_id": creator_id, "status": "error", "message": "Mentor not found"})
+                continue
+            
+            try:
+                if request.action == MentorAction.APPROVE:
+                    await db.creators.update_one(
+                        {"creator_id": creator_id},
+                        {"$set": {"status": CreatorStatus.APPROVED, "approved_at": datetime.utcnow()}}
+                    )
+                    results.append({"creator_id": creator_id, "status": "success", "message": "Mentor approved"})
+                    
+                elif request.action == MentorAction.REJECT:
+                    await db.creators.update_one(
+                        {"creator_id": creator_id},
+                        {"$set": {"status": CreatorStatus.REJECTED, "rejected_at": datetime.utcnow()}}
+                    )
+                    results.append({"creator_id": creator_id, "status": "success", "message": "Mentor rejected"})
+                    
+                elif request.action == MentorAction.SUSPEND:
+                    await db.creators.update_one(
+                        {"creator_id": creator_id},
+                        {"$set": {"status": CreatorStatus.SUSPENDED, "suspended_at": datetime.utcnow()}}
+                    )
+                    results.append({"creator_id": creator_id, "status": "success", "message": "Mentor suspended"})
+                    
+                elif request.action == MentorAction.REACTIVATE:
+                    await db.creators.update_one(
+                        {"creator_id": creator_id},
+                        {"$set": {"status": CreatorStatus.APPROVED}, "$unset": {"suspended_at": ""}}
+                    )
+                    results.append({"creator_id": creator_id, "status": "success", "message": "Mentor reactivated"})
+                    
+                elif request.action == MentorAction.DELETE:
+                    # Delete mentor data
+                    await db.creators.delete_one({"creator_id": creator_id})
+                    await db.creator_content.delete_many({"creator_id": creator_id})
+                    results.append({"creator_id": creator_id, "status": "success", "message": "Mentor deleted"})
+                    
+            except Exception as e:
+                results.append({"creator_id": creator_id, "status": "error", "message": str(e)})
+        
+        return {"results": results}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to manage mentors: {str(e)}")
+
+@app.get("/api/admin/reports/user-activity")
+async def get_user_activity_report(current_admin = Depends(get_current_admin)):
+    """Get user activity report (critical requirement)"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_reports"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Get all users and questions
+        users = await db.users.find({}).to_list(None)
+        questions = await db.questions.find({}).to_list(None)
+        
+        # Calculate activity metrics
+        from datetime import timedelta
+        now = datetime.utcnow()
+        periods = {
+            "today": now.replace(hour=0, minute=0, second=0, microsecond=0),
+            "week": now - timedelta(days=7),
+            "month": now - timedelta(days=30)
+        }
+        
+        activity_report = {}
+        for period_name, start_date in periods.items():
+            # User registrations
+            new_users = [u for u in users if u.get('created_at') and u['created_at'] >= start_date]
+            
+            # Questions asked
+            questions_period = [q for q in questions if q.get('created_at') and q['created_at'] >= start_date]
+            
+            # Active users (asked questions in period)
+            active_user_ids = set(q['user_id'] for q in questions_period)
+            
+            activity_report[period_name] = {
+                "new_users": len(new_users),
+                "active_users": len(active_user_ids),
+                "questions_asked": len(questions_period),
+                "avg_questions_per_user": len(questions_period) / len(active_user_ids) if active_user_ids else 0
+            }
+        
+        # Top users by questions
+        user_question_counts = {}
+        for q in questions:
+            user_id = q['user_id']
+            user_question_counts[user_id] = user_question_counts.get(user_id, 0) + 1
+        
+        top_users = []
+        for user_id, question_count in sorted(user_question_counts.items(), key=lambda x: x[1], reverse=True)[:10]:
+            user = next((u for u in users if u['user_id'] == user_id), None)
+            if user:
+                top_users.append({
+                    "user_id": user_id,
+                    "email": user['email'],
+                    "full_name": user['full_name'],
+                    "questions_asked": question_count,
+                    "is_subscribed": user.get('is_subscribed', False)
+                })
+        
+        return {
+            "summary": {
+                "total_users": len(users),
+                "total_questions": len(questions),
+                "subscribed_users": sum(1 for u in users if u.get('is_subscribed', False))
+            },
+            "period_activity": activity_report,
+            "top_users": top_users,
+            "generated_at": datetime.utcnow()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate user activity report: {str(e)}")
+
+@app.get("/api/admin/reports/financial")
+async def get_financial_report(current_admin = Depends(get_current_admin)):
+    """Get financial metrics report (critical requirement)"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_financials"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Get payment data
+        payments = await db.payment_transactions.find({"payment_status": "paid"}).to_list(None)
+        mentors = await db.creators.find({}).to_list(None)
+        users = await db.users.find({"is_subscribed": True}).to_list(None)
+        
+        # Calculate financial metrics by period
+        from datetime import timedelta
+        now = datetime.utcnow()
+        periods = {
+            "today": now.replace(hour=0, minute=0, second=0, microsecond=0),
+            "week": now - timedelta(days=7),
+            "month": now - timedelta(days=30),
+            "year": now - timedelta(days=365)
+        }
+        
+        financial_report = {}
+        for period_name, start_date in periods.items():
+            period_payments = [p for p in payments if p.get('created_at') and p['created_at'] >= start_date]
+            
+            revenue = sum(p.get('amount', 0) for p in period_payments)
+            transaction_count = len(period_payments)
+            
+            # Revenue breakdown
+            monthly_revenue = sum(p.get('amount', 0) for p in period_payments if p.get('package_id') == 'monthly')
+            yearly_revenue = sum(p.get('amount', 0) for p in period_payments if p.get('package_id') == 'yearly')
+            
+            financial_report[period_name] = {
+                "revenue": revenue,
+                "transaction_count": transaction_count,
+                "avg_transaction": revenue / transaction_count if transaction_count > 0 else 0,
+                "monthly_subscriptions": monthly_revenue,
+                "yearly_subscriptions": yearly_revenue
+            }
+        
+        # Platform revenue split
+        total_revenue = sum(p.get('amount', 0) for p in payments)
+        platform_commission = total_revenue * 0.20  # 20% platform fee
+        creator_payouts = total_revenue * 0.80  # 80% to creators
+        
+        # Top paying users
+        user_spending = {}
+        for p in payments:
+            user_id = p.get('user_id')
+            if user_id:
+                user_spending[user_id] = user_spending.get(user_id, 0) + p.get('amount', 0)
+        
+        top_spenders = []
+        for user_id, amount in sorted(user_spending.items(), key=lambda x: x[1], reverse=True)[:10]:
+            user = await db.users.find_one({"user_id": user_id})
+            if user:
+                top_spenders.append({
+                    "user_id": user_id,
+                    "email": user['email'],
+                    "full_name": user['full_name'],
+                    "total_spent": amount
+                })
+        
+        return {
+            "summary": {
+                "total_revenue": total_revenue,
+                "platform_commission": platform_commission,
+                "creator_payouts": creator_payouts,
+                "active_subscriptions": len(users),
+                "total_transactions": len(payments)
+            },
+            "period_revenue": financial_report,
+            "top_spenders": top_spenders,
+            "revenue_breakdown": {
+                "monthly_subscriptions": sum(p.get('amount', 0) for p in payments if p.get('package_id') == 'monthly'),
+                "yearly_subscriptions": sum(p.get('amount', 0) for p in payments if p.get('package_id') == 'yearly')
+            },
+            "generated_at": datetime.utcnow()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate financial report: {str(e)}")
+
+@app.get("/api/admin/me")
+async def get_admin_profile(current_admin = Depends(get_current_admin)):
+    """Get current admin profile"""
+    return {"admin": get_admin_public_profile(current_admin)}
