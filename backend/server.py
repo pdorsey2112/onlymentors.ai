@@ -9,7 +9,11 @@ from datetime import datetime, timedelta
 import jwt
 import uuid
 import os
+from dotenv import load_dotenv
 from complete_mentors_database import ALL_MENTORS, TOTAL_MENTORS
+
+# Load environment variables from .env file
+load_dotenv()
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
