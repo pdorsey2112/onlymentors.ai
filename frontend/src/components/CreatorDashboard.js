@@ -139,31 +139,31 @@ const CreatorDashboard = () => {
           />
           <StatCard 
             title="Monthly Earnings" 
-            value={formatCurrency(stats.monthly_earnings)} 
+            value={formatCurrency(stats.monthly_earnings || 0)} 
             icon="📈"
             color="blue"
           />
           <StatCard 
             title="Subscribers" 
-            value={stats.subscriber_count.toLocaleString()} 
+            value={(stats.subscriber_count || 0).toLocaleString()} 
             icon="👥"
             color="purple"
           />
           <StatCard 
             title="Content Pieces" 
-            value={stats.content_count.toLocaleString()} 
+            value={(stats.content_count || 0).toLocaleString()} 
             icon="📄"
             color="indigo"
           />
           <StatCard 
             title="Questions Answered" 
-            value={stats.total_questions.toLocaleString()} 
+            value={(stats.total_questions || 0).toLocaleString()} 
             icon="❓"
             color="pink"
           />
           <StatCard 
             title="Average Rating" 
-            value={`${stats.average_rating.toFixed(1)} ⭐`} 
+            value={`${(stats.average_rating || 5.0).toFixed(1)} ⭐`} 
             icon="⭐"
             color="yellow"
           />
