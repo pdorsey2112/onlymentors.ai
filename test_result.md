@@ -335,12 +335,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Admin System Core Infrastructure"
-    - "Admin Authentication & Authorization"
-    - "Admin Dashboard & Reports"
-    - "Admin Console Frontend Components"
-    - "Admin Dashboard Functionality"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
