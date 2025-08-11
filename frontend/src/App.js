@@ -123,6 +123,24 @@ function App() {
     setCreatorAuthMode(mode);
   };
 
+  // Admin auth handlers
+  const handleAdminLoginSuccess = (adminData) => {
+    setIsAdmin(true);
+    setAdmin(adminData);
+    setShowAdminAuth(false);
+  };
+
+  const handleAdminLoginError = (error) => {
+    setError(error);
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdmin(false);
+    setAdmin(null);
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminData');
+  };
+
   // API functions
   const fetchCategories = async () => {
     try {
