@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CreatorVerification from './CreatorVerification';
 
 const CreatorDashboard = () => {
   const [creator, setCreator] = useState(null);
