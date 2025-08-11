@@ -51,8 +51,8 @@ const CreatorLogin = ({ onSuccess, onSwitchToSignup }) => {
       <div className="max-w-md mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Creator Login</h2>
-            <p className="text-gray-600 mt-2">Access your creator dashboard</p>
+            <h2 className="text-3xl font-bold text-gray-900">Mentor Login</h2>
+            <p className="text-gray-600 mt-2">Access your mentor dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
