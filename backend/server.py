@@ -1601,3 +1601,374 @@ async def get_financial_report(current_admin = Depends(get_current_admin)):
 async def get_admin_profile(current_admin = Depends(get_current_admin)):
     """Get current admin profile"""
     return {"admin": get_admin_public_profile(current_admin)}
+
+# =============================================================================
+# PHASE 3: CONTENT MODERATION ENDPOINTS
+# =============================================================================
+
+@app.get("/api/admin/content-moderation")
+async def get_content_for_moderation(
+    current_admin = Depends(get_current_admin),
+    content_type: Optional[str] = None,
+    status: Optional[str] = None,
+    priority: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0
+):
+    """Get content items for moderation"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_content"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Build query for content moderation
+        query = {}
+        if content_type:
+            query["content_type"] = content_type
+        if status:
+            query["status"] = status
+        if priority:
+            query["priority"] = priority
+        
+        # Get content moderation items
+        moderation_items = await admin_db.content_moderation.find(query).skip(offset).limit(limit).to_list(limit)
+        total_count = await admin_db.content_moderation.count_documents(query)
+        
+        # Get moderation statistics
+        all_items = await admin_db.content_moderation.find({}).to_list(None)
+        stats = calculate_moderation_stats(all_items)
+        
+        return {
+            "content": moderation_items,
+            "total": total_count,
+            "limit": limit,
+            "offset": offset,
+            "stats": stats
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get content for moderation: {str(e)}")
+
+@app.post("/api/admin/content-moderation/action")
+async def moderate_content(
+    request: ModerationRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Take moderation action on content"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_content"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        results = []
+        
+        for content_id in request.content_ids:
+            # Get content item
+            content_item = await admin_db.content_moderation.find_one({"content_id": content_id})
+            if not content_item:
+                results.append({"content_id": content_id, "status": "error", "message": "Content not found"})
+                continue
+            
+            try:
+                previous_status = content_item["status"]
+                
+                # Update status based on action
+                new_status = {
+                    ModerationAction.APPROVE: ModerationStatus.APPROVED,
+                    ModerationAction.REJECT: ModerationStatus.REJECTED,
+                    ModerationAction.FLAG: ModerationStatus.FLAGGED,
+                    ModerationAction.REMOVE: ModerationStatus.REMOVED,
+                    ModerationAction.REVIEW: ModerationStatus.UNDER_REVIEW
+                }[request.action]
+                
+                # Update content moderation record
+                await admin_db.content_moderation.update_one(
+                    {"content_id": content_id},
+                    {
+                        "$set": {
+                            "status": new_status,
+                            "reviewed_by": current_admin["admin_id"],
+                            "reviewed_at": datetime.utcnow(),
+                            "review_notes": request.reviewer_notes,
+                            "updated_at": datetime.utcnow()
+                        },
+                        "$push": {
+                            "moderation_history": {
+                                "action": request.action,
+                                "status": new_status,
+                                "admin_id": current_admin["admin_id"],
+                                "reason": request.reason,
+                                "notes": request.reviewer_notes,
+                                "timestamp": datetime.utcnow()
+                            }
+                        }
+                    }
+                )
+                
+                # Log moderation activity
+                activity_log = create_moderation_activity_log(
+                    current_admin["admin_id"], request.action, content_id,
+                    ContentType(content_item["content_type"]), ModerationStatus(previous_status),
+                    new_status, request.reason, request.reviewer_notes
+                )
+                await admin_db.moderation_activity.insert_one(activity_log)
+                
+                results.append({"content_id": content_id, "status": "success", "message": f"Content {request.action}ed"})
+                
+            except Exception as e:
+                results.append({"content_id": content_id, "status": "error", "message": str(e)})
+        
+        return {"results": results}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to moderate content: {str(e)}")
+
+@app.post("/api/admin/content-moderation/bulk-approve")
+async def bulk_approve_content(
+    content_ids: List[str],
+    current_admin = Depends(get_current_admin)
+):
+    """Bulk approve multiple content items"""
+    request = ModerationRequest(
+        content_ids=content_ids,
+        action=ModerationAction.APPROVE,
+        reason="Bulk approval by admin"
+    )
+    return await moderate_content(request, current_admin)
+
+# =============================================================================
+# PHASE 3: PAYOUT MANAGEMENT ENDPOINTS
+# =============================================================================
+
+@app.get("/api/admin/payouts")
+async def get_payouts(
+    current_admin = Depends(get_current_admin),
+    status: Optional[str] = None,
+    creator_id: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0
+):
+    """Get payout records"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_financials"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Build query
+        query = {}
+        if status:
+            query["status"] = status
+        if creator_id:
+            query["creator_id"] = creator_id
+        
+        # Get payouts
+        payouts = await admin_db.payouts.find(query).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+        total_count = await admin_db.payouts.count_documents(query)
+        
+        # Calculate analytics
+        all_payouts = await admin_db.payouts.find({}).to_list(None)
+        analytics = calculate_payout_analytics(all_payouts)
+        
+        return {
+            "payouts": payouts,
+            "total": total_count,
+            "limit": limit,
+            "offset": offset,
+            "analytics": analytics
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get payouts: {str(e)}")
+
+@app.post("/api/admin/payouts/process")
+async def process_payouts(
+    request: PayoutRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Process payouts for creators"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_financials"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        results = []
+        
+        for creator_id in request.creator_ids:
+            try:
+                # Get creator earnings and settings
+                earnings = await admin_db.creator_earnings.find({"creator_id": creator_id, "payout_id": None}).to_list(None)
+                settings = await admin_db.payout_settings.find_one({"creator_id": creator_id})
+                
+                if not settings:
+                    # Create default settings
+                    settings = create_default_payout_settings(creator_id)
+                    await admin_db.payout_settings.insert_one(settings)
+                
+                # Process payout
+                payout = process_creator_payout(creator_id, earnings, settings, current_admin["admin_id"])
+                
+                # Save payout record
+                await admin_db.payouts.insert_one(payout)
+                
+                # Mark earnings as processed
+                earnings_ids = [e["earnings_id"] for e in earnings if e["creator_id"] == creator_id]
+                if earnings_ids:
+                    await admin_db.creator_earnings.update_many(
+                        {"earnings_id": {"$in": earnings_ids}},
+                        {"$set": {"payout_id": payout["payout_id"], "processed_at": datetime.utcnow()}}
+                    )
+                
+                # Update creator total paid out
+                await admin_db.payout_settings.update_one(
+                    {"creator_id": creator_id},
+                    {
+                        "$set": {
+                            "last_payout_date": datetime.utcnow(),
+                            "next_payout_date": calculate_next_payout_date(PayoutFrequency(settings["frequency"])),
+                            "updated_at": datetime.utcnow()
+                        },
+                        "$inc": {"total_paid_out": payout["amount"]}
+                    }
+                )
+                
+                results.append({
+                    "creator_id": creator_id,
+                    "status": "success",
+                    "payout_id": payout["payout_id"],
+                    "amount": payout["amount"],
+                    "message": f"Payout processed: ${payout['amount']:.2f}"
+                })
+                
+            except Exception as e:
+                results.append({
+                    "creator_id": creator_id,
+                    "status": "error",
+                    "message": str(e)
+                })
+        
+        return {"results": results}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process payouts: {str(e)}")
+
+@app.get("/api/admin/creator-earnings")
+async def get_creator_earnings(
+    current_admin = Depends(get_current_admin),
+    creator_id: Optional[str] = None,
+    limit: int = 100,
+    offset: int = 0
+):
+    """Get creator earnings data"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_financials"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        query = {}
+        if creator_id:
+            query["creator_id"] = creator_id
+        
+        earnings = await admin_db.creator_earnings.find(query).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+        total_count = await admin_db.creator_earnings.count_documents(query)
+        
+        # Calculate pending earnings by creator
+        all_earnings = await admin_db.creator_earnings.find({"payout_id": None}).to_list(None)
+        creators_with_earnings = list(set(e["creator_id"] for e in all_earnings))
+        
+        pending_by_creator = []
+        for cid in creators_with_earnings:
+            pending = calculate_creator_pending_earnings(cid, all_earnings)
+            if pending["pending_amount"] > 0:
+                pending_by_creator.append(pending)
+        
+        # Sort by pending amount
+        pending_by_creator.sort(key=lambda x: x["pending_amount"], reverse=True)
+        
+        return {
+            "earnings": earnings,
+            "total": total_count,
+            "limit": limit,
+            "offset": offset,
+            "pending_by_creator": pending_by_creator[:20]  # Top 20
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get creator earnings: {str(e)}")
+
+@app.post("/api/admin/earnings/add")
+async def add_creator_earnings(
+    earnings: EarningsEntry,
+    current_admin = Depends(get_current_admin)
+):
+    """Add manual earnings entry for creator"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_financials"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Create earnings entry
+        earnings_doc = create_earnings_entry({
+            "creator_id": earnings.creator_id,
+            "amount": earnings.amount,
+            "transaction_id": earnings.transaction_id,
+            "type": earnings.earnings_type,
+            "description": earnings.description or "Manual entry by admin"
+        })
+        
+        # Add admin tracking
+        earnings_doc["added_by"] = current_admin["admin_id"]
+        earnings_doc["manual_entry"] = True
+        
+        await admin_db.creator_earnings.insert_one(earnings_doc)
+        
+        return {
+            "earnings_id": earnings_doc["earnings_id"],
+            "message": f"Added ${earnings.amount:.2f} earnings for creator {earnings.creator_id}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add earnings: {str(e)}")
+
+@app.get("/api/admin/payout-analytics")
+async def get_payout_analytics(
+    current_admin = Depends(get_current_admin),
+    period_days: int = 30
+):
+    """Get comprehensive payout analytics"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_financials"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Get payouts and earnings data
+        payouts = await admin_db.payouts.find({}).to_list(None)
+        earnings = await admin_db.creator_earnings.find({}).to_list(None)
+        
+        # Calculate analytics
+        analytics = calculate_payout_analytics(payouts, period_days)
+        
+        # Additional platform metrics
+        total_revenue = sum(e["amount"] for e in earnings)
+        platform_fees = sum(e["platform_fee"] for e in earnings)
+        creator_earnings_total = sum(e["creator_earnings"] for e in earnings)
+        pending_payouts = sum(e["creator_earnings"] for e in earnings if not e.get("payout_id"))
+        
+        analytics["platform_metrics"] = {
+            "total_revenue": total_revenue,
+            "platform_fees_earned": platform_fees,
+            "creator_earnings_total": creator_earnings_total,
+            "pending_payouts": pending_payouts,
+            "revenue_retention_rate": (platform_fees / total_revenue * 100) if total_revenue > 0 else 0
+        }
+        
+        return analytics
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get payout analytics: {str(e)}")
