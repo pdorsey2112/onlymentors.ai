@@ -1150,6 +1150,21 @@ function App() {
     );
   }
 
+  // Render admin authentication
+  if (showAdminAuth) {
+    return (
+      <AdminLogin 
+        onLogin={handleAdminLoginSuccess}
+        onError={handleAdminLoginError}
+      />
+    );
+  }
+
+  // Render admin dashboard
+  if (isAdmin && admin) {
+    return <AdminDashboard admin={admin} onLogout={handleAdminLogout} />;
+  }
+
   // Render creator dashboard
   if (isCreator && creator) {
     return <CreatorDashboard />;
