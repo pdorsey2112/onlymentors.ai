@@ -843,3 +843,6 @@ ALL_MENTORS = {
 
 # Get total mentor count
 TOTAL_MENTORS = sum(len(mentors) for mentors in ALL_MENTORS.values())
+
+# Export individual lists for server.py imports
+__all__ = ['ALL_MENTORS', 'TOTAL_MENTORS', 'BUSINESS_MENTORS', 'SPORTS_MENTORS', 'HEALTH_MENTORS', 'SCIENCE_MENTORS', 'RELATIONSHIPS_MENTORS']
