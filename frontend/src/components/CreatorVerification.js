@@ -377,7 +377,7 @@ const CreatorVerification = ({ creatorId, onVerificationComplete }) => {
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Verification Complete!</h2>
         <p className="text-gray-600 mb-6">
-          Your creator account has been verified and approved. 
+          Your mentor account has been verified and approved. 
           You can now start uploading content and earning from subscribers.
         </p>
 
