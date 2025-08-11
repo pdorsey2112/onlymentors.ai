@@ -364,7 +364,10 @@ const CreatorDashboard = () => {
                     </span>
                   </div>
 
-                  <button className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700">
+                  <button 
+                    onClick={handleSaveSettings}
+                    className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700"
+                  >
                     Save Changes
                   </button>
                 </div>
