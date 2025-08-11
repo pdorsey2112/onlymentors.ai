@@ -31,6 +31,7 @@ function App() {
   const [creatorAuthMode, setCreatorAuthMode] = useState('login'); // 'login' or 'signup'
   
   // Main app states
+  const [currentView, setCurrentView] = useState('categories');
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedMentors, setSelectedMentors] = useState([]);
@@ -39,6 +40,7 @@ function App() {
   const [authMode, setAuthMode] = useState('login');
   const [authForm, setAuthForm] = useState({ email: '', password: '', full_name: '' });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [success, setSuccess] = useState('');
   const [questionHistory, setQuestionHistory] = useState([]);
   const [currentView, setCurrentView] = useState('categories');
