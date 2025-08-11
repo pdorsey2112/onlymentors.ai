@@ -149,6 +149,18 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Add Relationships & Dating Category"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/complete_mentors_database.py, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added new 'Relationships & Dating' category with 20 top relationship experts/coaches from FeedSpot list. Includes Jay Shetty, Dr. Nicole LePera, Esther Perel, and other renowned relationship professionals. Updated backend API to serve the new category."
+
 agent_communication:
   - agent: "main"
     message: "Implemented LLM integration using emergentintegrations library. Replaced the create_mentor_response function with async LLM calls using gpt-4o-mini model. Each mentor gets a unique session ID and personalized system message. Need to test the /api/questions/ask endpoint to ensure LLM responses are working properly."
