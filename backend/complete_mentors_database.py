@@ -669,7 +669,8 @@ ALL_MENTORS = {
     "business": BUSINESS_MENTORS,
     "sports": SPORTS_MENTORS, 
     "health": HEALTH_MENTORS,
-    "science": SCIENCE_MENTORS
+    "science": SCIENCE_MENTORS,
+    "relationships": RELATIONSHIPS_MENTORS
 }
 
 # Get total mentor count
