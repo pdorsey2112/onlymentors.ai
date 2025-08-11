@@ -151,7 +151,10 @@ const CreatorDashboard = () => {
                   Please complete your profile verification to start earning. You need to upload your ID and banking information.
                 </p>
                 <div className="mt-3">
-                  <button className="bg-amber-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-amber-700">
+                  <button 
+                    onClick={() => setShowVerification(true)}
+                    className="bg-amber-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-amber-700"
+                  >
                     Complete Verification
                   </button>
                 </div>
