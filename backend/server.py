@@ -204,6 +204,13 @@ async def get_categories():
                 "description": "Explore scientific thinking with history's greatest minds and Nobel Prize winners",
                 "mentors": ALL_MENTORS["science"],
                 "count": len(ALL_MENTORS["science"])
+            },
+            {
+                "id": "relationships",
+                "name": "Relationships & Dating",
+                "description": "Get expert advice on love, dating, and building meaningful relationships from top therapists and coaches",
+                "mentors": ALL_MENTORS["relationships"],
+                "count": len(ALL_MENTORS["relationships"])
             }
         ],
         "total_mentors": TOTAL_MENTORS
