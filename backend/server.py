@@ -386,22 +386,25 @@ async def get_question_history(current_user = Depends(get_current_user)):
     return {"questions": questions}
 
 @app.post("/api/payments/checkout")
-async def create_checkout_session(checkout_data: CheckoutRequest, current_user = Depends(get_current_user)):
+async def create_checkout_session(checkout_data: CheckoutRequest, current_user = Depends(get_current_user), request: Request = None):
     if checkout_data.package_id not in SUBSCRIPTION_PACKAGES:
         raise HTTPException(status_code=400, detail="Invalid package")
     
     package = SUBSCRIPTION_PACKAGES[checkout_data.package_id]
     
+    # Get base URL from request for webhook
+    host_url = str(request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    
     # Initialize Stripe checkout
-    webhook_url = f"{checkout_data.origin_url}/api/webhook/stripe"
     stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
     
-    # Create checkout session
+    # Create checkout session with origin_url for success/cancel
     success_url = f"{checkout_data.origin_url}/?session_id={{CHECKOUT_SESSION_ID}}"
     cancel_url = checkout_data.origin_url
     
     checkout_request = CheckoutSessionRequest(
-        amount=package["price"],
+        amount=float(package["price"]),  # Ensure float format
         currency=package["currency"],
         success_url=success_url,
         cancel_url=cancel_url,
@@ -420,7 +423,7 @@ async def create_checkout_session(checkout_data: CheckoutRequest, current_user =
         "user_id": current_user["user_id"],
         "session_id": session.session_id,
         "package_id": checkout_data.package_id,
-        "amount": package["price"],
+        "amount": float(package["price"]),  # Ensure float format
         "currency": package["currency"],
         "payment_status": "pending",
         "created_at": datetime.utcnow()
