@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CreatorVerification from './CreatorVerification';
 import ContentUpload from './ContentUpload';
+import MessagingInterface from './MessagingInterface';
 
 const CreatorDashboard = () => {
   const [creator, setCreator] = useState(null);
