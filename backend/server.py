@@ -19,6 +19,9 @@ SPORTS_MENTORS.extend(ADDITIONAL_SPORTS_MENTORS)
 HEALTH_MENTORS.extend(ADDITIONAL_HEALTH_MENTORS)
 SCIENCE_MENTORS.extend(ADDITIONAL_SCIENCE_MENTORS)
 
+# Recalculate total mentors after merging
+TOTAL_MENTORS = sum(len(mentors) for mentors in ALL_MENTORS.values())
+
 # Load environment variables from .env file
 load_dotenv()
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
