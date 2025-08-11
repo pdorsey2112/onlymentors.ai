@@ -1,5 +1,5 @@
 # Creator System for OnlyMentors.ai
-# Two-sided marketplace with creator onboarding, verification, and dashboard
+# Two-sided marketplace with mentor onboarding, verification, and dashboard
 
 from fastapi import HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field, EmailStr
