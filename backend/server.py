@@ -378,6 +378,92 @@ async def get_me(current_user = Depends(get_current_user)):
         }
     }
 
+# =============================================================================
+# GOOGLE OAUTH AUTHENTICATION ENDPOINTS
+# =============================================================================
+
+@app.post("/api/auth/google")
+async def google_oauth_login(auth_request: SocialAuthRequest):
+    """Handle Google OAuth login/signup"""
+    try:
+        if not auth_request.code:
+            raise HTTPException(status_code=400, detail="Authorization code is required")
+        
+        # Exchange code for token
+        token_response = await exchange_google_code_for_token(auth_request.code)
+        
+        # Get user info from Google
+        user_info = await get_google_user_info(token_response.access_token)
+        
+        # Check if user exists
+        existing_user = await db.users.find_one({"email": user_info.email})
+        
+        is_new_user = False
+        
+        if existing_user:
+            # Update existing user with social auth info if not already set
+            if not existing_user.get("social_auth"):
+                await db.users.update_one(
+                    {"user_id": existing_user["user_id"]},
+                    {
+                        "$set": {
+                            "social_auth": {
+                                "provider": "google",
+                                "provider_id": user_info.id,
+                                "provider_email": user_info.email,
+                                "profile_image_url": user_info.picture,
+                                "verified_email": user_info.verified_email
+                            },
+                            "profile_image_url": user_info.picture,
+                            "last_login": datetime.utcnow()
+                        }
+                    }
+                )
+            else:
+                # Just update last login
+                await db.users.update_one(
+                    {"user_id": existing_user["user_id"]},
+                    {"$set": {"last_login": datetime.utcnow()}}
+                )
+            
+            user_doc = await db.users.find_one({"user_id": existing_user["user_id"]})
+        else:
+            # Create new user from social auth
+            user_doc = create_user_from_social_auth(user_info, "google")
+            await db.users.insert_one(user_doc)
+            is_new_user = True
+        
+        # Create access token for our system
+        access_token = create_access_token({"user_id": user_doc["user_id"]})
+        
+        return SocialAuthResponse(
+            user_id=user_doc["user_id"],
+            email=user_doc["email"],
+            full_name=user_doc["full_name"],
+            profile_image_url=user_doc.get("profile_image_url"),
+            is_new_user=is_new_user,
+            access_token=access_token,
+            provider="google"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Google OAuth login failed: {str(e)}")
+
+@app.get("/api/auth/google/config")
+async def get_google_oauth_config():
+    """Get Google OAuth configuration for frontend"""
+    try:
+        oauth_config.validate_google_config()
+        return {
+            "client_id": oauth_config.google_client_id,
+            "redirect_uri": oauth_config.google_redirect_uri,
+            "scope": "openid email profile"
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=f"Google OAuth not configured: {str(e)}")
+
 @app.post("/api/questions/ask")
 async def ask_question(question_data: QuestionRequest, current_user = Depends(get_current_user)):
     # Check if user can ask questions
