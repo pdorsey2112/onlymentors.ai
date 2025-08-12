@@ -560,6 +560,355 @@ async def get_question_history(current_user = Depends(get_current_user)):
     
     return {"questions": questions}
 
+# =============================================================================
+# ENHANCED USER QUESTION CONTEXT SYSTEM - Option 4
+# =============================================================================
+
+from enhanced_context_system import (
+    ConversationThread, ConversationMessage, ContextualQuestionRequest,
+    EnhancedContext, EnhancedQuestionProcessor, ConversationAnalytics
+)
+
+@app.post("/api/questions/ask-contextual")
+async def ask_contextual_question(
+    question_data: ContextualQuestionRequest, 
+    current_user = Depends(get_current_user)
+):
+    """Enhanced question asking with conversation context and thread management"""
+    try:
+        # Check if user can ask questions
+        questions_asked = current_user.get("questions_asked", 0)
+        is_subscribed = current_user.get("is_subscribed", False)
+        
+        if not is_subscribed and questions_asked >= 10:
+            raise HTTPException(
+                status_code=402, 
+                detail=f"You've reached your free question limit. Please subscribe to continue asking questions to any of our {TOTAL_MENTORS} mentors."
+            )
+        
+        # Validate mentors exist
+        selected_mentors = []
+        for mentor_id in question_data.mentor_ids:
+            mentor = next((m for m in ALL_MENTORS[question_data.category] if m["id"] == mentor_id), None)
+            if not mentor:
+                raise HTTPException(status_code=404, detail=f"Mentor {mentor_id} not found")
+            selected_mentors.append(mentor)
+        
+        # Process contextual responses
+        contextual_responses = []
+        thread_ids = []
+        
+        for mentor in selected_mentors:
+            # Create individual thread per mentor if not specified
+            mentor_question_data = ContextualQuestionRequest(
+                category=question_data.category,
+                mentor_ids=[mentor["id"]],
+                question=question_data.question,
+                thread_id=question_data.thread_id if len(selected_mentors) == 1 else None,
+                include_history=question_data.include_history
+            )
+            
+            response_data = await EnhancedQuestionProcessor.process_contextual_question(
+                db, mentor_question_data, current_user, mentor
+            )
+            
+            contextual_responses.append(response_data)
+            thread_ids.append(response_data["thread_id"])
+        
+        # Also save to traditional questions collection for backward compatibility
+        question_doc = {
+            "question_id": str(uuid.uuid4()),
+            "user_id": current_user["user_id"],
+            "category": question_data.category,
+            "mentor_ids": question_data.mentor_ids,
+            "question": question_data.question,
+            "responses": [
+                {
+                    "mentor": r["mentor"],
+                    "response": r["response"]
+                } for r in contextual_responses
+            ],
+            "thread_ids": thread_ids,
+            "context_enabled": question_data.include_history,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.questions.insert_one(question_doc)
+        
+        # Update user question count
+        await db.users.update_one(
+            {"user_id": current_user["user_id"]},
+            {"$inc": {"questions_asked": 1}}
+        )
+        
+        return {
+            "question_id": question_doc["question_id"],
+            "question": question_data.question,
+            "contextual_responses": contextual_responses,
+            "thread_ids": thread_ids,
+            "context_enabled": question_data.include_history,
+            "selected_mentors": selected_mentors,
+            "questions_remaining": max(0, 10 - (questions_asked + 1)) if not is_subscribed else None
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process contextual question: {str(e)}")
+
+@app.get("/api/conversations/threads")
+async def get_conversation_threads(
+    current_user = Depends(get_current_user),
+    mentor_id: Optional[str] = None,
+    limit: int = 20
+):
+    """Get user's conversation threads"""
+    try:
+        threads = await EnhancedContext.get_user_conversation_threads(
+            db, current_user["user_id"], mentor_id
+        )
+        
+        return {
+            "threads": threads[:limit],
+            "total": len(threads),
+            "user_id": current_user["user_id"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get conversation threads: {str(e)}")
+
+@app.get("/api/conversations/threads/{thread_id}")
+async def get_conversation_thread(
+    thread_id: str,
+    current_user = Depends(get_current_user),
+    limit: int = 50
+):
+    """Get full conversation thread with messages"""
+    try:
+        # Verify user owns this thread
+        thread = await db.conversation_threads.find_one({
+            "thread_id": thread_id,
+            "user_id": current_user["user_id"]
+        })
+        
+        if not thread:
+            raise HTTPException(status_code=404, detail="Conversation thread not found")
+        
+        # Get conversation messages
+        messages = await EnhancedContext.get_conversation_history(db, thread_id, limit)
+        
+        # Remove MongoDB _id fields
+        if "_id" in thread:
+            del thread["_id"]
+        for msg in messages:
+            if "_id" in msg:
+                del msg["_id"]
+        
+        return {
+            "thread": thread,
+            "messages": messages,
+            "message_count": len(messages)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get conversation thread: {str(e)}")
+
+@app.post("/api/conversations/threads/{thread_id}/continue")
+async def continue_conversation(
+    thread_id: str,
+    question_data: dict,
+    current_user = Depends(get_current_user)
+):
+    """Continue an existing conversation thread"""
+    try:
+        # Verify thread exists and user owns it
+        thread = await db.conversation_threads.find_one({
+            "thread_id": thread_id,
+            "user_id": current_user["user_id"]
+        })
+        
+        if not thread:
+            raise HTTPException(status_code=404, detail="Conversation thread not found")
+        
+        # Find the mentor for this thread
+        mentor_id = thread["mentor_id"]
+        mentor = next((m for mentors in ALL_MENTORS.values() for m in mentors if m["id"] == mentor_id), None)
+        
+        if not mentor:
+            raise HTTPException(status_code=404, detail="Mentor not found")
+        
+        # Create contextual question request
+        contextual_request = ContextualQuestionRequest(
+            category=thread["category"],
+            mentor_ids=[mentor_id],
+            question=question_data.get("question", ""),
+            thread_id=thread_id,
+            include_history=True
+        )
+        
+        # Process the contextual question
+        response_data = await EnhancedQuestionProcessor.process_contextual_question(
+            db, contextual_request, current_user, mentor
+        )
+        
+        # Update user question count
+        await db.users.update_one(
+            {"user_id": current_user["user_id"]},
+            {"$inc": {"questions_asked": 1}}
+        )
+        
+        return {
+            "thread_id": thread_id,
+            "question": question_data.get("question"),
+            "mentor": mentor,
+            "response": response_data["response"],
+            "context_enabled": True
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to continue conversation: {str(e)}")
+
+@app.get("/api/conversations/analytics")
+async def get_conversation_analytics(current_user = Depends(get_current_user)):
+    """Get user's conversation analytics and context usage statistics"""
+    try:
+        # Get basic conversation stats
+        basic_stats = await ConversationAnalytics.get_conversation_stats(
+            db, current_user["user_id"]
+        )
+        
+        # Get context effectiveness metrics
+        context_metrics = await ConversationAnalytics.get_context_effectiveness_metrics(
+            db, current_user["user_id"]
+        )
+        
+        return {
+            "user_id": current_user["user_id"],
+            "conversation_stats": basic_stats,
+            "context_metrics": context_metrics,
+            "generated_at": datetime.utcnow()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get conversation analytics: {str(e)}")
+
+@app.post("/api/conversations/threads/{thread_id}/archive")
+async def archive_conversation_thread(
+    thread_id: str,
+    current_user = Depends(get_current_user)
+):
+    """Archive a conversation thread"""
+    try:
+        # Verify user owns this thread
+        result = await db.conversation_threads.update_one(
+            {
+                "thread_id": thread_id,
+                "user_id": current_user["user_id"]
+            },
+            {
+                "$set": {
+                    "is_active": False,
+                    "archived_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Conversation thread not found")
+        
+        return {"message": "Conversation thread archived successfully", "thread_id": thread_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to archive conversation thread: {str(e)}")
+
+@app.get("/api/context/explanation")
+async def get_context_system_explanation():
+    """Get detailed explanation of how the question context system works"""
+    return {
+        "system_overview": {
+            "title": "OnlyMentors.ai Question Context System",
+            "description": "Advanced conversation management system that maintains context across multiple interactions with mentors."
+        },
+        "current_implementation": {
+            "question_storage": {
+                "description": "All questions and responses are stored in MongoDB with full metadata",
+                "features": [
+                    "Question and response history per user",
+                    "Mentor-specific interaction tracking",
+                    "Category-based organization",
+                    "Timestamp-based sorting"
+                ]
+            },
+            "session_management": {
+                "description": "Each mentor-question interaction uses unique session IDs for context",
+                "format": "mentor_{mentor_id}_{hash(question) % 10000}",
+                "purpose": "Enables conversation continuity within individual sessions"
+            },
+            "context_limitations": {
+                "current_issues": [
+                    "No cross-question context linking",
+                    "Limited conversation memory beyond individual sessions",
+                    "No conversation threads or follow-up handling",
+                    "Isolated question-response pairs"
+                ]
+            }
+        },
+        "enhanced_features": {
+            "conversation_threads": {
+                "description": "Multi-turn conversations with maintained context",
+                "benefits": [
+                    "Follow-up questions reference previous exchanges",
+                    "Mentors remember earlier parts of conversations",
+                    "Coherent conversation flow across multiple questions",
+                    "Thread-based organization"
+                ]
+            },
+            "contextual_responses": {
+                "description": "Mentor responses that acknowledge conversation history",
+                "features": [
+                    "Reference to previous questions and answers",
+                    "Building upon earlier discussions",
+                    "Personalized responses based on conversation patterns",
+                    "Context-aware mentor personality"
+                ]
+            },
+            "conversation_analytics": {
+                "description": "Insights into conversation patterns and context effectiveness",
+                "metrics": [
+                    "Multi-turn conversation frequency",
+                    "Average messages per thread",
+                    "Most engaged mentors",
+                    "Context utilization statistics"
+                ]
+            }
+        },
+        "technical_implementation": {
+            "database_structure": {
+                "conversation_threads": "Stores conversation metadata and thread information",
+                "conversation_messages": "Individual messages within threads with context summaries",
+                "enhanced_prompts": "Context-aware system prompts for mentors"
+            },
+            "api_endpoints": {
+                "contextual_questions": "/api/questions/ask-contextual - Enhanced question asking with context",
+                "thread_management": "/api/conversations/threads - Manage conversation threads",
+                "thread_continuation": "/api/conversations/threads/{id}/continue - Continue existing conversations",
+                "analytics": "/api/conversations/analytics - Conversation insights"
+            }
+        },
+        "user_benefits": {
+            "improved_responses": "Mentors provide more relevant, context-aware advice",
+            "conversation_continuity": "Natural flow in multi-question interactions",
+            "personalized_experience": "Responses tailored to individual conversation history",
+            "better_learning": "Progressive discussions that build on previous insights"
+        }
+    }
+
 @app.post("/api/payments/checkout")
 async def create_checkout_session(checkout_data: CheckoutRequest, current_user = Depends(get_current_user), request: Request = None):
     if checkout_data.package_id not in SUBSCRIPTION_PACKAGES:
