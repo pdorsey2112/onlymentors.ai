@@ -1217,8 +1217,184 @@ SCIENCE_MENTORS = [
         "expertise": "Genetics, heredity, scientific methodology, plant breeding",
         "image_url": get_wikipedia_image_url("Gregor Mendel"),
         "wiki_description": "Gregor Johann Mendel was a biologist, meteorologist, mathematician, and Augustinian friar."
+    },
+    # Additional Science Pioneers - Expanding beyond limits
+    {
+        "id": "nikola_tesla", "name": "Nikola Tesla", "title": "Electricity Pioneer",
+        "bio": "Serbian-American inventor and electrical engineer who developed AC electrical system",
+        "expertise": "Electrical engineering, invention, wireless technology, energy transmission",
+        "image_url": get_wikipedia_image_url("Nikola Tesla"),
+        "wiki_description": "Nikola Tesla was a Serbian-American inventor, electrical engineer, mechanical engineer, and futurist."
+    },
+    {
+        "id": "leonardo_da_vinci", "name": "Leonardo da Vinci", "title": "Renaissance Genius",
+        "bio": "Italian polymath of the Renaissance known for art, invention, and scientific study",
+        "expertise": "Art, anatomy, engineering, invention, scientific observation, creativity",
+        "image_url": get_wikipedia_image_url("Leonardo da Vinci"),
+        "wiki_description": "Leonardo di ser Piero da Vinci was an Italian polymath of the High Renaissance."
+    },
+    {
+        "id": "galileo_galilei", "name": "Galileo Galilei", "title": "Father of Modern Science",
+        "bio": "Italian astronomer and physicist who championed heliocentrism",
+        "expertise": "Astronomy, physics, scientific method, mathematical analysis, telescopy",
+        "image_url": get_wikipedia_image_url("Galileo Galilei"),
+        "wiki_description": "Galileo di Vincenzo Bonaiuti de' Galilei was an Italian astronomer, physicist and engineer."
+    },
+    {
+        "id": "isaac_newton", "name": "Isaac Newton", "title": "Laws of Motion Pioneer",
+        "bio": "English mathematician and physicist who formulated laws of motion and universal gravitation",
+        "expertise": "Physics, mathematics, optics, calculus, gravitational theory",
+        "image_url": get_wikipedia_image_url("Isaac Newton"),
+        "wiki_description": "Sir Isaac Newton was an English mathematician, physicist, astronomer, alchemist, theologian, and author."
+    },
+    {
+        "id": "charles_darwin", "name": "Charles Darwin", "title": "Evolution Theorist",
+        "bio": "English naturalist who proposed the theory of evolution by natural selection",
+        "expertise": "Biology, evolution, natural selection, scientific observation, research methodology",
+        "image_url": get_wikipedia_image_url("Charles Darwin"),
+        "wiki_description": "Charles Robert Darwin was an English naturalist who proposed the theory of evolution by natural selection."
+    },
+    {
+        "id": "marie_curie", "name": "Marie Curie", "title": "Radioactivity Pioneer",
+        "bio": "Polish-French physicist who conducted pioneering research on radioactivity",
+        "expertise": "Physics, chemistry, radioactivity, scientific research, women in science",
+        "image_url": get_wikipedia_image_url("Marie Curie"),
+        "wiki_description": "Marie Salomea Skłodowska-Curie was a Polish and naturalized-French physicist and chemist."
+    },
+    {
+        "id": "pierre_curie", "name": "Pierre Curie", "title": "Physics Nobel Laureate",
+        "bio": "French physicist who shared Nobel Prize with Marie Curie for radioactivity research",
+        "expertise": "Physics, crystallography, radioactivity, magnetism, scientific collaboration",
+        "image_url": get_wikipedia_image_url("Pierre Curie"),
+        "wiki_description": "Pierre Curie was a French physicist, a pioneer in crystallography, magnetism, piezoelectricity, and radioactivity."
+    },
+    {
+        "id": "max_planck", "name": "Max Planck", "title": "Quantum Theory Founder",
+        "bio": "German physicist who originated quantum theory and won Nobel Prize",
+        "expertise": "Theoretical physics, quantum mechanics, thermodynamics, scientific theory",
+        "image_url": get_wikipedia_image_url("Max Planck"),
+        "wiki_description": "Max Karl Ernst Ludwig Planck was a German theoretical physicist whose discovery of energy quanta won him the Nobel Prize in Physics."
+    },
+    {
+        "id": "niels_bohr", "name": "Niels Bohr", "title": "Atomic Structure Pioneer",
+        "bio": "Danish physicist who made foundational contributions to atomic theory",
+        "expertise": "Atomic physics, quantum mechanics, complementarity principle, scientific philosophy",
+        "image_url": get_wikipedia_image_url("Niels Bohr"),
+        "wiki_description": "Niels Henrik David Bohr was a Danish physicist who made foundational contributions to understanding atomic structure and quantum theory."
+    },
+    {
+        "id": "werner_heisenberg", "name": "Werner Heisenberg", "title": "Uncertainty Principle",
+        "bio": "German physicist who formulated the uncertainty principle in quantum mechanics",
+        "expertise": "Quantum mechanics, theoretical physics, uncertainty principle, matrix mechanics",
+        "image_url": get_wikipedia_image_url("Werner Heisenberg"),
+        "wiki_description": "Werner Karl Heisenberg was a German theoretical physicist and one of the key pioneers of quantum mechanics."
+    },
+    {
+        "id": "erwin_schrodinger", "name": "Erwin Schrödinger", "title": "Wave Equation Pioneer",
+        "bio": "Austrian physicist who developed wave mechanics and the famous cat thought experiment",
+        "expertise": "Quantum mechanics, wave equations, theoretical physics, philosophy of science",
+        "image_url": get_wikipedia_image_url("Erwin Schrödinger"),
+        "wiki_description": "Erwin Rudolf Josef Alexander Schrödinger was a Nobel Prize-winning Austrian-Irish physicist."
+    },
+    {
+        "id": "richard_feynman", "name": "Richard Feynman", "title": "Quantum Electrodynamics",
+        "bio": "American physicist known for work in quantum electrodynamics and particle physics",
+        "expertise": "Theoretical physics, quantum electrodynamics, particle physics, science communication",
+        "image_url": get_wikipedia_image_url("Richard Feynman"),
+        "wiki_description": "Richard Phillips Feynman was an American theoretical physicist, known for his work in the path integral formulation of quantum mechanics."
+    },
+    {
+        "id": "enrico_fermi", "name": "Enrico Fermi", "title": "Nuclear Age Pioneer",
+        "bio": "Italian-American physicist who created the first nuclear reactor",
+        "expertise": "Nuclear physics, particle physics, statistical mechanics, nuclear reactor design",
+        "image_url": get_wikipedia_image_url("Enrico Fermi"),
+        "wiki_description": "Enrico Fermi was an Italian and later naturalized American physicist and the creator of the world's first nuclear reactor."
+    },
+    {
+        "id": "j_robert_oppenheimer", "name": "J. Robert Oppenheimer", "title": "Manhattan Project Leader",
+        "bio": "American physicist who led the Manhattan Project to develop atomic weapons",
+        "expertise": "Theoretical physics, nuclear weapons, scientific leadership, ethics of science",
+        "image_url": get_wikipedia_image_url("J. Robert Oppenheimer"),
+        "wiki_description": "Julius Robert Oppenheimer was an American theoretical physicist who served as director of the Manhattan Project's Los Alamos Laboratory."
+    },
+    {
+        "id": "linus_pauling", "name": "Linus Pauling", "title": "Chemical Bonding Expert",
+        "bio": "American chemist who won Nobel Prizes in Chemistry and Peace",
+        "expertise": "Chemistry, chemical bonding, molecular biology, peace activism, vitamin C",
+        "image_url": get_wikipedia_image_url("Linus Pauling"),
+        "wiki_description": "Linus Carl Pauling was an American chemist, biochemist, chemical engineer, peace activist, author, and educator."
+    },
+    {
+        "id": "rosalind_franklin", "name": "Rosalind Franklin", "title": "DNA Structure Pioneer",
+        "bio": "British chemist whose X-ray crystallography was crucial to understanding DNA structure",
+        "expertise": "X-ray crystallography, molecular biology, DNA structure, scientific research",
+        "image_url": get_wikipedia_image_url("Rosalind Franklin"),
+        "wiki_description": "Rosalind Elsie Franklin was an English chemist and X-ray crystallographer whose work was central to the understanding of the molecular structures of DNA."
+    },
+    {
+        "id": "james_watson", "name": "James Watson", "title": "DNA Co-discoverer",
+        "bio": "American molecular biologist who co-discovered the structure of DNA",
+        "expertise": "Molecular biology, genetics, DNA structure, genomics, scientific research",
+        "image_url": get_wikipedia_image_url("James Watson"),
+        "wiki_description": "James Dewey Watson is an American molecular biologist, geneticist, and zoologist."
+    },
+    {
+        "id": "francis_crick", "name": "Francis Crick", "title": "DNA Co-discoverer",
+        "bio": "British molecular biologist who co-discovered the structure of DNA",
+        "expertise": "Molecular biology, DNA structure, genetics, neuroscience, consciousness",
+        "image_url": get_wikipedia_image_url("Francis Crick"),
+        "wiki_description": "Francis Harry Compton Crick was an English molecular biologist, biophysicist, and neuroscientist."
+    },
+    {
+        "id": "barbara_mcclintock", "name": "Barbara McClintock", "title": "Genetic Transposition Pioneer",
+        "bio": "American geneticist who discovered genetic transposition and won Nobel Prize",
+        "expertise": "Genetics, cytogenetics, chromosome behavior, gene regulation, corn genetics",
+        "image_url": get_wikipedia_image_url("Barbara McClintock"),
+        "wiki_description": "Barbara McClintock was an American scientist and cytogeneticist who was awarded the 1983 Nobel Prize in Physiology or Medicine."
+    },
+    {
+        "id": "alan_turing", "name": "Alan Turing", "title": "Computer Science Father",
+        "bio": "British mathematician and computer scientist who laid foundations for computer science",
+        "expertise": "Computer science, artificial intelligence, cryptography, mathematical logic, computation",
+        "image_url": get_wikipedia_image_url("Alan Turing"),
+        "wiki_description": "Alan Mathison Turing was an English mathematician, computer scientist, logician, cryptanalyst, philosopher, and theoretical biologist."
+    },
+    {
+        "id": "john_von_neumann", "name": "John von Neumann", "title": "Mathematical Genius",
+        "bio": "Hungarian-American mathematician who made contributions to many fields",
+        "expertise": "Mathematics, computer science, game theory, quantum mechanics, economics",
+        "image_url": get_wikipedia_image_url("John von Neumann"),
+        "wiki_description": "John von Neumann was a Hungarian-American mathematician, physicist, computer scientist, engineer and polymath."
+    },
+    {
+        "id": "claude_shannon", "name": "Claude Shannon", "title": "Information Theory Founder",
+        "bio": "American mathematician who founded information theory and digital circuit design",
+        "expertise": "Information theory, digital circuits, cryptography, artificial intelligence",
+        "image_url": get_wikipedia_image_url("Claude Shannon"),
+        "wiki_description": "Claude Elwood Shannon was an American mathematician, electrical engineer, and cryptographer known as the 'father of information theory'."
+    },
+    {
+        "id": "tim_berners_lee", "name": "Tim Berners-Lee", "title": "World Wide Web Inventor",
+        "bio": "British computer scientist who invented the World Wide Web",
+        "expertise": "Web technology, computer science, internet protocols, information systems",
+        "image_url": get_wikipedia_image_url("Tim Berners-Lee"),
+        "wiki_description": "Sir Timothy John Berners-Lee is an English computer scientist best known as the inventor of the World Wide Web."
+    },
+    {
+        "id": "vint_cerf", "name": "Vint Cerf", "title": "Internet Pioneer",
+        "bio": "American computer scientist who helped develop TCP/IP protocols for the internet",
+        "expertise": "Computer networking, internet protocols, TCP/IP, network architecture",
+        "image_url": get_wikipedia_image_url("Vint Cerf"),
+        "wiki_description": "Vinton Gray Cerf is an American Internet pioneer and is recognized as one of 'the fathers of the Internet'."
+    },
+    {
+        "id": "margaret_hamilton", "name": "Margaret Hamilton", "title": "Apollo Software Engineer",
+        "bio": "American software engineer who wrote the flight software for Apollo missions",
+        "expertise": "Software engineering, space technology, systems engineering, programming",
+        "image_url": get_wikipedia_image_url("Margaret Hamilton"),
+        "wiki_description": "Margaret Heafield Hamilton is an American computer scientist, systems engineer, and business owner."
     }
-    # Note: This continues to 100 science mentors
+    # This list can continue growing without limits - more scientists can be added
 ]
 
 # Relationships & Dating Mentors (20 mentors) - Based on FeedSpot top influencers
