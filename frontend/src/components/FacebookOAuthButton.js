@@ -7,13 +7,56 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
   const [fbLoaded, setFbLoaded] = useState(false);
 
   useEffect(() => {
-    // Load Facebook SDK
-    const loadFacebookSDK = () => {
+    // Fetch Facebook OAuth config from backend first
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/facebook/config`);
+        if (response.ok) {
+          const configData = await response.json();
+          console.log('Facebook OAuth config loaded:', configData);
+          setConfig(configData);
+          
+          // Load Facebook SDK after getting config
+          try {
+            await loadFacebookSDK(configData);
+            console.log('Facebook SDK loaded successfully');
+          } catch (sdkError) {
+            console.error('Facebook SDK loading failed:', sdkError);
+            setConfigError('Failed to load Facebook SDK');
+          }
+        } else {
+          const error = await response.json();
+          console.error('Facebook config error:', error);
+          setConfigError(error.detail || 'Facebook OAuth not configured');
+        }
+      } catch (error) {
+        console.error('Failed to fetch Facebook OAuth config:', error);
+        setConfigError('Failed to load Facebook OAuth configuration');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Load Facebook SDK with config already available
+    const loadFacebookSDK = (configData) => {
       return new Promise((resolve, reject) => {
         // Check if FB is already loaded
         if (window.FB) {
-          setFbLoaded(true);
-          resolve(window.FB);
+          console.log('Facebook SDK already exists, initializing...');
+          try {
+            window.FB.init({
+              appId: configData.app_id,
+              cookie: true,
+              xfbml: true,
+              version: 'v18.0'
+            });
+            console.log('Facebook SDK direct init successful');
+            setFbLoaded(true);
+            resolve(window.FB);
+          } catch (err) {
+            console.error('Facebook SDK direct init error:', err);
+            reject(err);
+          }
           return;
         }
 
@@ -26,14 +69,14 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
         
         script.onload = () => {
           console.log('Facebook SDK script loaded');
-          // Set up fbAsyncInit function
+          // Set up fbAsyncInit function with config ready
           window.fbAsyncInit = () => {
-            console.log('fbAsyncInit called');
+            console.log('fbAsyncInit called with config ready');
             try {
-              if (config && config.app_id) {
-                console.log('Initializing Facebook SDK with App ID:', config.app_id);
+              if (configData && configData.app_id) {
+                console.log('Initializing Facebook SDK with App ID:', configData.app_id);
                 window.FB.init({
-                  appId: config.app_id,
+                  appId: configData.app_id,
                   cookie: true,
                   xfbml: true,
                   version: 'v18.0'
@@ -42,7 +85,8 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
                 setFbLoaded(true);
                 resolve(window.FB);
               } else {
-                console.warn('Facebook config not ready for SDK init');
+                console.error('Config data not available in fbAsyncInit');
+                reject(new Error('Configuration not available'));
               }
             } catch (err) {
               console.error('Facebook SDK init error:', err);
@@ -50,12 +94,12 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
             }
           };
           
-          // If fbAsyncInit was already called or FB is available, call it again
-          if (window.FB && config && config.app_id) {
+          // If FB is already loaded, initialize directly
+          if (window.FB && configData && configData.app_id) {
             console.log('Facebook SDK already loaded, initializing directly');
             try {
               window.FB.init({
-                appId: config.app_id,
+                appId: configData.app_id,
                 cookie: true,
                 xfbml: true,
                 version: 'v18.0'
@@ -79,38 +123,8 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
       });
     };
 
-    // Fetch Facebook OAuth config from backend
-    const fetchConfig = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/facebook/config`);
-        if (response.ok) {
-          const configData = await response.json();
-          console.log('Facebook OAuth config loaded:', configData);
-          setConfig(configData);
-          
-          // Load Facebook SDK after getting config
-          try {
-            await loadFacebookSDK();
-            console.log('Facebook SDK loaded successfully');
-          } catch (sdkError) {
-            console.error('Facebook SDK loading failed:', sdkError);
-            setConfigError('Failed to load Facebook SDK');
-          }
-        } else {
-          const error = await response.json();
-          console.error('Facebook config error:', error);
-          setConfigError(error.detail || 'Facebook OAuth not configured');
-        }
-      } catch (error) {
-        console.error('Failed to fetch Facebook OAuth config:', error);
-        setConfigError('Failed to load Facebook OAuth configuration');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchConfig();
-  }, []); // Remove config dependency to avoid infinite loop
+  }, []); // No dependencies to avoid infinite loops
 
   const handleFacebookLogin = () => {
     if (!window.FB || !fbLoaded || !config) {
