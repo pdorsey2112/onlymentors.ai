@@ -9,7 +9,6 @@ import CreatorVerification from './components/CreatorVerification';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboardSimple from './components/AdminDashboardSimple';
 import GoogleOAuthButton from './components/GoogleOAuthButton';
-import EnhancedContextDemo from './components/EnhancedContextDemo';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
