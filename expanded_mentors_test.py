@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://a94005b4-7a36-4d7b-a85f-af72d45040b9.preview.emergentagent.com')
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://mentor-hub-11.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 class ExpandedMentorsTest:

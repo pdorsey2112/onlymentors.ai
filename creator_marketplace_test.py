@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 
 class CreatorMarketplaceAPITester:
-    def __init__(self, base_url="https://a94005b4-7a36-4d7b-a85f-af72d45040b9.preview.emergentagent.com"):
+    def __init__(self, base_url="https://mentor-hub-11.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.creator_token = None
