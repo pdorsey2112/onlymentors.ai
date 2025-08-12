@@ -343,9 +343,12 @@ def create_user_from_facebook_auth(user_info: FacebookUserInfo, provider: str) -
     if user_info.picture and isinstance(user_info.picture, dict):
         profile_image_url = user_info.picture.get("data", {}).get("url")
     
+    # Handle case where email might be None (no email permission)
+    email = user_info.email or f"fb_{user_info.id}@onlymentors.ai"
+    
     user_doc = {
         "user_id": user_id,
-        "email": user_info.email,
+        "email": email,
         "full_name": user_info.name,
         "password_hash": None,  # Social auth users don't have passwords
         "is_subscribed": False,
@@ -356,7 +359,7 @@ def create_user_from_facebook_auth(user_info: FacebookUserInfo, provider: str) -
         "social_auth": {
             "provider": provider,
             "provider_id": user_info.id,
-            "provider_email": user_info.email,
+            "provider_email": user_info.email,  # Keep original (possibly None)
             "profile_image_url": profile_image_url,
             "first_name": user_info.first_name,
             "last_name": user_info.last_name
