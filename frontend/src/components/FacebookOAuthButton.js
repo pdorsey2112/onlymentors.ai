@@ -9,7 +9,7 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
   useEffect(() => {
     // Load Facebook SDK
     const loadFacebookSDK = () => {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         // Check if FB is already loaded
         if (window.FB) {
           setFbLoaded(true);
@@ -25,8 +25,28 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
         script.crossOrigin = 'anonymous';
         
         script.onload = () => {
+          // Set up fbAsyncInit function
           window.fbAsyncInit = () => {
-            if (config) {
+            try {
+              if (config && config.app_id) {
+                window.FB.init({
+                  appId: config.app_id,
+                  cookie: true,
+                  xfbml: true,
+                  version: 'v18.0'
+                });
+                setFbLoaded(true);
+                resolve(window.FB);
+              }
+            } catch (err) {
+              console.error('Facebook SDK init error:', err);
+              reject(err);
+            }
+          };
+          
+          // If fbAsyncInit was already called, call it again
+          if (window.FB && config && config.app_id) {
+            try {
               window.FB.init({
                 appId: config.app_id,
                 cookie: true,
@@ -35,20 +55,16 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
               });
               setFbLoaded(true);
               resolve(window.FB);
+            } catch (err) {
+              console.error('Facebook SDK direct init error:', err);
+              reject(err);
             }
-          };
-          
-          // If fbAsyncInit was already called, call it again
-          if (window.FB && config) {
-            window.FB.init({
-              appId: config.app_id,
-              cookie: true,
-              xfbml: true,
-              version: 'v18.0'
-            });
-            setFbLoaded(true);
-            resolve(window.FB);
           }
+        };
+
+        script.onerror = () => {
+          console.error('Failed to load Facebook SDK script');
+          reject(new Error('Failed to load Facebook SDK'));
         };
 
         document.head.appendChild(script);
@@ -61,12 +77,20 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/facebook/config`);
         if (response.ok) {
           const configData = await response.json();
+          console.log('Facebook OAuth config loaded:', configData);
           setConfig(configData);
           
           // Load Facebook SDK after getting config
-          await loadFacebookSDK();
+          try {
+            await loadFacebookSDK();
+            console.log('Facebook SDK loaded successfully');
+          } catch (sdkError) {
+            console.error('Facebook SDK loading failed:', sdkError);
+            setConfigError('Failed to load Facebook SDK');
+          }
         } else {
           const error = await response.json();
+          console.error('Facebook config error:', error);
           setConfigError(error.detail || 'Facebook OAuth not configured');
         }
       } catch (error) {
