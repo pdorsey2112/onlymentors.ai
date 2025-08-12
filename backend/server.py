@@ -125,6 +125,14 @@ class CheckoutRequest(BaseModel):
     package_id: str
     origin_url: str
 
+class ContentUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    tags: Optional[List[str]] = None
+    is_public: Optional[bool] = None
+    is_featured: Optional[bool] = None
+
 # Helper functions
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
