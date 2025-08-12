@@ -172,8 +172,12 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
     );
   }
 
-  if (!config || !fbLoaded) {
-    return null;
+  if (!config) {
+    return (
+      <div className="p-3 border border-yellow-300 rounded-lg bg-yellow-50">
+        <span className="text-yellow-600 text-sm">Facebook login temporarily unavailable</span>
+      </div>
+    );
   }
 
   return (
