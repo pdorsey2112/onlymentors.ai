@@ -31,7 +31,7 @@ class GoogleUserInfo(BaseModel):
 
 class FacebookUserInfo(BaseModel):
     id: str
-    email: EmailStr
+    email: Optional[EmailStr] = None  # Make email optional
     name: str
     first_name: str
     last_name: str
