@@ -169,7 +169,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         }}>
                             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Total Users</h3>
                             <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
-                                {dashboardData.platform_stats.total_users?.toLocaleString() || 0}
+                                {formatNumber(dashboardData.platform_stats.total_users)}
                             </p>
                         </div>
                         
@@ -182,7 +182,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         }}>
                             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Total Mentors</h3>
                             <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
-                                {dashboardData.platform_stats.total_mentors?.toLocaleString() || 0}
+                                {formatNumber(dashboardData.platform_stats.total_mentors)}
                             </p>
                         </div>
                         
@@ -195,7 +195,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         }}>
                             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Total Revenue</h3>
                             <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
-                                ${dashboardData.platform_stats.total_revenue?.toFixed(2) || 0}
+                                {formatCurrency(dashboardData.platform_stats.total_revenue)}
                             </p>
                         </div>
                         
@@ -208,7 +208,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         }}>
                             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Active Subscriptions</h3>
                             <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
-                                {dashboardData.platform_stats.active_subscriptions?.toLocaleString() || 0}
+                                {formatNumber(dashboardData.platform_stats.active_subscriptions)}
                             </p>
                         </div>
                     </>
