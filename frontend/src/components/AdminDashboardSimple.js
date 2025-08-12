@@ -548,21 +548,38 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         </h1>
                         <p style={{ color: '#666', margin: '5px 0 0 0' }}>Welcome back, {admin.full_name}</p>
                     </div>
-                    <button
-                        onClick={onLogout}
-                        style={{
-                            padding: '12px 24px',
-                            background: '#dc2626',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '16px',
-                            cursor: 'pointer',
-                            fontWeight: '600'
-                        }}
-                    >
-                        Logout
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <button
+                            onClick={() => setShowContextDemo(true)}
+                            style={{
+                                padding: '12px 24px',
+                                background: '#3b82f6',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontSize: '16px',
+                                cursor: 'pointer',
+                                fontWeight: '600'
+                            }}
+                        >
+                            Context System
+                        </button>
+                        <button
+                            onClick={onLogout}
+                            style={{
+                                padding: '12px 24px',
+                                background: '#dc2626',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontSize: '16px',
+                                cursor: 'pointer',
+                                fontWeight: '600'
+                            }}
+                        >
+                            Logout
+                        </button>
+                    </div>
                 </div>
             </div>
 
