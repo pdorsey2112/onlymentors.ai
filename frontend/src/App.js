@@ -10,6 +10,7 @@ import CreatorVerification from './components/CreatorVerification';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboardSimple from './components/AdminDashboardSimple';
 import GoogleOAuthButton from './components/GoogleOAuthButton';
+import FacebookOAuthButton from './components/FacebookOAuthButton';
 import ForgotPasswordForm from './components/ForgotPasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import { Label } from './components/ui/label';
