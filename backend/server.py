@@ -1145,12 +1145,17 @@ async def upload_creator_content(
         raise HTTPException(status_code=500, detail=f"Failed to upload content: {str(e)}")
 
 @app.get("/api/creators/{creator_id}/content")
-async def get_creator_content(creator_id: str, limit: int = 20, offset: int = 0):
+async def get_creator_content(
+    creator_id: str, 
+    limit: int = 20, 
+    offset: int = 0,
+    current_creator = Depends(get_current_creator)
+):
     """Get creator's content"""
     try:
-        creator = await db.creators.find_one({"creator_id": creator_id})
-        if not creator:
-            raise HTTPException(status_code=404, detail="Creator not found")
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only access your own content")
         
         content_list = await db.creator_content.find(
             {"creator_id": creator_id}
