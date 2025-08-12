@@ -231,15 +231,15 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#666' }}>New Users (Week):</span>
-                                <span style={{ fontWeight: 'bold', color: '#333' }}>{dashboardData.user_metrics.new_users_week}</span>
+                                <span style={{ fontWeight: 'bold', color: '#333' }}>{formatNumber(dashboardData.user_metrics.new_users_week)}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#666' }}>Active Users:</span>
-                                <span style={{ fontWeight: 'bold', color: '#333' }}>{dashboardData.user_metrics.active_users}</span>
+                                <span style={{ fontWeight: 'bold', color: '#333' }}>{formatNumber(dashboardData.user_metrics.active_users)}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#666' }}>Subscribed Users:</span>
-                                <span style={{ fontWeight: 'bold', color: '#22c55e' }}>{dashboardData.user_metrics.subscribed_users}</span>
+                                <span style={{ fontWeight: 'bold', color: '#22c55e' }}>{formatNumber(dashboardData.user_metrics.subscribed_users)}</span>
                             </div>
                         </div>
                     </div>
