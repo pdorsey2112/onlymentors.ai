@@ -379,8 +379,205 @@ BUSINESS_MENTORS = [
         "expertise": "Internet platforms, mobile apps, discovery engines, venture capital",
         "image_url": get_wikipedia_image_url("Garrett Camp"),
         "wiki_description": "Garrett Camp is a Canadian entrepreneur and computer programmer."
+    },
+    # Additional Business Leaders - Expanding beyond limits
+    {
+        "id": "ken_chenault", "name": "Kenneth Chenault", "title": "Former American Express CEO",
+        "bio": "Former CEO and Chairman of American Express, now venture capitalist",
+        "expertise": "Financial services, leadership, customer service, corporate strategy",
+        "image_url": get_wikipedia_image_url("Kenneth Chenault"),
+        "wiki_description": "Kenneth Irvine Chenault is an American business executive and venture capitalist."
+    },
+    {
+        "id": "ursula_burns", "name": "Ursula Burns", "title": "Former Xerox CEO",
+        "bio": "Former CEO of Xerox, first African American woman to lead Fortune 500 company",
+        "expertise": "Corporate leadership, technology transformation, diversity, manufacturing",
+        "image_url": get_wikipedia_image_url("Ursula Burns"),
+        "wiki_description": "Ursula Burns is an American businesswoman and the former CEO of Xerox."
+    },
+    {
+        "id": "jim_collins", "name": "Jim Collins", "title": "Business Author & Researcher",
+        "bio": "Management researcher and author of 'Good to Great' and 'Built to Last'",
+        "expertise": "Business research, leadership, organizational development, strategy",
+        "image_url": get_wikipedia_image_url("Jim Collins"),
+        "wiki_description": "James C. Collins is an American researcher, author, speaker and consultant."
+    },
+    {
+        "id": "tom_peters", "name": "Tom Peters", "title": "Management Guru",
+        "bio": "Management consultant and author of 'In Search of Excellence'",
+        "expertise": "Management excellence, organizational culture, customer service, innovation",
+        "image_url": get_wikipedia_image_url("Tom Peters"),
+        "wiki_description": "Thomas J. Peters is an American writer on business management practices."
+    },
+    {
+        "id": "stephen_covey", "name": "Stephen Covey", "title": "Leadership Expert",
+        "bio": "Author of 'The 7 Habits of Highly Effective People' and leadership expert",
+        "expertise": "Leadership development, personal effectiveness, organizational behavior",
+        "image_url": get_wikipedia_image_url("Stephen Covey"),
+        "wiki_description": "Stephen Richards Covey was an American educator, author, businessman, and keynote speaker."
+    },
+    {
+        "id": "dale_carnegie", "name": "Dale Carnegie", "title": "Interpersonal Skills Pioneer",
+        "bio": "Author of 'How to Win Friends and Influence People', communication expert",
+        "expertise": "Communication skills, interpersonal relationships, public speaking, sales",
+        "image_url": get_wikipedia_image_url("Dale Carnegie"),
+        "wiki_description": "Dale Carnegie was an American writer and lecturer, and the developer of courses in self-improvement."
+    },
+    {
+        "id": "napoleon_hill", "name": "Napoleon Hill", "title": "Success Philosophy Author",
+        "bio": "Author of 'Think and Grow Rich', pioneer in personal success literature",
+        "expertise": "Success principles, wealth building, motivation, achievement psychology",
+        "image_url": get_wikipedia_image_url("Napoleon Hill"),
+        "wiki_description": "Napoleon Hill was an American self-help author best known for his book Think and Grow Rich."
+    },
+    {
+        "id": "zig_ziglar", "name": "Zig Ziglar", "title": "Motivational Speaker",
+        "bio": "Legendary motivational speaker and sales trainer",
+        "expertise": "Sales training, motivation, goal setting, personal development",
+        "image_url": get_wikipedia_image_url("Zig Ziglar"),
+        "wiki_description": "Hilary Hinton Zig Ziglar was an American author, salesman, and motivational speaker."
+    },
+    {
+        "id": "tony_robbins", "name": "Tony Robbins", "title": "Life Coach & Author",
+        "bio": "World-renowned life coach, author, and business strategist",
+        "expertise": "Personal development, business strategy, peak performance, motivation",
+        "image_url": get_wikipedia_image_url("Tony Robbins"),
+        "wiki_description": "Anthony Jay Robbins is an American author, coach, speaker, and philanthropist."
+    },
+    {
+        "id": "john_maxwell", "name": "John Maxwell", "title": "Leadership Expert",
+        "bio": "Leadership expert, speaker, and author of numerous leadership books",
+        "expertise": "Leadership development, team building, organizational growth, influence",
+        "image_url": get_wikipedia_image_url("John Maxwell"),
+        "wiki_description": "John Calvin Maxwell is an American author, speaker, and pastor."
+    },
+    {
+        "id": "gary_vaynerchuk", "name": "Gary Vaynerchuk", "title": "Digital Marketing Expert",
+        "bio": "Digital marketing pioneer, entrepreneur, and social media expert",
+        "expertise": "Digital marketing, social media, entrepreneurship, personal branding",
+        "image_url": get_wikipedia_image_url("Gary Vaynerchuk"),
+        "wiki_description": "Gary Vaynerchuk is an American entrepreneur, author, speaker, and internet personality."
+    },
+    {
+        "id": "simon_sinek", "name": "Simon Sinek", "title": "Leadership Author",
+        "bio": "Author of 'Start With Why' and leadership consultant",
+        "expertise": "Leadership inspiration, organizational culture, purpose-driven business",
+        "image_url": get_wikipedia_image_url("Simon Sinek"),
+        "wiki_description": "Simon Oliver Sinek is a British-American author and inspirational speaker."
+    },
+    {
+        "id": "seth_godin", "name": "Seth Godin", "title": "Marketing Expert",
+        "bio": "Marketing guru and author of 'Purple Cow' and 'Permission Marketing'",
+        "expertise": "Marketing innovation, brand building, digital marketing, tribes",
+        "image_url": get_wikipedia_image_url("Seth Godin"),
+        "wiki_description": "Seth W. Godin is an American author and former dot-com business executive."
+    },
+    {
+        "id": "tim_ferriss", "name": "Tim Ferriss", "title": "Author & Podcaster",
+        "bio": "Author of '4-Hour Work Week' and productivity expert",
+        "expertise": "Productivity, lifestyle design, learning optimization, entrepreneurship",
+        "image_url": get_wikipedia_image_url("Tim Ferriss"),
+        "wiki_description": "Timothy Ferriss is an American entrepreneur, investor, author, and podcaster."
+    },
+    {
+        "id": "guy_kawasaki", "name": "Guy Kawasaki", "title": "Marketing Evangelist",
+        "bio": "Former Apple evangelist, venture capitalist, and author",
+        "expertise": "Marketing evangelism, venture capital, startup advice, technology",
+        "image_url": get_wikipedia_image_url("Guy Kawasaki"),
+        "wiki_description": "Guy Kawasaki is an American marketing specialist, author, and Silicon Valley venture capitalist."
+    },
+    {
+        "id": "reid_hoffman", "name": "Reid Hoffman", "title": "LinkedIn Co-founder",
+        "bio": "Co-founder of LinkedIn and partner at Greylock Partners",
+        "expertise": "Professional networking, venture capital, scaling startups, platform businesses",
+        "image_url": get_wikipedia_image_url("Reid Hoffman"),
+        "wiki_description": "Reid Garrett Hoffman is an American internet entrepreneur, venture capitalist, podcaster, and author."
+    },
+    {
+        "id": "peter_thiel", "name": "Peter Thiel", "title": "PayPal Co-founder",
+        "bio": "Co-founder of PayPal and Palantir, venture capitalist and author",
+        "expertise": "Technology investing, contrarian thinking, startup strategy, monopolies",
+        "image_url": get_wikipedia_image_url("Peter Thiel"),
+        "wiki_description": "Peter Andreas Thiel is a German-American billionaire entrepreneur and venture capitalist."
+    },
+    {
+        "id": "marc_andreessen", "name": "Marc Andreessen", "title": "Netscape Co-founder",
+        "bio": "Co-founder of Netscape and co-founder of Andreessen Horowitz",
+        "expertise": "Internet technology, venture capital, software development, technology trends",
+        "image_url": get_wikipedia_image_url("Marc Andreessen"),
+        "wiki_description": "Marc Lowell Andreessen is an American entrepreneur, investor, and software engineer."
+    },
+    {
+        "id": "ben_horowitz", "name": "Ben Horowitz", "title": "Venture Capitalist",
+        "bio": "Co-founder of Andreessen Horowitz and former CEO of Opsware",
+        "expertise": "Venture capital, CEO coaching, company building, technology leadership",
+        "image_url": get_wikipedia_image_url("Ben Horowitz"),
+        "wiki_description": "Benjamin Abraham Horowitz is an American businessman, investor, blogger, and author."
+    },
+    {
+        "id": "vinod_khosla", "name": "Vinod Khosla", "title": "Khosla Ventures Founder",
+        "bio": "Co-founder of Sun Microsystems and founder of Khosla Ventures",
+        "expertise": "Clean technology investing, technology entrepreneurship, venture capital",
+        "image_url": get_wikipedia_image_url("Vinod Khosla"),
+        "wiki_description": "Vinod Khosla is an Indian-American billionaire businessman and venture capitalist."
+    },
+    {
+        "id": "john_doerr", "name": "John Doerr", "title": "Kleiner Perkins Partner",
+        "bio": "Venture capitalist at Kleiner Perkins and author of 'Measure What Matters'",
+        "expertise": "Venture capital, OKRs (Objectives and Key Results), technology investing",
+        "image_url": get_wikipedia_image_url("John Doerr"),
+        "wiki_description": "L. John Doerr is an American investor and venture capitalist at Kleiner Perkins."
+    },
+    {
+        "id": "mary_meeker", "name": "Mary Meeker", "title": "Internet Analyst",
+        "bio": "Former Morgan Stanley analyst famous for Internet Trends reports",
+        "expertise": "Internet trends, technology analysis, digital transformation, venture capital",
+        "image_url": get_wikipedia_image_url("Mary Meeker"),
+        "wiki_description": "Mary Meeker is an American venture capitalist and former Wall Street securities analyst."
+    },
+    {
+        "id": "kiran_mazumdar", "name": "Kiran Mazumdar-Shaw", "title": "Biocon Founder",
+        "bio": "Founder of Biocon, pioneering biotechnology entrepreneur",
+        "expertise": "Biotechnology, pharmaceuticals, healthcare innovation, entrepreneurship",
+        "image_url": get_wikipedia_image_url("Kiran Mazumdar-Shaw"),
+        "wiki_description": "Kiran Mazumdar-Shaw is an Indian billionaire entrepreneur who is the chairperson of Biocon Limited."
+    },
+    {
+        "id": "ratan_tata", "name": "Ratan Tata", "title": "Tata Group Chairman",
+        "bio": "Former Chairman of Tata Group and philanthropist",
+        "expertise": "Conglomerate management, philanthropy, ethical business, industrial leadership",
+        "image_url": get_wikipedia_image_url("Ratan Tata"),
+        "wiki_description": "Ratan Naval Tata is an Indian industrialist, philanthropist, and former chairman of Tata Sons."
+    },
+    {
+        "id": "mukesh_ambani", "name": "Mukesh Ambani", "title": "Reliance Industries Chairman",
+        "bio": "Chairman of Reliance Industries, one of India's largest companies",
+        "expertise": "Petrochemicals, telecommunications, retail, industrial management",
+        "image_url": get_wikipedia_image_url("Mukesh Ambani"),
+        "wiki_description": "Mukesh Dhirubhai Ambani is an Indian billionaire businessman and chairman of Reliance Industries."
+    },
+    {
+        "id": "carlos_slim", "name": "Carlos Slim", "title": "Mexican Business Magnate",
+        "bio": "Mexican business magnate, investor and philanthropist",
+        "expertise": "Telecommunications, real estate, mining, retail, diversified investments",
+        "image_url": get_wikipedia_image_url("Carlos Slim"),
+        "wiki_description": "Carlos Slim Helú is a Mexican business magnate, investor, and philanthropist."
+    },
+    {
+        "id": "bernard_arnault", "name": "Bernard Arnault", "title": "LVMH Chairman",
+        "bio": "Chairman of LVMH, world's largest luxury goods company",
+        "expertise": "Luxury goods, fashion, retail, brand management, acquisitions",
+        "image_url": get_wikipedia_image_url("Bernard Arnault"),
+        "wiki_description": "Bernard Jean Étienne Arnault is a French billionaire business magnate and art collector."
+    },
+    {
+        "id": "francoise_bettencourt", "name": "Françoise Bettencourt Meyers", "title": "L'Oréal Heiress",
+        "bio": "Principal shareholder of L'Oréal and philanthropist",
+        "expertise": "Cosmetics industry, luxury goods, philanthropy, family business",
+        "image_url": get_wikipedia_image_url("Françoise Bettencourt Meyers"),
+        "wiki_description": "Françoise Bettencourt Meyers is a French billionaire heiress and philanthropist."
     }
-    # Continue with more business mentors to reach 100 total
+    # This list can continue growing without limits
 ]
 
 # Sports Champions (100 mentors) - Including NFL coaches and athletes
