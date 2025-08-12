@@ -419,7 +419,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             }}>
                                 <h3 style={{ color: '#666', margin: '0 0 10px 0' }}>Total Users</h3>
                                 <p style={{ fontSize: '36px', fontWeight: 'bold', color: '#333', margin: 0 }}>
-                                    {userActivityReport.summary.total_users}
+                                    {formatNumber(userActivityReport.summary.total_users)}
                                 </p>
                             </div>
                             <div style={{
@@ -431,7 +431,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             }}>
                                 <h3 style={{ color: '#666', margin: '0 0 10px 0' }}>Total Questions</h3>
                                 <p style={{ fontSize: '36px', fontWeight: 'bold', color: '#3b82f6', margin: 0 }}>
-                                    {userActivityReport.summary.total_questions}
+                                    {formatNumber(userActivityReport.summary.total_questions)}
                                 </p>
                             </div>
                             <div style={{
@@ -443,7 +443,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             }}>
                                 <h3 style={{ color: '#666', margin: '0 0 10px 0' }}>Subscribed Users</h3>
                                 <p style={{ fontSize: '36px', fontWeight: 'bold', color: '#22c55e', margin: 0 }}>
-                                    {userActivityReport.summary.subscribed_users}
+                                    {formatNumber(userActivityReport.summary.subscribed_users)}
                                 </p>
                             </div>
                         </div>
