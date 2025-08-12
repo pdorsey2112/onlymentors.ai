@@ -637,6 +637,13 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                     100% { transform: rotate(360deg); }
                 }
             `}</style>
+
+            {/* Enhanced Context System Demo */}
+            {showContextDemo && (
+                <EnhancedContextDemo
+                    onClose={() => setShowContextDemo(false)}
+                />
+            )}
         </div>
     );
 };
