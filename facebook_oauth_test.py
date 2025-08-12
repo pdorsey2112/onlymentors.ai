@@ -189,11 +189,11 @@ class FacebookOAuthTester:
         
         # Test 1: verify_facebook_access_token function (via invalid token)
         print("   Testing verify_facebook_access_token function...")
-        success1, _ = self.test_facebook_oauth_authentication_invalid_token()
+        success1 = self.test_facebook_oauth_authentication_invalid_token()
         
         # Test 2: get_facebook_user_info function (via invalid token)
         print("   Testing get_facebook_user_info function...")
-        success2, _ = self.test_facebook_oauth_authentication_invalid_code()
+        success2 = self.test_facebook_oauth_authentication_invalid_code()
         
         # Test 3: create_user_from_facebook_auth function (tested via database integration)
         print("   Testing create_user_from_facebook_auth function...")
