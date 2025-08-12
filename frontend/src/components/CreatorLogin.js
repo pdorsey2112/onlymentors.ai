@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CreatorLogin = ({ onSuccess, onSwitchToSignup }) => {
+const CreatorLogin = ({ onSuccess, onSwitchToSignup, onForgotPassword }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
