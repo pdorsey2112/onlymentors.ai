@@ -273,11 +273,10 @@ async def get_facebook_user_info(access_token: str) -> FacebookUserInfo:
             
             user_data = response.json()
             
-            # Handle email not provided case - make it optional for testing
+            # Handle email not provided case - leave it as None for optional handling
             if "email" not in user_data:
-                # For testing without email permission, use a fallback with valid domain
-                user_data["email"] = f"fb_user_{user_data['id']}@onlymentors.ai"
-                print(f"Warning: No email permission, using fallback email: {user_data['email']}")
+                print(f"Warning: No email permission from Facebook for user ID: {user_data.get('id')}")
+                user_data["email"] = None
             
             return FacebookUserInfo(**user_data)
             
