@@ -27,8 +27,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 function App() {
   // User states
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showContextDemo, setShowContextDemo] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   // Creator states
   const [isCreator, setIsCreator] = useState(false);
