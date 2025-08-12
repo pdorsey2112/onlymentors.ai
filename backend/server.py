@@ -528,7 +528,7 @@ async def facebook_oauth_login(auth_request: SocialAuthRequest):
         existing_user = await db.users.find_one({"social_auth.provider": "facebook", "social_auth.provider_id": user_info.id})
         
         # If not found and email is not a fallback email, check by email
-        if not existing_user and user_info.email and not user_info.email.endswith("@facebook.local"):
+        if not existing_user and user_info.email and not user_info.email.endswith("@onlymentors.ai"):
             existing_user = await db.users.find_one({"email": user_info.email})
         
         is_new_user = False
