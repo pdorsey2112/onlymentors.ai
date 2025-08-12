@@ -149,50 +149,55 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
         appId: config.app_id
       });
 
-      window.FB.login(async (response) => {
-        try {
-          console.log('Facebook login response:', response);
-          
-          if (response.status === 'connected') {
-            console.log('Facebook login successful:', response);
+      window.FB.login((response) => {
+        const handleResponse = async () => {
+          try {
+            console.log('Facebook login response:', response);
             
-            // Send the access token to our backend
-            const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/facebook`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                provider: 'facebook',
-                access_token: response.authResponse.accessToken
-              })
-            });
+            if (response.status === 'connected') {
+              console.log('Facebook login successful:', response);
+              
+              // Send the access token to our backend
+              const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/facebook`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  provider: 'facebook',
+                  access_token: response.authResponse.accessToken
+                })
+              });
 
-            if (authResponse.ok) {
-              const authData = await authResponse.json();
-              console.log('Backend auth response:', authData);
-              onSuccess(authData);
+              if (authResponse.ok) {
+                const authData = await authResponse.json();
+                console.log('Backend auth response:', authData);
+                onSuccess(authData);
+              } else {
+                const error = await authResponse.json();
+                console.error('Backend auth error:', error);
+                onError(error.detail || 'Facebook authentication failed');
+              }
+            } else if (response.status === 'not_authorized') {
+              console.log('Facebook login not authorized:', response);
+              onError('Please authorize the app to continue with Facebook login');
+            } else if (response.status === 'unknown') {
+              console.log('Facebook login cancelled or failed:', response);
+              onError('Facebook login was cancelled. Please try again.');
             } else {
-              const error = await authResponse.json();
-              console.error('Backend auth error:', error);
-              onError(error.detail || 'Facebook authentication failed');
+              console.log('Facebook login failed with status:', response.status, response);
+              onError('Facebook login failed. Please try again or use email login.');
             }
-          } else if (response.status === 'not_authorized') {
-            console.log('Facebook login not authorized:', response);
-            onError('Please authorize the app to continue with Facebook login');
-          } else if (response.status === 'unknown') {
-            console.log('Facebook login cancelled or failed:', response);
-            onError('Facebook login was cancelled. Please try again.');
-          } else {
-            console.log('Facebook login failed with status:', response.status, response);
-            onError('Facebook login failed. Please try again or use email login.');
+          } catch (error) {
+            console.error('Facebook OAuth response processing error:', error);
+            onError('Facebook authentication failed: ' + error.message);
+          } finally {
+            setLoading(false);
           }
-        } catch (error) {
-          console.error('Facebook OAuth response processing error:', error);
-          onError('Facebook authentication failed: ' + error.message);
-        } finally {
-          setLoading(false);
-        }
+        };
+        
+        // Call the async handler
+        handleResponse();
       }, {
         scope: 'email,public_profile',
         return_scopes: true,
