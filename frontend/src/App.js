@@ -1340,6 +1340,13 @@ function App() {
           }
         })()}
       </main>
+
+      {/* Enhanced Context System Demo */}
+      {showContextDemo && (
+        <EnhancedContextDemo
+          onClose={() => setShowContextDemo(false)}
+        />
+      )}
     </div>
   );
 }
