@@ -1,0 +1,195 @@
+# OAuth Authentication System for OnlyMentors.ai
+# Handles Google OAuth 2.0 integration
+
+import os
+import uuid
+import httpx
+from datetime import datetime, timedelta
+from typing import Optional, Dict, Any
+from fastapi import HTTPException
+from pydantic import BaseModel, EmailStr
+import jwt
+
+# OAuth Models
+class GoogleOAuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "Bearer"
+    scope: str
+    expires_in: int
+    refresh_token: Optional[str] = None
+    id_token: str
+
+class GoogleUserInfo(BaseModel):
+    id: str
+    email: EmailStr
+    verified_email: bool
+    name: str
+    given_name: str
+    family_name: str
+    picture: str
+    locale: str
+
+class SocialAuthRequest(BaseModel):
+    provider: str  # "google", "apple", "twitter"
+    code: Optional[str] = None
+    id_token: Optional[str] = None
+    access_token: Optional[str] = None
+
+class SocialAuthResponse(BaseModel):
+    user_id: str
+    email: str
+    full_name: str
+    profile_image_url: Optional[str] = None
+    is_new_user: bool
+    access_token: str
+    provider: str
+
+# OAuth Configuration
+class OAuthConfig:
+    def __init__(self):
+        self.google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+        self.google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        self.google_redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:3000/auth/google")
+        self.jwt_secret = os.getenv("JWT_SECRET", "mentorship-jwt-secret-key-2024")
+        
+        # OAuth endpoints
+        self.google_token_url = "https://oauth2.googleapis.com/token"
+        self.google_userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+    
+    def validate_google_config(self):
+        """Validate Google OAuth configuration"""
+        if not self.google_client_id or self.google_client_id == "your_google_client_id_here":
+            raise ValueError("Google OAuth Client ID not configured")
+        if not self.google_client_secret or self.google_client_secret == "your_google_client_secret_here":
+            raise ValueError("Google OAuth Client Secret not configured")
+        return True
+
+oauth_config = OAuthConfig()
+
+def generate_user_id():
+    """Generate a unique user ID"""
+    return f"user_{uuid.uuid4().hex[:16]}"
+
+def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None):
+    """Create JWT access token"""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(hours=24)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, oauth_config.jwt_secret, algorithm="HS256")
+    return encoded_jwt
+
+async def exchange_google_code_for_token(code: str) -> GoogleOAuthResponse:
+    """Exchange Google OAuth code for access token"""
+    try:
+        oauth_config.validate_google_config()
+        
+        data = {
+            "client_id": oauth_config.google_client_id,
+            "client_secret": oauth_config.google_client_secret,
+            "code": code,
+            "grant_type": "authorization_code",
+            "redirect_uri": oauth_config.google_redirect_uri,
+        }
+        
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                oauth_config.google_token_url, 
+                data=data, 
+                headers=headers, 
+                timeout=30.0
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Failed to exchange code for token: {response.text}"
+                )
+            
+            token_data = response.json()
+            return GoogleOAuthResponse(**token_data)
+            
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"OAuth token exchange failed: {str(e)}")
+
+async def get_google_user_info(access_token: str) -> GoogleUserInfo:
+    """Get user information from Google using access token"""
+    try:
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                oauth_config.google_userinfo_url, 
+                headers=headers, 
+                timeout=30.0
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Failed to get user info: {response.text}"
+                )
+            
+            user_data = response.json()
+            return GoogleUserInfo(**user_data)
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user info: {str(e)}")
+
+def create_user_from_social_auth(user_info: GoogleUserInfo, provider: str) -> Dict[str, Any]:
+    """Create user document from social authentication data"""
+    user_id = generate_user_id()
+    
+    user_doc = {
+        "user_id": user_id,
+        "email": user_info.email,
+        "full_name": user_info.name,
+        "password_hash": None,  # Social auth users don't have passwords
+        "is_subscribed": False,
+        "subscription_expires": None,
+        "subscription_package": None,
+        "questions_asked": 0,
+        "questions_remaining": 10,  # Free questions for new users
+        "social_auth": {
+            "provider": provider,
+            "provider_id": user_info.id,
+            "provider_email": user_info.email,
+            "profile_image_url": user_info.picture,
+            "verified_email": user_info.verified_email
+        },
+        "profile_image_url": user_info.picture,
+        "created_at": datetime.utcnow(),
+        "last_login": datetime.utcnow(),
+        "last_active": datetime.utcnow()
+    }
+    
+    return user_doc
+
+def get_user_public_profile(user_doc: Dict[str, Any]) -> Dict[str, Any]:
+    """Get user's public profile data"""
+    return {
+        "user_id": user_doc["user_id"],
+        "email": user_doc["email"],
+        "full_name": user_doc["full_name"],
+        "is_subscribed": user_doc.get("is_subscribed", False),
+        "subscription_expires": user_doc.get("subscription_expires"),
+        "questions_asked": user_doc.get("questions_asked", 0),
+        "questions_remaining": user_doc.get("questions_remaining", 10),
+        "profile_image_url": user_doc.get("profile_image_url"),
+        "social_auth": {
+            "provider": user_doc.get("social_auth", {}).get("provider"),
+            "profile_image_url": user_doc.get("social_auth", {}).get("profile_image_url")
+        } if user_doc.get("social_auth") else None,
+        "created_at": user_doc["created_at"],
+        "last_login": user_doc.get("last_login")
+    }
