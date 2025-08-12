@@ -406,6 +406,15 @@ const CreatorDashboard = () => {
           onUploadSuccess={handleContentUploadSuccess}
         />
       )}
+
+      {/* Enhanced Content Management Modal */}
+      {showContentManagement && (
+        <EnhancedContentManagement
+          creatorId={creator.creator_id}
+          onClose={() => setShowContentManagement(false)}
+          onUploadSuccess={handleContentUploadSuccess}
+        />
+      )}
     </div>
   );
 };
