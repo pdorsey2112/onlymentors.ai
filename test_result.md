@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement Administrator Console with separate admin authentication, user/mentor management, user activity reports, and financial metrics reports. Admin system should be completely separate from regular users with its own database."
+user_problem_statement: "Complete 4 Options in sequence: 1) Mentor Data & Photos Enhancement (no limits, Wikipedia photos), 2) User Authentication Expansion (Google/Apple/Twitter sign-on), 3) Enhanced Content Management (edit/delete content), 4) User Question Context System explanation and improvement."
 
 backend:
   - task: "Admin System Core Infrastructure"
