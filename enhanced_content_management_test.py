@@ -66,7 +66,9 @@ class EnhancedContentManagementTester:
                 return False, f"Expected {expected_status}, got {response.status_code}"
             
             try:
-                return True, response.json()
+                response_data = response.json()
+                response_data['status_code'] = response.status_code  # Add status code to response
+                return True, response_data
             except:
                 return True, {"status_code": response.status_code, "text": response.text}
                 
