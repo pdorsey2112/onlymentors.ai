@@ -101,6 +101,16 @@ const CreatorLogin = ({ onSuccess, onSwitchToSignup, onForgotPassword }) => {
             </button>
           </form>
 
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              onClick={onForgotPassword}
+              className="text-purple-600 text-sm hover:text-purple-700 underline"
+            >
+              Forgot your password?
+            </button>
+          </div>
+
           <div className="text-center mt-6">
             <p className="text-gray-600 text-sm">
               Don't have a mentor account?{' '}
