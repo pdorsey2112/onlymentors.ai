@@ -7,7 +7,7 @@ import CreatorLogin from './components/CreatorLogin';
 import CreatorDashboard from './components/CreatorDashboard';
 import CreatorVerification from './components/CreatorVerification';
 import AdminLogin from './components/AdminLogin';
-import AdminDashboard from './components/AdminDashboard';
+import AdminDashboardSimple from './components/AdminDashboardSimple';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
