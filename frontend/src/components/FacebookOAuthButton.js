@@ -142,6 +142,13 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
     setLoading(true);
 
     try {
+      console.log('Attempting Facebook login...');
+      console.log('Facebook SDK status:', {
+        fbExists: typeof window.FB !== 'undefined',
+        loginExists: typeof window.FB.login === 'function',
+        appId: config.app_id
+      });
+
       window.FB.login(async (response) => {
         try {
           console.log('Facebook login response:', response);
@@ -171,23 +178,53 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
               onError(error.detail || 'Facebook authentication failed');
             }
           } else if (response.status === 'not_authorized') {
-            onError('Facebook login was cancelled or not authorized');
+            console.log('Facebook login not authorized:', response);
+            onError('Please authorize the app to continue with Facebook login');
+          } else if (response.status === 'unknown') {
+            console.log('Facebook login cancelled or failed:', response);
+            onError('Facebook login was cancelled. Please try again.');
           } else {
-            onError('Facebook login failed or was cancelled');
+            console.log('Facebook login failed with status:', response.status, response);
+            onError('Facebook login failed. Please try again or use email login.');
           }
         } catch (error) {
-          console.error('Facebook OAuth error:', error);
+          console.error('Facebook OAuth response processing error:', error);
           onError('Facebook authentication failed: ' + error.message);
         } finally {
           setLoading(false);
         }
       }, {
         scope: 'email,public_profile',
-        return_scopes: true
+        return_scopes: true,
+        auth_type: 'rerequest' // Force user to re-grant permissions if needed
       });
     } catch (error) {
       console.error('Facebook login initialization error:', error);
-      onError('Failed to initialize Facebook login');
+      
+      // Provide more specific error messages based on the error
+      let errorMessage = 'Failed to initialize Facebook login';
+      
+      if (error.message) {
+        errorMessage += ': ' + error.message;
+      }
+      
+      // Check for common Facebook SDK errors
+      if (error.message && error.message.includes('popup_blocked')) {
+        errorMessage = 'Facebook login popup was blocked. Please allow popups and try again.';
+      } else if (error.message && error.message.includes('network')) {
+        errorMessage = 'Network error during Facebook login. Please check your connection and try again.';
+      } else if (error.toString().includes('SDK not loaded')) {
+        errorMessage = 'Facebook SDK not fully loaded. Please refresh the page and try again.';
+      }
+      
+      console.error('Detailed Facebook error:', {
+        error: error,
+        message: error.message,
+        stack: error.stack,
+        fbStatus: typeof window.FB !== 'undefined' ? 'loaded' : 'not loaded'
+      });
+      
+      onError(errorMessage);
       setLoading(false);
     }
   };
