@@ -50,11 +50,21 @@ class OAuthConfig:
         self.google_client_id = os.getenv("GOOGLE_CLIENT_ID")
         self.google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
         self.google_redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:3000/auth/google")
+        
+        # Facebook OAuth Configuration
+        self.facebook_app_id = os.getenv("FACEBOOK_APP_ID")
+        self.facebook_app_secret = os.getenv("FACEBOOK_APP_SECRET")
+        self.facebook_redirect_uri = os.getenv("FACEBOOK_REDIRECT_URI", "http://localhost:3000")
+        
         self.jwt_secret = os.getenv("JWT_SECRET", "mentorship-jwt-secret-key-2024")
         
         # OAuth endpoints
         self.google_token_url = "https://oauth2.googleapis.com/token"
         self.google_userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        
+        # Facebook endpoints
+        self.facebook_token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
+        self.facebook_userinfo_url = "https://graph.facebook.com/v18.0/me"
     
     def validate_google_config(self):
         """Validate Google OAuth configuration"""
@@ -62,6 +72,14 @@ class OAuthConfig:
             raise ValueError("Google OAuth Client ID not configured")
         if not self.google_client_secret or self.google_client_secret == "your_google_client_secret_here":
             raise ValueError("Google OAuth Client Secret not configured")
+        return True
+    
+    def validate_facebook_config(self):
+        """Validate Facebook OAuth configuration"""
+        if not self.facebook_app_id:
+            raise ValueError("Facebook App ID not configured")
+        if not self.facebook_app_secret:
+            raise ValueError("Facebook App Secret not configured")
         return True
 
 oauth_config = OAuthConfig()
