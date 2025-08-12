@@ -1001,8 +1001,149 @@ HEALTH_MENTORS = [
         "expertise": "Microbiology, vaccination, pasteurization, germ theory",
         "image_url": get_wikipedia_image_url("Louis Pasteur"),
         "wiki_description": "Louis Pasteur was a French chemist and microbiologist renowned for his discoveries."
+    },
+    # Additional Health & Wellness Experts - Expanding beyond limits
+    {
+        "id": "joe_dispenza", "name": "Dr. Joe Dispenza", "title": "Mind-Body Researcher",
+        "bio": "Neuroscientist and author researching the intersection of neuroscience and personal transformation",
+        "expertise": "Neuroplasticity, meditation, mind-body healing, consciousness, personal transformation",
+        "image_url": get_wikipedia_image_url("Joe Dispenza"),
+        "wiki_description": "Joe Dispenza is an American author, researcher, and speaker known for his work on neuroscience and meditation."
+    },
+    {
+        "id": "wim_hof", "name": "Wim Hof", "title": "The Iceman",
+        "bio": "Dutch extreme athlete known for his ability to withstand freezing temperatures",
+        "expertise": "Cold exposure, breathing techniques, mental resilience, extreme performance",
+        "image_url": get_wikipedia_image_url("Wim Hof"),
+        "wiki_description": "Wim Hof is a Dutch motivational speaker and extreme athlete noted for his ability to withstand low temperatures."
+    },
+    {
+        "id": "ben_greenfield", "name": "Ben Greenfield", "title": "Biohacker",
+        "bio": "Biohacker, author, and entrepreneur focused on optimizing human performance",
+        "expertise": "Biohacking, performance optimization, fitness, nutrition, longevity",
+        "image_url": get_wikipedia_image_url("Ben Greenfield"),
+        "wiki_description": "Ben Greenfield is an American biohacker, nutritionist, physiologist, fitness expert, and author."
+    },
+    {
+        "id": "dave_asprey", "name": "Dave Asprey", "title": "Father of Biohacking",
+        "bio": "Entrepreneur and author who coined the term 'biohacking' and founded Bulletproof",
+        "expertise": "Biohacking, cognitive enhancement, nutrition optimization, performance",
+        "image_url": get_wikipedia_image_url("Dave Asprey"),
+        "wiki_description": "Dave Asprey is an American entrepreneur, author, and advocate of biohacking."
+    },
+    {
+        "id": "shawn_stevenson", "name": "Shawn Stevenson", "title": "Sleep Expert",
+        "bio": "Nutritionist and author of 'Sleep Smarter' focused on sleep optimization",
+        "expertise": "Sleep optimization, nutrition, fitness, holistic health, wellness",
+        "image_url": get_wikipedia_image_url("Shawn Stevenson"),
+        "wiki_description": "Shawn Stevenson is an American author, speaker, and creator of The Model Health Show podcast."
+    },
+    {
+        "id": "kelly_starrett", "name": "Kelly Starrett", "title": "Mobility Expert",
+        "bio": "Physical therapist and CrossFit coach specializing in human movement",
+        "expertise": "Mobility, movement mechanics, injury prevention, physical therapy, athletic performance",
+        "image_url": get_wikipedia_image_url("Kelly Starrett"),
+        "wiki_description": "Kelly Starrett is an American physical therapist, CrossFit trainer, author, and speaker."
+    },
+    {
+        "id": "laird_hamilton", "name": "Laird Hamilton", "title": "Big Wave Surfer",
+        "bio": "American big wave surfer and waterman known for pioneering tow-in surfing",
+        "expertise": "Water sports, extreme performance, fitness, mental toughness, adventure",
+        "image_url": get_wikipedia_image_url("Laird Hamilton"),
+        "wiki_description": "Laird John Hamilton is an American big-wave surfer, co-inventor of tow-in surfing, and an occasional fashion and action-sports model."
+    },
+    {
+        "id": "gabby_reece", "name": "Gabrielle Reece", "title": "Volleyball Champion",
+        "bio": "Former professional volleyball player, model, and fitness expert",
+        "expertise": "Athletic performance, fitness, nutrition, lifestyle balance, women's health",
+        "image_url": get_wikipedia_image_url("Gabrielle Reece"),
+        "wiki_description": "Gabrielle Allyse Reece is an American professional volleyball player, sports announcer, fashion model, and actress."
+    },
+    {
+        "id": "dan_buettner", "name": "Dan Buettner", "title": "Blue Zones Expert",
+        "bio": "National Geographic Fellow and author researching longevity in Blue Zones",
+        "expertise": "Longevity research, lifestyle medicine, nutrition, community wellness, aging",
+        "image_url": get_wikipedia_image_url("Dan Buettner"),
+        "wiki_description": "Dan Buettner is an American National Geographic Fellow and New York Times bestselling author."
+    },
+    {
+        "id": "valter_longo", "name": "Dr. Valter Longo", "title": "Longevity Researcher",
+        "bio": "Director of USC Longevity Institute researching aging and fasting",
+        "expertise": "Longevity research, fasting, caloric restriction, aging biology, nutrition",
+        "image_url": get_wikipedia_image_url("Valter Longo"),
+        "wiki_description": "Valter Longo is an Italian-American biogerontologist and cell biologist known for his research on the role of fasting and diet in longevity."
+    },
+    {
+        "id": "jason_fung", "name": "Dr. Jason Fung", "title": "Intermittent Fasting Expert",
+        "bio": "Nephrologist and author specializing in intermittent fasting and diabetes",
+        "expertise": "Intermittent fasting, diabetes management, weight loss, metabolic health",
+        "image_url": get_wikipedia_image_url("Jason Fung"),
+        "wiki_description": "Jason Fung is a Canadian nephrologist and author known for his advocacy of intermittent fasting and low-carbohydrate diets."
+    },
+    {
+        "id": "tim_noakes", "name": "Dr. Tim Noakes", "title": "Sports Scientist",
+        "bio": "South African sports scientist and author of 'The Lore of Running'",
+        "expertise": "Sports science, low-carb nutrition, endurance training, athletic performance",
+        "image_url": get_wikipedia_image_url("Tim Noakes"),
+        "wiki_description": "Timothy David Noakes is a South African scientist, and an emeritus professor in the Division of Exercise Science."
+    },
+    {
+        "id": "robb_wolf", "name": "Robb Wolf", "title": "Paleo Expert",
+        "bio": "Biochemist and author promoting the Paleolithic diet approach",
+        "expertise": "Paleo diet, nutrition science, autoimmune conditions, ancestral health",
+        "image_url": get_wikipedia_image_url("Robb Wolf"),
+        "wiki_description": "Robb Wolf is an American author and former research biochemist who advocates for the Paleolithic diet."
+    },
+    {
+        "id": "mark_sisson", "name": "Mark Sisson", "title": "Primal Living Expert",
+        "bio": "Former endurance athlete and author of 'The Primal Blueprint'",
+        "expertise": "Primal living, low-carb lifestyle, fitness, ancestral health, nutrition",
+        "image_url": get_wikipedia_image_url("Mark Sisson"),
+        "wiki_description": "Mark Sisson is an American fitness author and food blogger, and a former distance runner, triathlete and Ironman competitor."
+    },
+    {
+        "id": "chris_kresser", "name": "Chris Kresser", "title": "Functional Medicine Practitioner",
+        "bio": "Functional medicine practitioner and author focusing on ancestral health",
+        "expertise": "Functional medicine, gut health, chronic disease, nutrition, lifestyle medicine",
+        "image_url": get_wikipedia_image_url("Chris Kresser"),
+        "wiki_description": "Chris Kresser is an American acupuncturist, practitioner of functional and integrative medicine, and New York Times bestselling author."
+    },
+    {
+        "id": "sara_gottfried", "name": "Dr. Sara Gottfried", "title": "Hormone Expert",
+        "bio": "Harvard-trained physician specializing in women's hormonal health",
+        "expertise": "Hormonal health, women's wellness, functional medicine, aging, nutrition",
+        "image_url": get_wikipedia_image_url("Sara Gottfried"),
+        "wiki_description": "Sara Gottfried is an American gynecologist, author, and speaker known for her work on hormonal health."
+    },
+    {
+        "id": "izabella_wentz", "name": "Dr. Izabella Wentz", "title": "Thyroid Expert",
+        "bio": "Pharmacist and author specializing in Hashimoto's thyroiditis treatment",
+        "expertise": "Thyroid health, Hashimoto's disease, autoimmune conditions, functional medicine",
+        "image_url": get_wikipedia_image_url("Izabella Wentz"),
+        "wiki_description": "Izabella Wentz is an American pharmacist and author who specializes in thyroid health and Hashimoto's thyroiditis."
+    },
+    {
+        "id": "terry_wahls", "name": "Dr. Terry Wahls", "title": "MS Recovery Pioneer",
+        "bio": "Physician who reversed her MS symptoms through diet and lifestyle changes",
+        "expertise": "Multiple sclerosis, autoimmune recovery, functional medicine, nutrition therapy",
+        "image_url": get_wikipedia_image_url("Terry Wahls"),
+        "wiki_description": "Terry Wahls is an American physician who is known for her unconventional treatment of multiple sclerosis through diet and lifestyle changes."
+    },
+    {
+        "id": "william_davis", "name": "Dr. William Davis", "title": "Wheat Belly Author",
+        "bio": "Cardiologist and author of 'Wheat Belly' advocating grain-free living",
+        "expertise": "Cardiology, wheat-free diet, autoimmune conditions, heart health",
+        "image_url": get_wikipedia_image_url("William Davis"),
+        "wiki_description": "William Davis is an American cardiologist and author of health books, including the New York Times bestseller Wheat Belly."
+    },
+    {
+        "id": "david_perlmutter", "name": "Dr. David Perlmutter", "title": "Brain Health Expert",
+        "bio": "Neurologist and author of 'Grain Brain' focusing on brain health",
+        "expertise": "Neurology, brain health, gluten sensitivity, cognitive function, nutrition",
+        "image_url": get_wikipedia_image_url("David Perlmutter"),
+        "wiki_description": "David Perlmutter is an American celebrity doctor and author who is a proponent of functional medicine."
     }
-    # Note: This continues to 100 health mentors
+    # This list can continue growing without limits - more health experts can be added
 ]
 
 # Science Pioneers (100 mentors)
