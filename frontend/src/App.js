@@ -594,7 +594,10 @@ function App() {
                 <div className="text-center">
                   <button
                     type="button"
-                    onClick={() => setShowForgotPassword(true)}
+                    onClick={() => {
+                      setForgotPasswordUserType('user');
+                      setShowForgotPassword(true);
+                    }}
                     className="text-sm text-purple-600 hover:text-purple-700 underline"
                     disabled={isLoading}
                   >
