@@ -9,6 +9,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
     const [userActivityReport, setUserActivityReport] = useState(null);
     const [financialReport, setFinancialReport] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showContextDemo, setShowContextDemo] = useState(false);
 
     // Helper function to format numbers with commas
     const formatNumber = (num) => {
