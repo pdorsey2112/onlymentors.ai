@@ -613,13 +613,19 @@ function App() {
                 <div className="flex-grow border-t border-gray-300"></div>
               </div>
               
-              {/* Google OAuth Button */}
+              {/* OAuth Buttons */}
               <div className="space-y-3">
                 <GoogleOAuthButton
                   onSuccess={handleGoogleAuthSuccess}
                   onError={handleGoogleAuthError}
                   disabled={isLoading}
                   text={authMode === 'login' ? "signin_with" : "signup_with"}
+                />
+                <FacebookOAuthButton
+                  onSuccess={handleFacebookAuthSuccess}
+                  onError={handleFacebookAuthError}
+                  disabled={isLoading}
+                  text={authMode === 'login' ? "Continue with Facebook" : "Sign up with Facebook"}
                 />
               </div>
 
