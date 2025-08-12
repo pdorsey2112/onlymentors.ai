@@ -102,10 +102,10 @@ class EnhancedContentManagementTester:
         
         # Create second creator for authorization testing
         creator2_data = {
-            "email": "creator2@test.com", 
+            "email": f"creator2_{timestamp}@test.com", 
             "password": "TestPass123!",
             "full_name": "Test Creator Two",
-            "account_name": "testcreator2",
+            "account_name": f"testcreator2_{timestamp}",
             "description": "Second test creator",
             "monthly_price": 39.99,
             "category": "health",
