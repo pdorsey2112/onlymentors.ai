@@ -224,6 +224,39 @@ function App() {
     setQuestionHistory([]);
   };
 
+  // Google OAuth handlers
+  const handleGoogleAuthSuccess = (authData) => {
+    try {
+      localStorage.setItem('auth_token', authData.access_token);
+      
+      const userData = {
+        user_id: authData.user_id,
+        email: authData.email,
+        full_name: authData.full_name,
+        profile_image_url: authData.profile_image_url,
+        questions_asked: 0,
+        is_subscribed: false
+      };
+      
+      setUser(userData);
+      setSuccess(
+        authData.is_new_user 
+          ? `Welcome to OnlyMentors.ai, ${authData.full_name}!` 
+          : `Welcome back, ${authData.full_name}!`
+      );
+      setCurrentView('categories');
+      setError('');
+    } catch (error) {
+      console.error('Google auth success handler error:', error);
+      setError('Authentication successful but failed to complete login');
+    }
+  };
+
+  const handleGoogleAuthError = (error) => {
+    console.error('Google OAuth error:', error);
+    setError(typeof error === 'string' ? error : 'Google authentication failed');
+  };
+
   const handleMentorSelect = (mentor) => {
     setSelectedMentors(prev => {
       const isSelected = prev.some(m => m.id === mentor.id);
