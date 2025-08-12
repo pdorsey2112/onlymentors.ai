@@ -61,6 +61,7 @@ from ai_agent_framework import (
     DEFAULT_AI_AGENTS, create_default_ai_agent
 )
 from oauth_system import *
+from forgot_password_system import *
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
