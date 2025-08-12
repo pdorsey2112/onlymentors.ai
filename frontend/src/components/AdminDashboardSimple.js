@@ -468,7 +468,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             }}>
                                 <h3 style={{ color: '#666', margin: '0 0 10px 0' }}>Total Revenue</h3>
                                 <p style={{ fontSize: '36px', fontWeight: 'bold', color: '#22c55e', margin: 0 }}>
-                                    ${financialReport.summary.total_revenue?.toFixed(2)}
+                                    {formatCurrency(financialReport.summary.total_revenue)}
                                 </p>
                             </div>
                             <div style={{
@@ -480,7 +480,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             }}>
                                 <h3 style={{ color: '#666', margin: '0 0 10px 0' }}>Platform Commission</h3>
                                 <p style={{ fontSize: '36px', fontWeight: 'bold', color: '#3b82f6', margin: 0 }}>
-                                    ${financialReport.summary.platform_commission?.toFixed(2)}
+                                    {formatCurrency(financialReport.summary.platform_commission)}
                                 </p>
                             </div>
                             <div style={{
@@ -492,7 +492,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             }}>
                                 <h3 style={{ color: '#666', margin: '0 0 10px 0' }}>Creator Payouts</h3>
                                 <p style={{ fontSize: '36px', fontWeight: 'bold', color: '#8b5cf6', margin: 0 }}>
-                                    ${financialReport.summary.creator_payouts?.toFixed(2)}
+                                    {formatCurrency(financialReport.summary.creator_payouts)}
                                 </p>
                             </div>
                         </div>
