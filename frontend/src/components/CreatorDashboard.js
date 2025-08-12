@@ -62,6 +62,10 @@ const CreatorDashboard = () => {
     setShowContentUpload(true);
   };
 
+  const handleManageContent = () => {
+    setShowContentManagement(true);
+  };
+
   const handleSaveSettings = async () => {
     // TODO: Implement settings save functionality
     alert('Settings saved successfully!');
