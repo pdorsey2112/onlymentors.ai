@@ -1,8 +1,9 @@
 # OnlyMentors.ai - Complete 400 Mentors Database with Wikipedia Photos
-# 100 mentors per category with real Wikipedia images
+# Unlimited mentors per category with real Wikipedia images
 
 import requests
 import re
+import urllib.parse
 
 def get_wikipedia_image_url(person_name):
     """
