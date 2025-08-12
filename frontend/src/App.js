@@ -452,13 +452,6 @@ function App() {
             
             <div className="flex items-center space-x-4">
               <Button 
-                onClick={() => setShowContextDemo(true)} 
-                variant="outline"
-                className="text-blue-600 border-blue-600 hover:bg-blue-50"
-              >
-                Context System
-              </Button>
-              <Button 
                 onClick={() => setShowCreatorAuth(true)} 
                 variant="outline"
                 className="text-purple-600 border-purple-600 hover:bg-purple-50"
