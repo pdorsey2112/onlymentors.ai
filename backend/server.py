@@ -409,16 +409,31 @@ async def get_me(current_user = Depends(get_current_user)):
 
 @app.post("/api/auth/google")
 async def google_oauth_login(auth_request: SocialAuthRequest):
-    """Handle Google OAuth login/signup"""
+    """Handle Google OAuth login/signup with both code and ID token flows"""
     try:
-        if not auth_request.code:
-            raise HTTPException(status_code=400, detail="Authorization code is required")
+        user_info = None
         
-        # Exchange code for token
-        token_response = await exchange_google_code_for_token(auth_request.code)
+        # Handle ID token flow (most common with @react-oauth/google)
+        if auth_request.id_token:
+            print(f"Processing Google ID token flow")
+            user_info = await verify_google_id_token(auth_request.id_token)
         
-        # Get user info from Google
-        user_info = await get_google_user_info(token_response.access_token)
+        # Handle authorization code flow (fallback)
+        elif auth_request.code:
+            print(f"Processing Google authorization code flow")
+            # Exchange code for token
+            token_response = await exchange_google_code_for_token(auth_request.code)
+            # Get user info from Google
+            user_info = await get_google_user_info(token_response.access_token)
+        
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail="Either authorization code or ID token is required for Google OAuth"
+            )
+        
+        if not user_info:
+            raise HTTPException(status_code=400, detail="Failed to get user information from Google")
         
         # Check if user exists
         existing_user = await db.users.find_one({"email": user_info.email})
@@ -474,6 +489,7 @@ async def google_oauth_login(auth_request: SocialAuthRequest):
     except HTTPException:
         raise
     except Exception as e:
+        print(f"Google OAuth error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Google OAuth login failed: {str(e)}")
 
 @app.get("/api/auth/google/config")
