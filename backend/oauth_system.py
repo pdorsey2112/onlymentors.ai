@@ -217,6 +217,160 @@ async def get_google_user_info(access_token: str) -> GoogleUserInfo:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get user info: {str(e)}")
 
+async def exchange_facebook_code_for_token(code: str) -> str:
+    """Exchange Facebook OAuth code for access token"""
+    try:
+        oauth_config.validate_facebook_config()
+        
+        params = {
+            "client_id": oauth_config.facebook_app_id,
+            "client_secret": oauth_config.facebook_app_secret,
+            "code": code,
+            "redirect_uri": oauth_config.facebook_redirect_uri,
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                oauth_config.facebook_token_url, 
+                params=params, 
+                timeout=30.0
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Failed to exchange Facebook code for token: {response.text}"
+                )
+            
+            token_data = response.json()
+            return token_data.get("access_token")
+            
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Facebook OAuth token exchange failed: {str(e)}")
+
+async def get_facebook_user_info(access_token: str) -> FacebookUserInfo:
+    """Get user information from Facebook using access token"""
+    try:
+        params = {
+            "access_token": access_token,
+            "fields": "id,email,name,first_name,last_name,picture.type(large)"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                oauth_config.facebook_userinfo_url, 
+                params=params, 
+                timeout=30.0
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Failed to get Facebook user info: {response.text}"
+                )
+            
+            user_data = response.json()
+            
+            # Handle email not provided case
+            if "email" not in user_data:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Email permission required for Facebook login. Please grant email access."
+                )
+            
+            return FacebookUserInfo(**user_data)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get Facebook user info: {str(e)}")
+
+async def verify_facebook_access_token(access_token: str) -> FacebookUserInfo:
+    """Verify Facebook access token and get user info"""
+    try:
+        oauth_config.validate_facebook_config()
+        
+        # First, validate the token with Facebook
+        params = {
+            "input_token": access_token,
+            "access_token": f"{oauth_config.facebook_app_id}|{oauth_config.facebook_app_secret}"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            # Verify token
+            response = await client.get(
+                "https://graph.facebook.com/debug_token",
+                params=params,
+                timeout=30.0
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Failed to verify Facebook token: {response.text}"
+                )
+            
+            token_info = response.json()
+            
+            # Check if token is valid
+            if not token_info.get("data", {}).get("is_valid", False):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid Facebook access token"
+                )
+            
+            # Verify the token is for our app
+            if token_info.get("data", {}).get("app_id") != oauth_config.facebook_app_id:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Facebook token is not for this application"
+                )
+            
+            # Get user info
+            return await get_facebook_user_info(access_token)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to verify Facebook token: {str(e)}")
+
+def create_user_from_facebook_auth(user_info: FacebookUserInfo, provider: str) -> Dict[str, Any]:
+    """Create user document from Facebook authentication data"""
+    user_id = generate_user_id()
+    
+    # Extract profile picture URL
+    profile_image_url = None
+    if user_info.picture and isinstance(user_info.picture, dict):
+        profile_image_url = user_info.picture.get("data", {}).get("url")
+    
+    user_doc = {
+        "user_id": user_id,
+        "email": user_info.email,
+        "full_name": user_info.name,
+        "password_hash": None,  # Social auth users don't have passwords
+        "is_subscribed": False,
+        "subscription_expires": None,
+        "subscription_package": None,
+        "questions_asked": 0,
+        "questions_remaining": 10,  # Free questions for new users
+        "social_auth": {
+            "provider": provider,
+            "provider_id": user_info.id,
+            "provider_email": user_info.email,
+            "profile_image_url": profile_image_url,
+            "first_name": user_info.first_name,
+            "last_name": user_info.last_name
+        },
+        "profile_image_url": profile_image_url,
+        "created_at": datetime.utcnow(),
+        "last_login": datetime.utcnow(),
+        "last_active": datetime.utcnow()
+    }
+    
+    return user_doc
+
 def create_user_from_social_auth(user_info: GoogleUserInfo, provider: str) -> Dict[str, Any]:
     """Create user document from social authentication data"""
     user_id = generate_user_id()
