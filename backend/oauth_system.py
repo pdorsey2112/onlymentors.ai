@@ -120,6 +120,51 @@ async def exchange_google_code_for_token(code: str) -> GoogleOAuthResponse:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"OAuth token exchange failed: {str(e)}")
 
+async def verify_google_id_token(id_token: str) -> GoogleUserInfo:
+    """Verify Google ID token and extract user info"""
+    try:
+        oauth_config.validate_google_config()
+        
+        # Verify the ID token with Google
+        verification_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}"
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(verification_url, timeout=30.0)
+            
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Failed to verify Google ID token: {response.text}"
+                )
+            
+            token_data = response.json()
+            
+            # Verify the token is for our client
+            if token_data.get("aud") != oauth_config.google_client_id:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Invalid token audience"
+                )
+            
+            # Map the token data to our GoogleUserInfo format
+            user_info = GoogleUserInfo(
+                id=token_data.get("sub"),
+                email=token_data.get("email"),
+                verified_email=token_data.get("email_verified", False),
+                name=token_data.get("name"),
+                given_name=token_data.get("given_name", ""),
+                family_name=token_data.get("family_name", ""),
+                picture=token_data.get("picture", ""),
+                locale=token_data.get("locale", "en")
+            )
+            
+            return user_info
+            
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to verify Google ID token: {str(e)}")
+
 async def get_google_user_info(access_token: str) -> GoogleUserInfo:
     """Get user information from Google using access token"""
     try:
