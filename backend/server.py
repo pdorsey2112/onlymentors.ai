@@ -493,6 +493,105 @@ async def google_oauth_login(auth_request: SocialAuthRequest):
         print(f"Google OAuth error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Google OAuth login failed: {str(e)}")
 
+@app.post("/api/auth/facebook")
+async def facebook_oauth_login(auth_request: SocialAuthRequest):
+    """Handle Facebook OAuth login/signup"""
+    try:
+        user_info = None
+        
+        # Handle access token flow (most common with Facebook SDK)
+        if auth_request.access_token:
+            print(f"Processing Facebook access token flow")
+            user_info = await verify_facebook_access_token(auth_request.access_token)
+        
+        # Handle authorization code flow
+        elif auth_request.code:
+            print(f"Processing Facebook authorization code flow")
+            # Exchange code for token
+            access_token = await exchange_facebook_code_for_token(auth_request.code)
+            # Get user info from Facebook
+            user_info = await get_facebook_user_info(access_token)
+        
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail="Either authorization code or access token is required for Facebook OAuth"
+            )
+        
+        if not user_info:
+            raise HTTPException(status_code=400, detail="Failed to get user information from Facebook")
+        
+        # Check if user exists
+        existing_user = await db.users.find_one({"email": user_info.email})
+        
+        is_new_user = False
+        
+        if existing_user:
+            # Update existing user with social auth info if not already set
+            if not existing_user.get("social_auth"):
+                await db.users.update_one(
+                    {"user_id": existing_user["user_id"]},
+                    {
+                        "$set": {
+                            "social_auth": {
+                                "provider": "facebook",
+                                "provider_id": user_info.id,
+                                "provider_email": user_info.email,
+                                "profile_image_url": user_info.picture.get("data", {}).get("url") if user_info.picture else None,
+                                "first_name": user_info.first_name,
+                                "last_name": user_info.last_name
+                            },
+                            "profile_image_url": user_info.picture.get("data", {}).get("url") if user_info.picture else None,
+                            "last_login": datetime.utcnow()
+                        }
+                    }
+                )
+            else:
+                # Just update last login
+                await db.users.update_one(
+                    {"user_id": existing_user["user_id"]},
+                    {"$set": {"last_login": datetime.utcnow()}}
+                )
+            
+            user_doc = await db.users.find_one({"user_id": existing_user["user_id"]})
+        else:
+            # Create new user from social auth
+            user_doc = create_user_from_facebook_auth(user_info, "facebook")
+            await db.users.insert_one(user_doc)
+            is_new_user = True
+        
+        # Create access token for our system
+        access_token = create_access_token({"user_id": user_doc["user_id"]})
+        
+        return SocialAuthResponse(
+            user_id=user_doc["user_id"],
+            email=user_doc["email"],
+            full_name=user_doc["full_name"],
+            profile_image_url=user_doc.get("profile_image_url"),
+            is_new_user=is_new_user,
+            access_token=access_token,
+            provider="facebook"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Facebook OAuth error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Facebook OAuth login failed: {str(e)}")
+
+@app.get("/api/auth/facebook/config")
+async def get_facebook_oauth_config():
+    """Get Facebook OAuth configuration for frontend"""
+    try:
+        oauth_config.validate_facebook_config()
+        return {
+            "app_id": oauth_config.facebook_app_id,
+            "redirect_uri": oauth_config.facebook_redirect_uri,
+            "scope": "email,public_profile"
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=f"Facebook OAuth not configured: {str(e)}")
+
 @app.get("/api/auth/google/config")
 async def get_google_oauth_config():
     """Get Google OAuth configuration for frontend"""
