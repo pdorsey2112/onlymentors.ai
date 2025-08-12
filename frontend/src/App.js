@@ -28,6 +28,7 @@ function App() {
   // User states
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showContextDemo, setShowContextDemo] = useState(false);
   
   // Creator states
   const [isCreator, setIsCreator] = useState(false);
