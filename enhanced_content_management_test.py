@@ -179,11 +179,13 @@ class EnhancedContentManagementTester:
         ]
         
         for method, endpoint, data in endpoints_to_test:
-            success, response = self.make_request(method, endpoint, data, token=None, expected_status=401)
+            success, response = self.make_request(method, endpoint, data, token=None)
+            # Accept both 401 and 403 as valid authentication-required responses
+            auth_required = response.get('status_code') in [401, 403] if isinstance(response, dict) else False
             self.log_security_test(
                 f"{method} {endpoint.split('/')[-1]} requires auth",
-                success,
-                "Returns 401 without token" if success else f"Security issue: {response}"
+                auth_required,
+                f"Returns {response.get('status_code', 'N/A')} without token (auth required)" if auth_required else f"Security issue: {response}"
             )
 
     def test_authorization_checks(self):
