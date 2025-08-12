@@ -265,7 +265,7 @@ class ForgotPasswordTester:
         """Test password reset token validation"""
         print("\n🔑 Testing Token Validation...")
         
-        # Test 1: Invalid token - using query parameters instead of JSON body
+        # Test 1: Invalid token - using query parameters
         status, response = await self.make_request("POST", "/auth/validate-reset-token?token=invalid_token_123&user_type=user")
         
         if status == 400:
