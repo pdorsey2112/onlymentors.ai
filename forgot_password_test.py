@@ -265,11 +265,8 @@ class ForgotPasswordTester:
         """Test password reset token validation"""
         print("\n🔑 Testing Token Validation...")
         
-        # Test 1: Invalid token
-        status, response = await self.make_request("POST", "/auth/validate-reset-token", {
-            "token": "invalid_token_123",
-            "user_type": "user"
-        })
+        # Test 1: Invalid token - using query parameters instead of JSON body
+        status, response = await self.make_request("POST", "/auth/validate-reset-token?token=invalid_token_123&user_type=user")
         
         if status == 400:
             await self.log_test("Invalid Token Validation", True, 
@@ -278,11 +275,8 @@ class ForgotPasswordTester:
             await self.log_test("Invalid Token Validation", False, "", 
                               f"Should reject invalid token, got status: {status}")
         
-        # Test 2: Invalid user type
-        status, response = await self.make_request("POST", "/auth/validate-reset-token", {
-            "token": "some_token",
-            "user_type": "invalid"
-        })
+        # Test 2: Invalid user type - using query parameters
+        status, response = await self.make_request("POST", "/auth/validate-reset-token?token=some_token&user_type=invalid")
         
         if status == 400:
             await self.log_test("Token Validation User Type", True, 
