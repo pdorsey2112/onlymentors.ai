@@ -566,6 +566,20 @@ function App() {
                   text={authMode === 'login' ? "signin_with" : "signup_with"}
                 />
               </div>
+
+              {/* Forgot Password Link */}
+              {authMode === 'login' && (
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-sm text-purple-600 hover:text-purple-700 underline"
+                    disabled={isLoading}
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
