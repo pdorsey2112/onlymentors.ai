@@ -138,6 +138,10 @@ class SimpleForgotPasswordTester:
         """Test SendGrid configuration"""
         print("\n📧 Testing SendGrid Configuration...")
         
+        # Load from backend .env file
+        from dotenv import load_dotenv
+        load_dotenv('/app/backend/.env')
+        
         # Check environment variables
         sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
         from_email = os.getenv("FROM_EMAIL")
