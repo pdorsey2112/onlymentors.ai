@@ -402,7 +402,7 @@ backend:
 
 test_plan:
   current_focus:
-    - "Enhanced Content Management Endpoints (Option 3)"
+    - "Complete Forgot Password System for Users and Mentors"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
