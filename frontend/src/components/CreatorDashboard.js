@@ -302,17 +302,25 @@ const CreatorDashboard = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Content Management</h2>
-                  <button 
-                    onClick={handleUploadContent}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700"
-                  >
-                    Upload New Content
-                  </button>
+                  <div className="flex space-x-3">
+                    <button 
+                      onClick={handleManageContent}
+                      className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700"
+                    >
+                      Manage Content
+                    </button>
+                    <button 
+                      onClick={handleUploadContent}
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700"
+                    >
+                      Upload New Content
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="text-center py-8 text-gray-500">
-                  <p>No content uploaded yet</p>
-                  <p className="text-sm mt-1">Upload videos, documents, or article links to get started</p>
+                  <p>Content management tools available</p>
+                  <p className="text-sm mt-1">Upload new content or manage existing content with editing and deletion capabilities</p>
                 </div>
               </div>
             )}
