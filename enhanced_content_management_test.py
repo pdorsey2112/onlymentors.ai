@@ -77,12 +77,14 @@ class EnhancedContentManagementTester:
         """Create test creators for authentication testing"""
         print("\n🔧 Setting up test creators...")
         
-        # Create first creator
+        # Create first creator with unique timestamp
+        import time
+        timestamp = str(int(time.time()))
         creator1_data = {
-            "email": "creator1@test.com",
+            "email": f"creator1_{timestamp}@test.com",
             "password": "TestPass123!",
             "full_name": "Test Creator One",
-            "account_name": "testcreator1",
+            "account_name": f"testcreator1_{timestamp}",
             "description": "Test creator for content management",
             "monthly_price": 29.99,
             "category": "business",
