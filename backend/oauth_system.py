@@ -29,8 +29,16 @@ class GoogleUserInfo(BaseModel):
     picture: str
     locale: str
 
+class FacebookUserInfo(BaseModel):
+    id: str
+    email: EmailStr
+    name: str
+    first_name: str
+    last_name: str
+    picture: Optional[Dict] = None
+
 class SocialAuthRequest(BaseModel):
-    provider: str  # "google", "apple", "twitter"
+    provider: str  # "google", "facebook", "apple", "twitter"
     code: Optional[str] = None
     id_token: Optional[str] = None
     access_token: Optional[str] = None
