@@ -177,6 +177,23 @@ async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid admin token")
 
+async def get_current_creator(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Creator authentication middleware"""
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=["HS256"])
+        creator_id = payload.get("creator_id")
+        creator_type = payload.get("type")
+        
+        if creator_id is None or creator_type != "creator":
+            raise HTTPException(status_code=401, detail="Invalid creator token")
+        
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=401, detail="Creator not found")
+        return creator
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid creator token")
+
 async def create_mentor_response(mentor, question):
     """Create AI-powered response from a mentor using their personality and expertise"""
     try:
