@@ -161,53 +161,57 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                 {dashboardData && (
                     <>
                         <div style={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            background: 'white',
                             padding: '25px',
                             borderRadius: '12px',
-                            color: 'white',
-                            textAlign: 'center'
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            textAlign: 'center',
+                            border: '1px solid #e5e7eb'
                         }}>
-                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Total Users</h3>
-                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
+                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#666' }}>Total Users</h3>
+                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold', color: '#333' }}>
                                 {formatNumber(dashboardData.platform_stats.total_users)}
                             </p>
                         </div>
                         
                         <div style={{
-                            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                            background: 'white',
                             padding: '25px',
                             borderRadius: '12px',
-                            color: 'white',
-                            textAlign: 'center'
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            textAlign: 'center',
+                            border: '1px solid #e5e7eb'
                         }}>
-                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Total Mentors</h3>
-                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
+                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#666' }}>Total Mentors</h3>
+                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold', color: '#333' }}>
                                 {formatNumber(dashboardData.platform_stats.total_mentors)}
                             </p>
                         </div>
                         
                         <div style={{
-                            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                            background: 'white',
                             padding: '25px',
                             borderRadius: '12px',
-                            color: 'white',
-                            textAlign: 'center'
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            textAlign: 'center',
+                            border: '1px solid #e5e7eb'
                         }}>
-                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Total Revenue</h3>
-                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
+                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#666' }}>Total Revenue</h3>
+                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold', color: '#333' }}>
                                 {formatCurrency(dashboardData.platform_stats.total_revenue)}
                             </p>
                         </div>
                         
                         <div style={{
-                            background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                            background: 'white',
                             padding: '25px',
                             borderRadius: '12px',
-                            color: 'white',
-                            textAlign: 'center'
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            textAlign: 'center',
+                            border: '1px solid #e5e7eb'
                         }}>
-                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: '0.9' }}>Active Subscriptions</h3>
-                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold' }}>
+                            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#666' }}>Active Subscriptions</h3>
+                            <p style={{ margin: '0', fontSize: '32px', fontWeight: 'bold', color: '#333' }}>
                                 {formatNumber(dashboardData.platform_stats.active_subscriptions)}
                             </p>
                         </div>
