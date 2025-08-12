@@ -7,7 +7,7 @@ import tempfile
 from datetime import datetime
 
 class CreatorVerificationTester:
-    def __init__(self, base_url="https://mentor-hub-11.preview.emergentagent.com"):
+    def __init__(self, base_url="https://mentor-platform-2.preview.emergentagent.com"):
         self.base_url = base_url
         self.creator_token = None
         self.creator_data = None
