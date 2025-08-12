@@ -603,7 +603,8 @@ function App() {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderCategories = () => (
     <div className="min-h-screen bg-white">
