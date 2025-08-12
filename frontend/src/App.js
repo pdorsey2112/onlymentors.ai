@@ -448,8 +448,11 @@ function App() {
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
           <ForgotPasswordForm
-            userType="user"
-            onBack={() => setShowForgotPassword(false)}
+            userType={forgotPasswordUserType}
+            onBack={() => {
+              setShowForgotPassword(false);
+              setForgotPasswordUserType('user');
+            }}
             onSuccess={(data) => {
               console.log('Password reset email sent:', data);
               // Could show success message or redirect
