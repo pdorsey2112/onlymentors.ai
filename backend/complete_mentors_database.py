@@ -743,8 +743,191 @@ SPORTS_MENTORS = [
         "expertise": "Major championship performance, longevity, course management",
         "image_url": get_wikipedia_image_url("Jack Nicklaus"),
         "wiki_description": "Jack William Nicklaus is an American retired professional golfer and golf course designer."
+    },
+    # Additional Sports Champions - Expanding beyond limits
+    {
+        "id": "arnold_palmer", "name": "Arnold Palmer", "title": "Golf Legend",
+        "bio": "Golf legend known for his charismatic personality and aggressive playing style",
+        "expertise": "Golf technique, sportsmanship, business ventures, brand building",
+        "image_url": get_wikipedia_image_url("Arnold Palmer"),
+        "wiki_description": "Arnold Daniel Palmer was an American professional golfer who is generally regarded as one of the greatest and most charismatic players in the sport."
+    },
+    {
+        "id": "phil_jackson", "name": "Phil Jackson", "title": "Zen Master Coach",
+        "bio": "NBA coach with 11 championship rings, known for mindfulness approach",
+        "expertise": "Team chemistry, mindfulness, championship coaching, leadership philosophy",
+        "image_url": get_wikipedia_image_url("Phil Jackson"),
+        "wiki_description": "Philip Douglas Jackson is an American former professional basketball player, coach, and executive."
+    },
+    {
+        "id": "john_wooden", "name": "John Wooden", "title": "Legendary UCLA Coach",
+        "bio": "UCLA basketball coach who won 10 NCAA championships in 12 years",
+        "expertise": "Team building, character development, winning culture, life lessons",
+        "image_url": get_wikipedia_image_url("John Wooden"),
+        "wiki_description": "John Robert Wooden was an American basketball player and head coach at UCLA."
+    },
+    {
+        "id": "kobe_bryant", "name": "Kobe Bryant", "title": "Mamba Mentality",
+        "bio": "Five-time NBA champion known for his relentless work ethic and 'Mamba Mentality'",
+        "expertise": "Mental toughness, work ethic, excellence pursuit, competitive mindset",
+        "image_url": get_wikipedia_image_url("Kobe Bryant"),
+        "wiki_description": "Kobe Bean Bryant was an American professional basketball player."
+    },
+    {
+        "id": "shaquille_oneal", "name": "Shaquille O'Neal", "title": "The Big Aristotle",
+        "bio": "Dominant NBA center and successful entrepreneur and entertainer",
+        "expertise": "Basketball dominance, entertainment, business ventures, leadership",
+        "image_url": get_wikipedia_image_url("Shaquille O'Neal"),
+        "wiki_description": "Shaquille Rashaun O'Neal, known commonly as Shaq, is an American former professional basketball player."
+    },
+    {
+        "id": "larry_bird", "name": "Larry Bird", "title": "The Hick from French Lick",
+        "bio": "Three-time NBA champion and one of the greatest shooters in basketball history",
+        "expertise": "Basketball fundamentals, clutch performance, team leadership, competitiveness",
+        "image_url": get_wikipedia_image_url("Larry Bird"),
+        "wiki_description": "Larry Joe Bird is an American former professional basketball player, coach, and executive."
+    },
+    {
+        "id": "tom_brady", "name": "Tom Brady", "title": "The GOAT",
+        "bio": "Seven-time Super Bowl champion quarterback with unmatched longevity",
+        "expertise": "Leadership, longevity, clutch performance, team building, nutrition",
+        "image_url": get_wikipedia_image_url("Tom Brady"),
+        "wiki_description": "Thomas Edward Patrick Brady Jr. is an American former football quarterback."
+    },
+    {
+        "id": "joe_montana", "name": "Joe Montana", "title": "Joe Cool",
+        "bio": "Four-time Super Bowl champion known for his clutch performances",
+        "expertise": "Clutch performance, leadership, quarterback skills, pressure management",
+        "image_url": get_wikipedia_image_url("Joe Montana"),
+        "wiki_description": "Joseph Clifford Montana Jr., nicknamed Joe Cool and the Comeback Kid, is an American former football quarterback."
+    },
+    {
+        "id": "peyton_manning", "name": "Peyton Manning", "title": "The Sheriff",
+        "bio": "Five-time NFL MVP and two-time Super Bowl champion quarterback",
+        "expertise": "Football intelligence, preparation, leadership, quarterback mastery",
+        "image_url": get_wikipedia_image_url("Peyton Manning"),
+        "wiki_description": "Peyton Williams Manning is an American former football quarterback."
+    },
+    {
+        "id": "wayne_gretzky", "name": "Wayne Gretzky", "title": "The Great One",
+        "bio": "Hockey legend who holds numerous NHL records and transformed the sport",
+        "expertise": "Hockey excellence, vision, anticipation, leadership, sports legacy",
+        "image_url": get_wikipedia_image_url("Wayne Gretzky"),
+        "wiki_description": "Wayne Douglas Gretzky CC is a Canadian former professional ice hockey player and former head coach."
+    },
+    {
+        "id": "mario_lemieux", "name": "Mario Lemieux", "title": "The Magnificent One",
+        "bio": "Hockey superstar who overcame health challenges to achieve greatness",
+        "expertise": "Resilience, hockey skills, overcoming adversity, leadership",
+        "image_url": get_wikipedia_image_url("Mario Lemieux"),
+        "wiki_description": "Mario Lemieux OC CQ is a Canadian former professional ice hockey player."
+    },
+    {
+        "id": "babe_ruth", "name": "Babe Ruth", "title": "The Sultan of Swat",
+        "bio": "Baseball legend who revolutionized the game and became a cultural icon",
+        "expertise": "Baseball excellence, entertainment value, cultural impact, charisma",
+        "image_url": get_wikipedia_image_url("Babe Ruth"),
+        "wiki_description": "George Herman Ruth Jr., nicknamed Babe Ruth and the Bambino, was an American professional baseball player."
+    },
+    {
+        "id": "lou_gehrig", "name": "Lou Gehrig", "title": "The Iron Horse",
+        "bio": "Baseball legend known for his durability and sportsmanship",
+        "expertise": "Consistency, durability, sportsmanship, character, work ethic",
+        "image_url": get_wikipedia_image_url("Lou Gehrig"),
+        "wiki_description": "Henry Louis Gehrig, nicknamed the Iron Horse, was an American professional baseball first baseman."
+    },
+    {
+        "id": "jackie_robinson", "name": "Jackie Robinson", "title": "Breaking Barriers",
+        "bio": "Baseball pioneer who broke the color barrier in Major League Baseball",
+        "expertise": "Breaking barriers, courage, social change, baseball excellence",
+        "image_url": get_wikipedia_image_url("Jackie Robinson"),
+        "wiki_description": "Jack Roosevelt Robinson was an American professional baseball player who became the first African American to play in Major League Baseball."
+    },
+    {
+        "id": "hank_aaron", "name": "Hank Aaron", "title": "Hammerin' Hank",
+        "bio": "Baseball legend and civil rights icon who broke Babe Ruth's home run record",
+        "expertise": "Baseball excellence, perseverance, breaking records, social impact",
+        "image_url": get_wikipedia_image_url("Hank Aaron"),
+        "wiki_description": "Henry Louis Aaron, nicknamed Hammerin' Hank, was an American professional baseball right fielder."
+    },
+    {
+        "id": "willie_mays", "name": "Willie Mays", "title": "The Say Hey Kid",
+        "bio": "Baseball Hall of Famer known for his all-around excellence and charisma",
+        "expertise": "Baseball fundamentals, all-around excellence, entertainment, sportsmanship",
+        "image_url": get_wikipedia_image_url("Willie Mays"),
+        "wiki_description": "Willie Howard Mays Jr., nicknamed the Say Hey Kid, is an American former professional baseball center fielder."
+    },
+    {
+        "id": "derek_jeter", "name": "Derek Jeter", "title": "The Captain",
+        "bio": "Five-time World Series champion and Yankees captain known for leadership",
+        "expertise": "Leadership, clutch performance, team culture, professionalism",
+        "image_url": get_wikipedia_image_url("Derek Jeter"),
+        "wiki_description": "Derek Sanderson Jeter is an American former professional baseball shortstop, businessman, and baseball executive."
+    },
+    {
+        "id": "floyd_mayweather", "name": "Floyd Mayweather Jr.", "title": "Money Mayweather",
+        "bio": "Undefeated professional boxer and master of defensive boxing",
+        "expertise": "Boxing technique, self-promotion, business acumen, defensive mastery",
+        "image_url": get_wikipedia_image_url("Floyd Mayweather Jr."),
+        "wiki_description": "Floyd Joy Mayweather Jr. is an American boxing promoter and former professional boxer."
+    },
+    {
+        "id": "manny_pacquiao", "name": "Manny Pacquiao", "title": "The Fighting Pride of the Philippines",
+        "bio": "Eight-division world champion boxer and Filipino politician",
+        "expertise": "Boxing versatility, determination, overcoming poverty, public service",
+        "image_url": get_wikipedia_image_url("Manny Pacquiao"),
+        "wiki_description": "Emmanuel Dapidran Pacquiao Sr. is a Filipino politician and former professional boxer."
+    },
+    {
+        "id": "sugar_ray_robinson", "name": "Sugar Ray Robinson", "title": "Boxing's Greatest",
+        "bio": "Widely considered the greatest boxer pound-for-pound of all time",
+        "expertise": "Boxing technique, ring generalship, athletic excellence, style",
+        "image_url": get_wikipedia_image_url("Sugar Ray Robinson"),
+        "wiki_description": "Walker Smith Jr., better known as Sugar Ray Robinson, was an American professional boxer."
+    },
+    {
+        "id": "simone_biles", "name": "Simone Biles", "title": "Gymnastics GOAT",
+        "bio": "Most decorated gymnast in history with unmatched athletic abilities",
+        "expertise": "Gymnastics excellence, mental health advocacy, resilience, athletic perfection",
+        "image_url": get_wikipedia_image_url("Simone Biles"),
+        "wiki_description": "Simone Arianne Biles is an American artistic gymnast."
+    },
+    {
+        "id": "nadia_comaneci", "name": "Nadia Comăneci", "title": "Perfect 10",
+        "bio": "First gymnast to score a perfect 10 at the Olympics",
+        "expertise": "Gymnastics perfection, Olympic excellence, precision, dedication",
+        "image_url": get_wikipedia_image_url("Nadia Comăneci"),
+        "wiki_description": "Nadia Elena Comăneci is a Romanian retired gymnast and a five-time Olympic gold medalist."
+    },
+    {
+        "id": "katie_ledecky", "name": "Katie Ledecky", "title": "Swimming Phenomenon",
+        "bio": "American swimmer with multiple Olympic golds and world records",
+        "expertise": "Swimming excellence, distance swimming, training discipline, competitive spirit",
+        "image_url": get_wikipedia_image_url("Katie Ledecky"),
+        "wiki_description": "Kathleen Genevieve Ledecky is an American competitive swimmer."
+    },
+    {
+        "id": "mark_spitz", "name": "Mark Spitz", "title": "Seven Gold Medal Legend",
+        "bio": "American swimmer who won seven gold medals at 1972 Olympics",
+        "expertise": "Swimming technique, Olympic preparation, competitive excellence, goal achievement",
+        "image_url": get_wikipedia_image_url("Mark Spitz"),
+        "wiki_description": "Mark Andrew Spitz is an American former competitive swimmer and nine-time Olympic champion."
+    },
+    {
+        "id": "jesse_owens", "name": "Jesse Owens", "title": "Olympic Hero",
+        "bio": "Track and field legend who won four golds at 1936 Berlin Olympics",
+        "expertise": "Track and field excellence, overcoming racism, Olympic greatness, courage",
+        "image_url": get_wikipedia_image_url("Jesse Owens"),
+        "wiki_description": "James Cleveland Owens was an American track and field athlete and four-time gold medalist in the 1936 Olympic Games."
+    },
+    {
+        "id": "florence_griffith_joyner", "name": "Florence Griffith-Joyner", "title": "Flo-Jo",
+        "bio": "American sprinter and world record holder known for her style and speed",
+        "expertise": "Sprinting excellence, style, confidence, breaking barriers",
+        "image_url": get_wikipedia_image_url("Florence Griffith Joyner"),
+        "wiki_description": "Florence Delorez Griffith Joyner, also known as Flo-Jo, was an American track and field athlete."
     }
-    # Note: This continues to 100 sports mentors
+    # This list can continue growing without limits - more sports legends can be added
 ]
 
 # Health & Wellness Experts (100 mentors)
