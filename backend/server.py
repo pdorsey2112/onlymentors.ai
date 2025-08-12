@@ -1321,13 +1321,16 @@ async def get_single_content(
         raise HTTPException(status_code=500, detail=f"Failed to get content: {str(e)}")
 
 @app.post("/api/creators/{creator_id}/content/{content_id}/duplicate")
-async def duplicate_creator_content(creator_id: str, content_id: str):
+async def duplicate_creator_content(
+    creator_id: str, 
+    content_id: str,
+    current_creator = Depends(get_current_creator)
+):
     """Duplicate existing content"""
     try:
-        # Verify creator exists
-        creator = await db.creators.find_one({"creator_id": creator_id})
-        if not creator:
-            raise HTTPException(status_code=404, detail="Creator not found")
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only duplicate your own content")
         
         # Get original content
         original_content = await db.creator_content.find_one({
