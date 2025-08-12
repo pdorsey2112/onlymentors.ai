@@ -1235,6 +1235,10 @@ function App() {
           <CreatorLogin 
             onSuccess={handleCreatorLoginSuccess}
             onSwitchToSignup={() => switchCreatorAuthMode('signup')}
+            onForgotPassword={() => {
+              setForgotPasswordUserType('mentor');
+              setShowForgotPassword(true);
+            }}
           />
         ) : (
           <CreatorSignup 
