@@ -60,6 +60,7 @@ from ai_agent_framework import (
     ContentModerationAI, CustomerServiceAI, SalesAnalyticsAI, MarketingAnalyticsAI,
     DEFAULT_AI_AGENTS, create_default_ai_agent
 )
+from oauth_system import *
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
