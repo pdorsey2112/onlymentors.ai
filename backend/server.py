@@ -506,6 +506,290 @@ async def get_google_oauth_config():
     except ValueError as e:
         raise HTTPException(status_code=500, detail=f"Google OAuth not configured: {str(e)}")
 
+# =============================================================================
+# FORGOT PASSWORD SYSTEM - Complete Password Reset Process
+# =============================================================================
+
+@app.post("/api/auth/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    """Handle forgot password requests for both users and mentors"""
+    try:
+        # Input validation
+        if request.user_type not in ["user", "mentor"]:
+            raise HTTPException(status_code=400, detail="user_type must be 'user' or 'mentor'")
+        
+        # Rate limiting - max 3 attempts per hour per email
+        recent_attempts = await get_recent_reset_attempts(db, request.email, hours=1)
+        if recent_attempts >= 3:
+            raise HTTPException(
+                status_code=429, 
+                detail="Too many password reset attempts. Please wait 1 hour before trying again."
+            )
+        
+        # Find user/mentor by email
+        if request.user_type == "mentor":
+            collection = db.creators  # Mentors are stored in creators collection
+            user_doc = await collection.find_one({"email": request.email})
+            user_name = user_doc.get("full_name", "Mentor") if user_doc else "Mentor"
+        else:
+            collection = db.users
+            user_doc = await collection.find_one({"email": request.email})
+            user_name = user_doc.get("full_name", "User") if user_doc else "User"
+        
+        # Always return success message for security (don't reveal if email exists)
+        success_response = ForgotPasswordResponse(
+            message=f"If an account with email {request.email} exists, a password reset link has been sent.",
+            email=request.email,
+            expires_in=60  # 1 hour in minutes
+        )
+        
+        # Only send email if user/mentor actually exists
+        if user_doc:
+            # Create reset token
+            reset_token = await create_password_reset_token(db, request.email, request.user_type)
+            
+            if reset_token:
+                # Send password reset email
+                email_sent = await send_password_reset_email(
+                    request.email, reset_token, request.user_type, user_name
+                )
+                
+                # Log the attempt
+                await log_password_reset_attempt(
+                    db, request.email, request.user_type, 
+                    success=email_sent
+                )
+                
+                if not email_sent:
+                    # Log failure but still return success for security
+                    print(f"❌ Failed to send password reset email to {request.email}")
+        else:
+            # Log attempt for non-existent user
+            await log_password_reset_attempt(
+                db, request.email, request.user_type, success=False
+            )
+        
+        # Clean up old tokens periodically
+        await cleanup_expired_tokens(db)
+        
+        return success_response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Forgot password error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to process password reset request")
+
+@app.post("/api/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    """Handle password reset confirmation"""
+    try:
+        # Input validation
+        if request.user_type not in ["user", "mentor"]:
+            raise HTTPException(status_code=400, detail="user_type must be 'user' or 'mentor'")
+        
+        if not request.token or not request.new_password:
+            raise HTTPException(status_code=400, detail="Token and new password are required")
+        
+        # Validate password strength
+        is_strong, message = validate_password_strength(request.new_password)
+        if not is_strong:
+            raise HTTPException(status_code=400, detail=message)
+        
+        # Validate reset token
+        token_doc = await validate_reset_token(db, request.token, request.user_type)
+        if not token_doc:
+            raise HTTPException(
+                status_code=400, 
+                detail="Invalid or expired reset token. Please request a new password reset."
+            )
+        
+        # Find user/mentor by email
+        if request.user_type == "mentor":
+            collection = db.creators
+            user_doc = await collection.find_one({"email": token_doc["email"]})
+        else:
+            collection = db.users
+            user_doc = await collection.find_one({"email": token_doc["email"]})
+        
+        if not user_doc:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Hash new password
+        new_password_hash = hash_password(request.new_password)
+        
+        # Update password in database
+        if request.user_type == "mentor":
+            await collection.update_one(
+                {"email": token_doc["email"]},
+                {
+                    "$set": {
+                        "password_hash": new_password_hash,
+                        "password_reset_at": datetime.utcnow(),
+                        "last_login": None  # Force re-login
+                    }
+                }
+            )
+        else:
+            await collection.update_one(
+                {"email": token_doc["email"]},
+                {
+                    "$set": {
+                        "password_hash": new_password_hash,
+                        "password_reset_at": datetime.utcnow(),
+                        "last_login": None  # Force re-login
+                    }
+                }
+            )
+        
+        # Mark token as used
+        await mark_token_as_used(db, request.token)
+        
+        # Log successful password reset
+        await log_password_reset_attempt(
+            db, token_doc["email"], request.user_type, success=True
+        )
+        
+        # Send confirmation email (optional)
+        try:
+            user_name = user_doc.get("full_name", "User")
+            await send_password_reset_confirmation_email(
+                token_doc["email"], user_name, request.user_type
+            )
+        except Exception as e:
+            print(f"⚠️  Failed to send confirmation email: {str(e)}")
+        
+        return {
+            "message": "Password has been reset successfully. Please log in with your new password.",
+            "email": token_doc["email"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Reset password error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to reset password")
+
+@app.post("/api/auth/validate-reset-token")
+async def validate_reset_token_endpoint(token: str, user_type: str):
+    """Validate a password reset token without using it"""
+    try:
+        if user_type not in ["user", "mentor"]:
+            raise HTTPException(status_code=400, detail="user_type must be 'user' or 'mentor'")
+        
+        token_doc = await validate_reset_token(db, token, user_type)
+        
+        if not token_doc:
+            raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+        
+        return {
+            "valid": True,
+            "email": token_doc["email"],
+            "expires_at": token_doc["expires_at"],
+            "time_remaining": int((token_doc["expires_at"] - datetime.utcnow()).total_seconds() / 60)  # minutes
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to validate reset token")
+
+async def send_password_reset_confirmation_email(email: str, user_name: str, user_type: str):
+    """Send confirmation email after successful password reset"""
+    try:
+        reset_config.validate_config()
+        
+        # Create SendGrid client
+        sg = sendgrid.SendGridAPIClient(api_key=reset_config.sendgrid_api_key)
+        
+        # Email subject and content
+        subject = "Password Reset Confirmation - OnlyMentors.ai"
+        user_type_text = "mentor account" if user_type == "mentor" else "account"
+        
+        # HTML email content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Password Reset Confirmation - OnlyMentors.ai</title>
+            <style>
+                body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+                .content {{ background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
+                .success {{ background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .warning {{ background: #fffbeb; border: 1px solid #fed7aa; color: #92400e; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
+                .button {{ display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🧠 OnlyMentors.ai</h1>
+                </div>
+                <div class="content">
+                    <h2>✅ Password Reset Successful</h2>
+                    <p>Hello {user_name},</p>
+                    
+                    <div class="success">
+                        <strong>🎉 Success!</strong> Your OnlyMentors.ai {user_type_text} password has been successfully reset.
+                    </div>
+                    
+                    <p>Your password was changed on <strong>{datetime.utcnow().strftime('%B %d, %Y at %I:%M %p UTC')}</strong>.</p>
+                    
+                    <p>You can now log in to your account using your new password:</p>
+                    
+                    <div style="text-align: center;">
+                        <a href="{reset_config.frontend_base_url}" class="button">Log In Now</a>
+                    </div>
+                    
+                    <div class="warning">
+                        <strong>⚠️ Security Notice:</strong>
+                        <ul>
+                            <li>If you didn't reset your password, please contact support immediately</li>
+                            <li>We recommend using a strong, unique password</li>
+                            <li>Never share your password with anyone</li>
+                        </ul>
+                    </div>
+                    
+                    <p>If you have any questions or concerns, please contact our support team.</p>
+                    
+                    <p>Best regards,<br>
+                    The OnlyMentors.ai Team</p>
+                </div>
+                <div class="footer">
+                    <p>© 2024 OnlyMentors.ai - Connect with the Greatest Minds</p>
+                    <p>This email was sent to {email}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Create and send email
+        from_email = Email(reset_config.from_email)
+        to_email = To(email)
+        plain_content = Content("text/plain", f"Your OnlyMentors.ai password has been successfully reset on {datetime.utcnow().strftime('%B %d, %Y at %I:%M %p UTC')}. You can now log in with your new password.")
+        html_content_obj = Content("text/html", html_content)
+        
+        mail = Mail(from_email, to_email, subject, plain_content)
+        mail.add_content(html_content_obj)
+        
+        response = sg.client.mail.send.post(request_body=mail.get())
+        
+        if response.status_code in [200, 202]:
+            print(f"✅ Password reset confirmation email sent to {email}")
+        else:
+            print(f"❌ Failed to send confirmation email: {response.status_code}")
+            
+    except Exception as e:
+        print(f"❌ Confirmation email error: {str(e)}")
+        # Don't raise exception - this is not critical
+
 @app.post("/api/questions/ask")
 async def ask_question(question_data: QuestionRequest, current_user = Depends(get_current_user)):
     # Check if user can ask questions
