@@ -1142,6 +1142,217 @@ async def get_creator_content(creator_id: str, limit: int = 20, offset: int = 0)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get content: {str(e)}")
 
+# =============================================================================
+# ENHANCED CONTENT MANAGEMENT ENDPOINTS - Option 3
+# =============================================================================
+
+class ContentUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    tags: Optional[List[str]] = None
+    is_public: Optional[bool] = None
+    is_featured: Optional[bool] = None
+
+@app.put("/api/creators/{creator_id}/content/{content_id}")
+async def update_creator_content(
+    creator_id: str, 
+    content_id: str, 
+    update_data: ContentUpdateRequest
+):
+    """Update/Edit creator's content"""
+    try:
+        # Verify creator exists
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        # Verify content exists and belongs to creator
+        content = await db.creator_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        if not content:
+            raise HTTPException(status_code=404, detail="Content not found or doesn't belong to creator")
+        
+        # Build update document
+        update_doc = {"updated_at": datetime.utcnow()}
+        
+        if update_data.title is not None:
+            update_doc["title"] = update_data.title
+        if update_data.description is not None:
+            update_doc["description"] = update_data.description
+        if update_data.category is not None:
+            update_doc["category"] = update_data.category
+        if update_data.tags is not None:
+            update_doc["tags"] = update_data.tags
+        if update_data.is_public is not None:
+            update_doc["is_public"] = update_data.is_public
+        if update_data.is_featured is not None:
+            update_doc["is_featured"] = update_data.is_featured
+        
+        # Update content
+        result = await db.creator_content.update_one(
+            {"content_id": content_id, "creator_id": creator_id},
+            {"$set": update_doc}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=400, detail="No changes made to content")
+        
+        # Get updated content
+        updated_content = await db.creator_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        
+        # Convert ObjectId for JSON serialization
+        if updated_content and "_id" in updated_content:
+            updated_content["_id"] = str(updated_content["_id"])
+        
+        return {
+            "message": "Content updated successfully",
+            "content": updated_content
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update content: {str(e)}")
+
+@app.delete("/api/creators/{creator_id}/content/{content_id}")
+async def delete_creator_content(creator_id: str, content_id: str):
+    """Delete creator's content"""
+    try:
+        # Verify creator exists
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        # Verify content exists and belongs to creator
+        content = await db.creator_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        if not content:
+            raise HTTPException(status_code=404, detail="Content not found or doesn't belong to creator")
+        
+        # Delete associated file if it exists
+        if content.get("file_url") and os.path.exists(content["file_url"]):
+            try:
+                os.remove(content["file_url"])
+            except OSError as e:
+                print(f"Warning: Could not delete file {content['file_url']}: {str(e)}")
+        
+        # Delete content from database
+        result = await db.creator_content.delete_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=400, detail="Failed to delete content")
+        
+        # Update creator content count
+        await db.creators.update_one(
+            {"creator_id": creator_id},
+            {"$inc": {"stats.content_count": -1}}
+        )
+        
+        return {
+            "message": "Content deleted successfully",
+            "content_id": content_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete content: {str(e)}")
+
+@app.get("/api/creators/{creator_id}/content/{content_id}")
+async def get_single_content(creator_id: str, content_id: str):
+    """Get single content item for editing"""
+    try:
+        # Verify creator exists
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        # Get content
+        content = await db.creator_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        if not content:
+            raise HTTPException(status_code=404, detail="Content not found or doesn't belong to creator")
+        
+        # Convert ObjectId for JSON serialization
+        if "_id" in content:
+            content["_id"] = str(content["_id"])
+        
+        return {"content": content}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get content: {str(e)}")
+
+@app.post("/api/creators/{creator_id}/content/{content_id}/duplicate")
+async def duplicate_creator_content(creator_id: str, content_id: str):
+    """Duplicate existing content"""
+    try:
+        # Verify creator exists
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            raise HTTPException(status_code=404, detail="Creator not found")
+        
+        # Get original content
+        original_content = await db.creator_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        if not original_content:
+            raise HTTPException(status_code=404, detail="Content not found or doesn't belong to creator")
+        
+        # Create duplicate content document
+        new_content_id = generate_content_id()
+        duplicate_content = {
+            **original_content,
+            "content_id": new_content_id,
+            "title": f"{original_content['title']} (Copy)",
+            "view_count": 0,
+            "like_count": 0,
+            "is_featured": False,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Remove the original _id to create new document
+        if "_id" in duplicate_content:
+            del duplicate_content["_id"]
+        
+        # Save duplicate content
+        await db.creator_content.insert_one(duplicate_content)
+        
+        # Update creator content count
+        await db.creators.update_one(
+            {"creator_id": creator_id},
+            {"$inc": {"stats.content_count": 1}}
+        )
+        
+        # Convert ObjectId for JSON serialization
+        duplicate_content["_id"] = str(duplicate_content["_id"]) if "_id" in duplicate_content else None
+        
+        return {
+            "message": "Content duplicated successfully",
+            "content": duplicate_content
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to duplicate content: {str(e)}")
+
 @app.get("/api/creators/{creator_id}/verification-status")
 async def get_verification_status(creator_id: str):
     """Get creator verification status"""
