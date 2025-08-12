@@ -10,15 +10,26 @@ def get_wikipedia_image_url(person_name):
     Returns None if no image found
     """
     try:
-        # Format name for Wikipedia URL
-        wiki_name = person_name.replace(' ', '_')
-        wiki_url = f"https://en.wikipedia.org/wiki/{wiki_name}"
+        import urllib.parse
         
-        # For now, return None to show no image if Wikipedia image not available
-        # This ensures we only show real photos when they exist
+        # Format name for Wikipedia API
+        formatted_name = person_name.replace(' ', '_')
+        api_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(formatted_name)}"
+        
+        response = requests.get(api_url, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Try to get the main page image
+            if 'originalimage' in data and data['originalimage']:
+                return data['originalimage']['source']
+            elif 'thumbnail' in data and data['thumbnail']:
+                return data['thumbnail']['source']
+        
         return None
         
-    except:
+    except Exception as e:
+        print(f"Warning: Could not fetch image for {person_name}: {str(e)}")
         return None
 
 # Business Leaders (100 mentors) - Based on DigitalDefynd research
