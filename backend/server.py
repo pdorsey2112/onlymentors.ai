@@ -1154,14 +1154,6 @@ async def get_creator_content(creator_id: str, limit: int = 20, offset: int = 0)
 # ENHANCED CONTENT MANAGEMENT ENDPOINTS - Option 3
 # =============================================================================
 
-class ContentUpdateRequest(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    category: Optional[str] = None
-    tags: Optional[List[str]] = None
-    is_public: Optional[bool] = None
-    is_featured: Optional[bool] = None
-
 @app.put("/api/creators/{creator_id}/content/{content_id}")
 async def update_creator_content(
     creator_id: str, 
