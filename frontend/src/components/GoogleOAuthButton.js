@@ -33,29 +33,47 @@ const GoogleOAuthButton = ({ onSuccess, onError, disabled = false, text = "Sign 
     try {
       setLoading(true);
 
+      console.log('Google OAuth Response:', credentialResponse);
+
+      // Prepare the request body based on what Google provides
+      const requestBody = {
+        provider: 'google'
+      };
+
+      // Handle different Google OAuth response types
+      if (credentialResponse.credential) {
+        // ID token flow (most common with new Google OAuth)
+        requestBody.id_token = credentialResponse.credential;
+      } else if (credentialResponse.code) {
+        // Authorization code flow
+        requestBody.code = credentialResponse.code;
+      } else {
+        throw new Error('No valid credential or code received from Google');
+      }
+
+      console.log('Sending to backend:', requestBody);
+
       // Send the credential to our backend
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          provider: 'google',
-          code: credentialResponse.code || credentialResponse.credential,
-          id_token: credentialResponse.credential
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (response.ok) {
         const authData = await response.json();
+        console.log('Backend response:', authData);
         onSuccess(authData);
       } else {
         const error = await response.json();
+        console.error('Backend error:', error);
         onError(error.detail || 'Google authentication failed');
       }
     } catch (error) {
       console.error('Google OAuth error:', error);
-      onError('Google authentication failed');
+      onError('Google authentication failed: ' + error.message);
     } finally {
       setLoading(false);
     }
