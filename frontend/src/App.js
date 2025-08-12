@@ -1332,8 +1332,6 @@ function App() {
           }
         })()}
       </main>
-
-
     </div>
   );
 }
