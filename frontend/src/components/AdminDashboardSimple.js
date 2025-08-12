@@ -9,6 +9,18 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
     const [financialReport, setFinancialReport] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Helper function to format numbers with commas
+    const formatNumber = (num) => {
+        if (num == null || num === undefined) return '0';
+        return num.toLocaleString();
+    };
+
+    // Helper function to format currency with commas
+    const formatCurrency = (num) => {
+        if (num == null || num === undefined) return '$0.00';
+        return `$${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
     const getAuthHeaders = () => ({
         'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
         'Content-Type': 'application/json'
