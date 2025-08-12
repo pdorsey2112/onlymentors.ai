@@ -371,9 +371,9 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                             {mentor.status}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '15px', color: '#374151' }}>{mentor.subscriber_count}</td>
+                                    <td style={{ padding: '15px', color: '#374151' }}>{formatNumber(mentor.subscriber_count)}</td>
                                     <td style={{ padding: '15px', color: '#22c55e', fontWeight: '600' }}>
-                                        ${mentor.total_earnings?.toFixed(2) || '0.00'}
+                                        {formatCurrency(mentor.total_earnings)}
                                     </td>
                                 </tr>
                             ))}
