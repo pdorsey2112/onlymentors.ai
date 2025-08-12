@@ -78,7 +78,7 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
     };
 
     fetchConfig();
-  }, [config]);
+  }, []); // Remove config dependency to avoid infinite loop
 
   const handleFacebookLogin = () => {
     if (!window.FB || !fbLoaded || !config) {
