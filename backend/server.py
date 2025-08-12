@@ -1290,13 +1290,16 @@ async def delete_creator_content(
         raise HTTPException(status_code=500, detail=f"Failed to delete content: {str(e)}")
 
 @app.get("/api/creators/{creator_id}/content/{content_id}")
-async def get_single_content(creator_id: str, content_id: str):
+async def get_single_content(
+    creator_id: str, 
+    content_id: str,
+    current_creator = Depends(get_current_creator)
+):
     """Get single content item for editing"""
     try:
-        # Verify creator exists
-        creator = await db.creators.find_one({"creator_id": creator_id})
-        if not creator:
-            raise HTTPException(status_code=404, detail="Creator not found")
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only access your own content")
         
         # Get content
         content = await db.creator_content.find_one({
