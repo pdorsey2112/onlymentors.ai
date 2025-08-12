@@ -254,15 +254,15 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#666' }}>Approved Mentors:</span>
-                                <span style={{ fontWeight: 'bold', color: '#22c55e' }}>{dashboardData.mentor_metrics.approved_mentors}</span>
+                                <span style={{ fontWeight: 'bold', color: '#22c55e' }}>{formatNumber(dashboardData.mentor_metrics.approved_mentors)}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#666' }}>Pending Approval:</span>
-                                <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{dashboardData.mentor_metrics.pending_mentors}</span>
+                                <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{formatNumber(dashboardData.mentor_metrics.pending_mentors)}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#666' }}>Total Earnings:</span>
-                                <span style={{ fontWeight: 'bold', color: '#22c55e' }}>${dashboardData.mentor_metrics.total_earnings?.toFixed(2) || 0}</span>
+                                <span style={{ fontWeight: 'bold', color: '#22c55e' }}>{formatCurrency(dashboardData.mentor_metrics.total_earnings)}</span>
                             </div>
                         </div>
                     </div>
