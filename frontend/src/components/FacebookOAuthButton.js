@@ -25,18 +25,24 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
         script.crossOrigin = 'anonymous';
         
         script.onload = () => {
+          console.log('Facebook SDK script loaded');
           // Set up fbAsyncInit function
           window.fbAsyncInit = () => {
+            console.log('fbAsyncInit called');
             try {
               if (config && config.app_id) {
+                console.log('Initializing Facebook SDK with App ID:', config.app_id);
                 window.FB.init({
                   appId: config.app_id,
                   cookie: true,
                   xfbml: true,
                   version: 'v18.0'
                 });
+                console.log('Facebook SDK initialized successfully');
                 setFbLoaded(true);
                 resolve(window.FB);
+              } else {
+                console.warn('Facebook config not ready for SDK init');
               }
             } catch (err) {
               console.error('Facebook SDK init error:', err);
@@ -44,8 +50,9 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
             }
           };
           
-          // If fbAsyncInit was already called, call it again
+          // If fbAsyncInit was already called or FB is available, call it again
           if (window.FB && config && config.app_id) {
+            console.log('Facebook SDK already loaded, initializing directly');
             try {
               window.FB.init({
                 appId: config.app_id,
@@ -53,6 +60,7 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
                 xfbml: true,
                 version: 'v18.0'
               });
+              console.log('Facebook SDK direct init successful');
               setFbLoaded(true);
               resolve(window.FB);
             } catch (err) {
