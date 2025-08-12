@@ -1175,14 +1175,14 @@ async def get_creator_content(creator_id: str, limit: int = 20, offset: int = 0)
 async def update_creator_content(
     creator_id: str, 
     content_id: str, 
-    update_data: ContentUpdateRequest
+    update_data: ContentUpdateRequest,
+    current_creator = Depends(get_current_creator)
 ):
     """Update/Edit creator's content"""
     try:
-        # Verify creator exists
-        creator = await db.creators.find_one({"creator_id": creator_id})
-        if not creator:
-            raise HTTPException(status_code=404, detail="Creator not found")
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only manage your own content")
         
         # Verify content exists and belongs to creator
         content = await db.creator_content.find_one({
