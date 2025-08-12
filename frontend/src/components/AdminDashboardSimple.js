@@ -302,7 +302,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                 }}>
                                     <td style={{ padding: '15px', color: '#374151' }}>{user.email}</td>
                                     <td style={{ padding: '15px', color: '#374151' }}>{user.full_name}</td>
-                                    <td style={{ padding: '15px', color: '#374151' }}>{user.questions_asked}</td>
+                                    <td style={{ padding: '15px', color: '#374151' }}>{formatNumber(user.questions_asked)}</td>
                                     <td style={{ padding: '15px' }}>
                                         <span style={{
                                             padding: '4px 12px',
