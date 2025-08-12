@@ -199,7 +199,7 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
         // Call the async handler
         handleResponse();
       }, {
-        scope: 'email,public_profile',
+        scope: 'public_profile',
         return_scopes: true,
         auth_type: 'rerequest' // Force user to re-grant permissions if needed
       });
