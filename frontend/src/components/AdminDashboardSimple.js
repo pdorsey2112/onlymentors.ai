@@ -266,7 +266,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ color: '#666' }}>Total Earnings:</span>
-                                <span style={{ fontWeight: 'bold', color: '#22c55e' }}>{formatCurrency(dashboardData.mentor_metrics.total_earnings)}</span>
+                                <span style={{ fontWeight: 'bold', color: '#333' }}>{formatCurrency(dashboardData.mentor_metrics.total_earnings)}</span>
                             </div>
                         </div>
                     </div>
