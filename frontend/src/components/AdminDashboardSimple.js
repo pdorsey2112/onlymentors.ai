@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import EnhancedContextDemo from './EnhancedContextDemo';
 
 const AdminDashboardSimple = ({ admin, onLogout }) => {
     const [activeTab, setActiveTab] = useState('overview');
