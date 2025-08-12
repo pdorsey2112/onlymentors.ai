@@ -51,6 +51,7 @@ function App() {
   const [responses, setResponses] = useState([]);
   const [authMode, setAuthMode] = useState('login');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordUserType, setForgotPasswordUserType] = useState('user');
   const [authForm, setAuthForm] = useState({ email: '', password: '', full_name: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
