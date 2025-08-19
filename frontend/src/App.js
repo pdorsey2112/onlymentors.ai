@@ -1265,15 +1265,15 @@ function MainApp() {
               <Card key={index} className="bg-white border-gray-200 shadow-lg">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
+                    <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
                       {response.mentor.image_url ? (
-                        <AvatarImage src={response.mentor.image_url} alt={response.mentor.name} />
+                        <img src={response.mentor.image_url} alt={response.mentor.name} className="h-12 w-12 rounded-full object-cover" />
                       ) : (
-                        <AvatarFallback className="bg-purple-100 text-purple-600 font-bold">
+                        <div className="bg-purple-100 text-purple-600 font-bold h-12 w-12 rounded-full flex items-center justify-center">
                           <User className="h-6 w-6" />
-                        </AvatarFallback>
+                        </div>
                       )}
-                    </Avatar>
+                    </div>
                     <div>
                       <CardTitle className="text-gray-900">{response.mentor.name}</CardTitle>
                       <CardDescription className="text-purple-600">
