@@ -195,6 +195,38 @@ async def get_current_creator(credentials: HTTPAuthorizationCredentials = Depend
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid creator token")
 
+# Performance optimization: Response cache
+from typing import Dict
+import time
+
+# Simple in-memory cache with TTL (Time To Live)
+response_cache: Dict[str, Dict] = {}
+CACHE_TTL = 300  # 5 minutes cache
+
+def get_cache_key(mentor_id: str, question: str) -> str:
+    """Generate cache key for mentor-question combination"""
+    return f"{mentor_id}:{hash(question)}"
+
+def get_cached_response(cache_key: str) -> str:
+    """Get cached response if still valid"""
+    if cache_key in response_cache:
+        cached_data = response_cache[cache_key]
+        if time.time() - cached_data["timestamp"] < CACHE_TTL:
+            print(f"📦 Using cached response for {cache_key[:20]}...")
+            return cached_data["response"]
+        else:
+            # Remove expired cache entry
+            del response_cache[cache_key]
+    return None
+
+def cache_response(cache_key: str, response: str):
+    """Cache a mentor response"""
+    response_cache[cache_key] = {
+        "response": response,
+        "timestamp": time.time()
+    }
+    print(f"💾 Cached response for {cache_key[:20]}...")
+
 async def create_mentor_response(mentor, question):
     """Create AI-powered response from a mentor using their personality and expertise"""
     try:
