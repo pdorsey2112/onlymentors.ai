@@ -350,6 +350,7 @@ function MainApp() {
       };
       
       setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
       setSuccess(
         authData.is_new_user 
           ? `Welcome to OnlyMentors.ai, ${authData.full_name}!` 
