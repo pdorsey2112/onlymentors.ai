@@ -201,56 +201,37 @@ async def create_mentor_response(mentor, question):
         # Create a unique session ID for this mentor-question combination
         session_id = f"mentor_{mentor['id']}_{hash(question) % 10000}"
         
-        # Build system message based on mentor's personality and expertise
-        system_message = f"""You are {mentor['name']}, {mentor['expertise']}. {mentor['wiki_description']}
+        # Optimized system message - shorter but still personalized
+        system_message = f"""You are {mentor['name']}, {mentor['expertise']}.
 
-Personality and Communication Style:
-- Respond as if you are actually {mentor['name']}
-- Use your authentic voice, personality, and speaking patterns
-- Draw from your real-life experiences, achievements, and philosophy
-- Provide practical, actionable based on your expertise
-- Keep responses conversational yet insightful (2-3 paragraphs)
-- Use "I" statements and personal anecdotes where appropriate
-- Reflect your known values, beliefs, and approach to life/work
+Respond in your authentic voice with 2-3 paragraphs. Use personal experiences and "I" statements. Be practical and actionable. Your expertise: {mentor['expertise']}."""
 
-Areas of Expertise: {mentor['expertise']}
-
-Your response should feel authentic to who you are as a person and thought leader."""
-
-        print(f"🤖 Attempting LLM call for {mentor['name']} with session {session_id}")
+        print(f"🤖 Creating response for {mentor['name']} (concurrent)")
         
-        # Initialize LLM chat with additional debugging
+        # Initialize LLM chat with faster model settings
         chat = LlmChat(
             api_key=OPENAI_API_KEY,
             session_id=session_id,
             system_message=system_message
         ).with_model("openai", "gpt-4o-mini")
         
-        print(f"🤖 LlmChat initialized for {mentor['name']}")
-        
         # Create user message
         user_message = UserMessage(text=question)
         
-        print(f"🤖 Sending message to LLM for {mentor['name']}")
-        
-        # Get AI response with timeout handling
+        # Get AI response with shorter timeout for faster responses
         import asyncio
-        response = await asyncio.wait_for(chat.send_message(user_message), timeout=30.0)
+        response = await asyncio.wait_for(chat.send_message(user_message), timeout=20.0)
         
-        print(f"✅ LLM response received for {mentor['name']}: {len(response)} chars")
+        print(f"✅ Response ready for {mentor['name']}: {len(response)} chars")
         
         return response.strip()
         
     except asyncio.TimeoutError:
-        print(f"⏰ LLM API Timeout for {mentor['name']}")
-        return f"Thank you for your question about '{question}'. Based on my experience in {mentor['expertise']}, I believe this is an important topic that requires thoughtful consideration. While I'd love to provide a detailed response right now, I encourage you to explore this further and perhaps rephrase your question for the best guidance. {mentor['wiki_description']}"
+        print(f"⏰ Timeout for {mentor['name']} - using fallback")
+        return f"Thank you for your question. Based on my experience in {mentor['expertise']}, this is an important topic. {mentor.get('wiki_description', '')[:200]}..."
     except Exception as e:
-        # Fallback to a generic response if LLM fails
-        print(f"❌ LLM API Error for {mentor['name']}: {str(e)}")
-        print(f"❌ Error type: {type(e).__name__}")
-        import traceback
-        print(f"❌ Traceback: {traceback.format_exc()}")
-        return f"Thank you for your question about '{question}'. Based on my experience in {mentor['expertise']}, I believe this is an important topic that requires thoughtful consideration. While I'd love to provide a detailed response right now, I encourage you to explore this further and perhaps rephrase your question for the best guidance. {mentor['wiki_description']}"
+        print(f"❌ Error for {mentor['name']}: {str(e)}")
+        return f"Thank you for your question. Based on my experience in {mentor['expertise']}, this is an important topic that requires thoughtful consideration."
 
 # Routes
 @app.get("/")
