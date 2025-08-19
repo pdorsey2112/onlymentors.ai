@@ -784,12 +784,17 @@ function App() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredMentors.map((mentor) => {
             const isSelected = selectedMentors.some(m => m.id === mentor.id);
+            const isAtLimit = selectedMentors.length >= 5 && !isSelected;
             return (
               <Card
                 key={mentor.id}
-                className={`bg-white border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-300 cursor-pointer group relative ${
-                  isSelected ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' : ''
-                }`}
+                className={`bg-white border-gray-200 transition-all duration-300 relative ${
+                  isSelected 
+                    ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' 
+                    : isAtLimit 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : 'hover:border-purple-300 hover:shadow-md cursor-pointer'
+                } group`}
                 onClick={() => user && handleMentorSelect(mentor)}
               >
                 {/* Selection Checkbox */}
