@@ -283,7 +283,7 @@ function MainApp() {
     const checkAuth = async () => {
       try {
         // Check for regular user token
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('auth_token');
         const userData = localStorage.getItem('user');
         
         if (token && userData) {
