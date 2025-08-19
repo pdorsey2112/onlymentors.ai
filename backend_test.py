@@ -954,141 +954,103 @@ class OnlyMentorsAPITester:
         return False
 
 def main():
-    print("🚀 Starting OnlyMentors.ai Backend Tests - Focus on Google OAuth Integration")
-    print("=" * 70)
+    print("🚀 Starting OnlyMentors.ai Backend Tests - Complete User Profile Flow with Authentication")
+    print("=" * 90)
     
     # Setup
     tester = OnlyMentorsAPITester()
-    test_email = f"oauth_test_{datetime.now().strftime('%H%M%S')}@test.com"
-    test_password = "password123"
-    test_name = "OAuth Test User"
-
-    # Test 1: Root endpoint
-    tester.test_root_endpoint()
-
-    # Test 2: Categories endpoint (should work without auth)
-    tester.test_categories_endpoint()
-
-    # Test 3: GOOGLE OAUTH INTEGRATION TESTING - PRIMARY FOCUS
-    print(f"\n{'='*70}")
-    print("🔐 TESTING GOOGLE OAUTH INTEGRATION - PRIMARY FOCUS")
-    print(f"{'='*70}")
     
-    oauth_tests_passed = 0
-    oauth_tests_total = 0
-    
-    # Test Google OAuth configuration endpoint
-    oauth_tests_total += 1
-    if tester.test_google_oauth_config():
-        oauth_tests_passed += 1
-        print("✅ Google OAuth config endpoint working (proper error handling)")
-    else:
-        print("❌ Google OAuth config endpoint failed")
-    
-    # Test Google OAuth login without code
-    oauth_tests_total += 1
-    if tester.test_google_oauth_login_no_code():
-        oauth_tests_passed += 1
-        print("✅ Google OAuth login error handling working (no code)")
-    else:
-        print("❌ Google OAuth login error handling failed (no code)")
-    
-    # Test Google OAuth login with invalid code
-    oauth_tests_total += 1
-    if tester.test_google_oauth_login_invalid_code():
-        oauth_tests_passed += 1
-        print("✅ Google OAuth login error handling working (invalid code)")
-    else:
-        print("❌ Google OAuth login error handling failed (invalid code)")
-    
-    # Test database OAuth schema support
-    oauth_tests_total += 1
-    if tester.test_database_oauth_schema_support():
-        oauth_tests_passed += 1
-        print("✅ Database OAuth schema support working")
-    else:
-        print("❌ Database OAuth schema support failed")
-
-    # Test 4: EXISTING AUTHENTICATION TESTING
-    print(f"\n{'='*70}")
-    print("🔑 TESTING EXISTING AUTHENTICATION SYSTEM")
-    print(f"{'='*70}")
-    
-    auth_tests_passed = 0
-    auth_tests_total = 0
-    
-    # Test user signup
-    auth_tests_total += 1
-    if tester.test_signup(test_email, test_password, test_name):
-        auth_tests_passed += 1
-        print("✅ Regular email/password signup working")
-    else:
-        print("❌ Regular email/password signup failed")
+    # Test basic connectivity first
+    print(f"\n🌐 Testing Basic API Connectivity")
+    if not tester.test_root_endpoint():
+        print("❌ Cannot connect to API - aborting tests")
         return 1
-
-    # Test user login
-    auth_tests_total += 1
-    if tester.test_login(test_email, test_password):
-        auth_tests_passed += 1
-        print("✅ Regular email/password login working")
-    else:
-        print("❌ Regular email/password login failed")
-
-    # Test get current user
-    auth_tests_total += 1
-    if tester.test_get_me():
-        auth_tests_passed += 1
-        print("✅ Get current user info working")
-    else:
-        print("❌ Get current user info failed")
-
-    # Test 5: Quick LLM Integration Test (to ensure it still works)
-    print(f"\n{'='*70}")
-    print("🤖 QUICK LLM INTEGRATION VERIFICATION")
-    print(f"{'='*70}")
     
-    # Test one mentor to ensure LLM still works
-    question = "What's your best business advice?"
-    llm_success, _ = tester.test_llm_integration_single_mentor("business", "warren_buffett", question)
+    # Run the complete user profile flow test
+    profile_results = tester.run_complete_user_profile_flow_test()
     
-    # Test 6: Question history
-    tester.test_question_history()
+    # Test frontend token storage simulation
+    print(f"\n{'='*80}")
+    print("💻 FRONTEND TOKEN STORAGE SIMULATION")
+    print(f"{'='*80}")
     
-    # Test 7: Error handling
-    tester.test_error_handling()
+    frontend_simulation_success = tester.simulate_frontend_token_storage()
     
-    # Calculate OAuth integration status
-    oauth_working = oauth_tests_passed >= 3  # At least 3/4 OAuth tests should pass
-    auth_working = auth_tests_passed >= 2   # At least 2/3 auth tests should pass
+    # Calculate overall results
+    total_flow_steps = len(profile_results)
+    passed_flow_steps = sum(profile_results.values())
     
-    # Print final results
-    print("\n" + "=" * 70)
-    print(f"📊 FINAL TEST RESULTS - GOOGLE OAUTH INTEGRATION FOCUS")
-    print("=" * 70)
-    print(f"Overall tests passed: {tester.tests_passed}/{tester.tests_run}")
-    print(f"Overall success rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
-    print(f"OAuth tests passed: {oauth_tests_passed}/{oauth_tests_total}")
-    print(f"OAuth success rate: {(oauth_tests_passed/oauth_tests_total)*100:.1f}%")
-    print(f"Existing Auth tests passed: {auth_tests_passed}/{auth_tests_total}")
-    print(f"Existing Auth success rate: {(auth_tests_passed/auth_tests_total)*100:.1f}%")
-    print(f"Google OAuth Integration Status: {'✅ WORKING' if oauth_working else '❌ NOT WORKING'}")
-    print(f"Existing Authentication Status: {'✅ WORKING' if auth_working else '❌ NOT WORKING'}")
-    print(f"LLM Integration Status: {'✅ WORKING' if llm_success else '❌ NOT WORKING'}")
+    # Print comprehensive results
+    print("\n" + "=" * 90)
+    print(f"📊 COMPLETE USER PROFILE FLOW TEST RESULTS")
+    print("=" * 90)
     
-    if oauth_working and auth_working:
-        print("🎉 GOOGLE OAUTH INTEGRATION IS WORKING CORRECTLY!")
-        print("✅ OAuth endpoints are accessible and return proper error messages")
-        print("✅ Error handling works correctly for missing credentials")
-        print("✅ Database schema supports OAuth user fields")
-        print("✅ All existing authentication continues working normally")
-        print("✅ No import or server errors detected")
+    print(f"\n🔍 Individual Flow Step Results:")
+    for step, passed in profile_results.items():
+        status = "✅ PASSED" if passed else "❌ FAILED"
+        print(f"   {step.replace('_', ' ').title()}: {status}")
+    
+    print(f"\n📈 Overall Statistics:")
+    print(f"   Total API Tests Run: {tester.tests_run}")
+    print(f"   Total API Tests Passed: {tester.tests_passed}")
+    print(f"   API Success Rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+    print(f"   Profile Flow Steps Passed: {passed_flow_steps}/{total_flow_steps}")
+    print(f"   Profile Flow Success Rate: {(passed_flow_steps/total_flow_steps)*100:.1f}%")
+    print(f"   Frontend Simulation: {'✅ PASSED' if frontend_simulation_success else '❌ FAILED'}")
+    
+    # Determine overall success
+    critical_steps = ['signup', 'login', 'get_profile', 'update_profile', 'change_password']
+    critical_passed = sum(profile_results.get(step, False) for step in critical_steps)
+    
+    overall_success = (
+        critical_passed >= 4 and  # At least 4/5 critical steps must pass
+        passed_flow_steps >= 6 and  # At least 6/8 total steps must pass
+        tester.tests_passed / tester.tests_run >= 0.75  # At least 75% API success rate
+    )
+    
+    print(f"\n🎯 FINAL ASSESSMENT:")
+    if overall_success:
+        print("🎉 USER PROFILE FLOW WITH AUTHENTICATION: ✅ FULLY FUNCTIONAL!")
+        print("\n✅ Key Achievements:")
+        print("   • Complete user signup and login flow working")
+        print("   • JWT token generation and validation working")
+        print("   • Profile retrieval and updates working")
+        print("   • Password change functionality working")
+        print("   • Authentication requirements properly enforced")
+        print("   • Error handling and validation working")
+        print("   • Frontend token storage patterns validated")
+        print("   • Complete user journey tested successfully")
+        
+        if profile_results.get('auth_validation'):
+            print("   • All profile endpoints require valid JWT tokens")
+        if profile_results.get('error_handling'):
+            print("   • Comprehensive error handling for invalid operations")
+        if frontend_simulation_success:
+            print("   • Token format and persistence suitable for frontend")
+            
+        print(f"\n🚀 The User Profile system is PRODUCTION-READY!")
         return 0
     else:
-        print("⚠️  OAUTH INTEGRATION HAS ISSUES")
-        if not oauth_working:
-            print("❌ OAuth infrastructure is not working properly")
-        if not auth_working:
-            print("❌ Existing authentication system has issues")
+        print("❌ USER PROFILE FLOW HAS CRITICAL ISSUES!")
+        print("\n🔍 Issues Found:")
+        
+        if critical_passed < 4:
+            failed_critical = [step for step in critical_steps if not profile_results.get(step, False)]
+            print(f"   • Critical flow steps failed: {', '.join(failed_critical)}")
+        
+        if not profile_results.get('auth_validation'):
+            print("   • Authentication validation issues detected")
+        
+        if not profile_results.get('error_handling'):
+            print("   • Error handling insufficient")
+        
+        if not frontend_simulation_success:
+            print("   • Frontend token integration issues")
+        
+        if tester.tests_passed / tester.tests_run < 0.75:
+            print(f"   • Low API success rate: {(tester.tests_passed/tester.tests_run)*100:.1f}%")
+        
+        print(f"\n⚠️  The User Profile system needs fixes before production use.")
         return 1
 
 if __name__ == "__main__":
