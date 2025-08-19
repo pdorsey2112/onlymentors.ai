@@ -287,7 +287,13 @@ function MainApp() {
         const userData = localStorage.getItem('user');
         
         if (token && userData) {
-          setUser(JSON.parse(userData));
+          try {
+            setUser(JSON.parse(userData));
+          } catch (e) {
+            console.error('Invalid user data in localStorage:', e);
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+          }
         }
         
         await fetchCategories();
