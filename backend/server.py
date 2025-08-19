@@ -917,14 +917,40 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
                 raise HTTPException(status_code=404, detail=f"Mentor {mentor_id} not found")
             selected_mentors.append(mentor)
         
-        # Create responses from all selected mentors
-        responses = []
+        # Create responses from all selected mentors CONCURRENTLY for speed
+        import asyncio
+        
+        # Create tasks for all mentors to run in parallel
+        mentor_tasks = []
         for mentor in selected_mentors:
-            response_text = await create_mentor_response(mentor, question_data.question)
-            responses.append({
-                "mentor": mentor,
-                "response": response_text
-            })
+            task = asyncio.create_task(create_mentor_response(mentor, question_data.question))
+            mentor_tasks.append((mentor, task))
+        
+        # Wait for all mentors to respond simultaneously
+        responses = []
+        for mentor, task in mentor_tasks:
+            try:
+                # Wait for this mentor's response (with timeout)
+                response_text = await asyncio.wait_for(task, timeout=35.0)
+                responses.append({
+                    "mentor": mentor,
+                    "response": response_text
+                })
+            except asyncio.TimeoutError:
+                # Fallback response for timeout
+                fallback_response = f"Thank you for your question about '{question_data.question}'. Based on my experience in {mentor['expertise']}, I believe this is an important topic that requires thoughtful consideration. While I'd love to provide a detailed response right now, I encourage you to explore this further and perhaps rephrase your question for the best guidance."
+                responses.append({
+                    "mentor": mentor,
+                    "response": fallback_response
+                })
+            except Exception as e:
+                print(f"❌ Error getting response from {mentor['name']}: {str(e)}")
+                # Fallback response for errors
+                fallback_response = f"Thank you for your question about '{question_data.question}'. Based on my experience in {mentor['expertise']}, I believe this is an important topic that requires thoughtful consideration. While I'd love to provide a detailed response right now, I encourage you to explore this further and perhaps rephrase your question for the best guidance."
+                responses.append({
+                    "mentor": mentor,
+                    "response": fallback_response
+                })
         
         # Save question and responses
         question_doc = {
