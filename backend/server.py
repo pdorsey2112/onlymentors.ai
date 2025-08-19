@@ -821,12 +821,171 @@ async def reset_password(request: ResetPasswordRequest):
             "message": "Password has been reset successfully. Please log in with your new password.",
             "email": token_doc["email"]
         }
-        
+    
     except HTTPException:
         raise
     except Exception as e:
         print(f"❌ Reset password error: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to reset password")
+
+# ================================
+# USER PROFILE ENDPOINTS
+# ================================
+
+@app.get("/api/user/profile")
+async def get_user_profile(current_user = Depends(get_current_user)):
+    """Get current user's profile information"""
+    try:
+        user_doc = await db.users.find_one({"user_id": current_user["user_id"]})
+        
+        if not user_doc:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Return safe profile data (no password hash)
+        profile_data = {
+            "user_id": user_doc["user_id"],
+            "email": user_doc["email"],
+            "full_name": user_doc.get("full_name", ""),
+            "phone_number": user_doc.get("phone_number", ""),
+            "questions_asked": user_doc.get("questions_asked", 0),
+            "questions_remaining": user_doc.get("questions_remaining", 10),
+            "is_subscribed": user_doc.get("is_subscribed", False),
+            "profile_image_url": user_doc.get("profile_image_url"),
+            "created_at": user_doc.get("created_at"),
+            "last_login": user_doc.get("last_login")
+        }
+        
+        return profile_data
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Get profile error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.put("/api/user/profile")
+async def update_user_profile(profile_update: UserProfileUpdate, current_user = Depends(get_current_user)):
+    """Update current user's profile information"""
+    try:
+        # Build update document
+        update_data = {"updated_at": datetime.utcnow()}
+        
+        if profile_update.full_name is not None:
+            update_data["full_name"] = profile_update.full_name.strip()
+            
+        if profile_update.phone_number is not None:
+            # Basic phone number validation
+            phone = profile_update.phone_number.strip()
+            if phone and not re.match(r'^[\+]?[1-9][\d]{0,15}$', phone):
+                raise HTTPException(status_code=400, detail="Invalid phone number format")
+            update_data["phone_number"] = phone
+            
+        if profile_update.email is not None:
+            # Check if email is already taken by another user
+            existing_user = await db.users.find_one({
+                "email": profile_update.email,
+                "user_id": {"$ne": current_user["user_id"]}
+            })
+            if existing_user:
+                raise HTTPException(status_code=400, detail="Email address is already in use")
+            update_data["email"] = profile_update.email
+        
+        # Update user document
+        result = await db.users.update_one(
+            {"user_id": current_user["user_id"]},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get updated profile
+        updated_user = await db.users.find_one({"user_id": current_user["user_id"]})
+        
+        # Return updated profile data
+        profile_data = {
+            "user_id": updated_user["user_id"],
+            "email": updated_user["email"],
+            "full_name": updated_user.get("full_name", ""),
+            "phone_number": updated_user.get("phone_number", ""),
+            "questions_asked": updated_user.get("questions_asked", 0),
+            "questions_remaining": updated_user.get("questions_remaining", 10),
+            "is_subscribed": updated_user.get("is_subscribed", False),
+            "profile_image_url": updated_user.get("profile_image_url"),
+            "updated_at": updated_user.get("updated_at")
+        }
+        
+        return {
+            "message": "Profile updated successfully",
+            "profile": profile_data
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Update profile error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.put("/api/user/password")
+async def change_user_password(password_request: PasswordChangeRequest, current_user = Depends(get_current_user)):
+    """Change current user's password"""
+    try:
+        # Get current user from database
+        user_doc = await db.users.find_one({"user_id": current_user["user_id"]})
+        
+        if not user_doc:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Check if user has a password (not social auth only)
+        if not user_doc.get("password_hash"):
+            raise HTTPException(
+                status_code=400, 
+                detail="Cannot change password for social authentication accounts. Please use forgot password if you need to set a password."
+            )
+        
+        # Verify current password
+        if not verify_password(password_request.current_password, user_doc["password_hash"]):
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
+        
+        # Hash new password
+        new_password_hash = hash_password(password_request.new_password)
+        
+        # Update password in database
+        result = await db.users.update_one(
+            {"user_id": current_user["user_id"]},
+            {
+                "$set": {
+                    "password_hash": new_password_hash,
+                    "updated_at": datetime.utcnow(),
+                    "password_changed_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Optional: Send email notification about password change
+        try:
+            user_name = user_doc.get("full_name", "User")
+            # TODO: Add email notification for password change
+            print(f"✅ Password changed successfully for {user_name} ({user_doc['email']})")
+        except Exception as e:
+            print(f"⚠️  Failed to send password change notification: {str(e)}")
+        
+        return {
+            "message": "Password changed successfully. Please log in again with your new password."
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Change password error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ================================
+# MENTOR QUESTIONS ENDPOINTS  
+# ================================
 
 @app.post("/api/auth/validate-reset-token")
 async def validate_reset_token_endpoint(token: str, user_type: str):
