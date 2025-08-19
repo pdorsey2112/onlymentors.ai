@@ -425,6 +425,7 @@ function MainApp() {
 
       if (response.ok) {
         localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         setUser(data.user);
         setSuccess(authMode === 'login' ? 'Welcome back!' : 'Account created successfully!');
         setCurrentView('categories');
