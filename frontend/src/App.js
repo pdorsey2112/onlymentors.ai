@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Input } from './components/ui/input';
+import { Avatar, AvatarImage, AvatarFallback } from './components/ui/avatar';
 import CreatorSignup from './components/CreatorSignup';
 import CreatorLogin from './components/CreatorLogin';
 import CreatorDashboard from './components/CreatorDashboard';
