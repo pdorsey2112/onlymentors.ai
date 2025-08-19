@@ -300,8 +300,16 @@ function App() {
     setSelectedMentors(prev => {
       const isSelected = prev.some(m => m.id === mentor.id);
       if (isSelected) {
+        // Deselect mentor
         return prev.filter(m => m.id !== mentor.id);
       } else {
+        // Check if we're at the 5-mentor limit
+        if (prev.length >= 5) {
+          setError('You can select a maximum of 5 mentors per question for optimal response time and quality.');
+          return prev; // Don't add mentor if at limit
+        }
+        // Add mentor
+        setError(''); // Clear any previous error
         return [...prev, mentor];
       }
     });
