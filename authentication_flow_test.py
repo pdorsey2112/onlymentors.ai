@@ -701,7 +701,7 @@ class AuthenticationFlowTester:
         # Test 3: Different HTTP methods with same token
         print(f"\n   Middleware Test 3: Different HTTP Methods")
         methods_to_test = [
-            ("GET", "api/user/profile", 200),
+            ("GET", "api/user/profile", 200, None),
             ("PUT", "api/user/profile", 200, {"full_name": "Test Update"})
         ]
         
