@@ -107,6 +107,36 @@ function AdminApp() {
 }
 
 function CreatorApp() {
+  const [creator, setCreator] = useState(null);
+  const [isCreator, setIsCreator] = useState(false);
+
+  useEffect(() => {
+    // Check if creator is already logged in
+    const token = localStorage.getItem('creator_token');
+    const creatorData = localStorage.getItem('creator_data');
+    
+    if (token && creatorData) {
+      try {
+        const parsedCreator = JSON.parse(creatorData);
+        setCreator(parsedCreator);
+        setIsCreator(true);
+      } catch (e) {
+        // Clear invalid data
+        localStorage.removeItem('creator_token');
+        localStorage.removeItem('creator_data');
+      }
+    }
+  }, []);
+
+  if (isCreator && creator) {
+    return <CreatorDashboard />;
+  }
+
+  // Show creator login/signup options
+  return <CreatorLogin />;
+}
+
+function ForgotPasswordApp() {
   // User states
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
