@@ -141,6 +141,74 @@ function ForgotPasswordApp() {
   return <ForgotPasswordForm />;
 }
 
+function ProfileApp() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('auth_token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch (e) {
+        // Clear invalid data and redirect
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+      }
+    } else {
+      // Not authenticated, redirect to main page
+      window.location.href = '/';
+    }
+    
+    setLoading(false);
+  }, []);
+
+  const handleProfileUpdate = (updatedProfile) => {
+    // Update local user data
+    const updatedUser = { ...user, ...updatedProfile };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
+  const handleLogout = () => {
+    // Clear all auth data
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_data');
+    localStorage.removeItem('creator_token');
+    localStorage.removeItem('creator_data');
+    
+    // Redirect to main page
+    window.location.href = '/';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect
+  }
+
+  return (
+    <UserProfile
+      user={user}
+      onProfileUpdate={handleProfileUpdate}
+      onLogout={handleLogout}
+    />
+  );
+}
+
 function ResetPasswordApp() {
   return <ResetPasswordForm />;
 }
