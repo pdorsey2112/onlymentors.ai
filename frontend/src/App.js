@@ -149,17 +149,6 @@ function MainApp() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Creator states
-  const [isCreator, setIsCreator] = useState(false);
-  const [creator, setCreator] = useState(null);
-  const [showCreatorAuth, setShowCreatorAuth] = useState(false);
-  const [creatorAuthMode, setCreatorAuthMode] = useState('login'); // 'login' or 'signup'
-  
-  // Admin states
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [admin, setAdmin] = useState(null);
-  const [showAdminAuth, setShowAdminAuth] = useState(false);
-  
   // Main app states
   const [currentView, setCurrentView] = useState('categories');
   const [categories, setCategories] = useState([]);
