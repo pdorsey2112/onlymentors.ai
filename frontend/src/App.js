@@ -811,7 +811,7 @@ function MainApp() {
           <p className="text-xl text-gray-600 mb-6">Ask questions to history's greatest minds</p>
           
           {user && (
-            <div className="flex items-center justify-center gap-6 mb-6 flex-wrap">
+            <div className="bg-purple-50 p-4 rounded-lg mb-8 flex justify-between items-center">
               <div className="text-sm text-gray-700">
                 Welcome back, <span className="text-purple-600 font-semibold">{user.full_name}</span>
               </div>
@@ -826,16 +826,11 @@ function MainApp() {
                     {10 - user.questions_asked} free questions left
                   </Badge>
                 )}
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="text-sm text-gray-600">
-                  Welcome, <span className="font-medium">{user.full_name || user.email}</span>
-                </div>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => window.location.href = '/profile'} 
-                  className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                  className="border-gray-300 text-gray-600 hover:bg-gray-50 ml-3"
                 >
                   <User className="h-4 w-4 mr-2" />
                   Profile
@@ -850,6 +845,7 @@ function MainApp() {
                 </Button>
               </div>
             </div>
+          )}
 
           {user && !user.is_subscribed && (
             <Progress value={(user?.questions_asked || 0) * 10} className="w-64 mx-auto mb-4" />
