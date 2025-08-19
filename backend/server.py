@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request, Depends, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator, EmailStr
 from typing import Optional, List, Dict, Any
 from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.context import CryptContext
