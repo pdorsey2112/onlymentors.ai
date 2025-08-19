@@ -827,10 +827,28 @@ function MainApp() {
                   </Badge>
                 )}
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="border-gray-300 text-gray-600 hover:bg-gray-50">
-                Logout
-              </Button>
-            </div>
+              <div className="flex items-center space-x-3">
+                <div className="text-sm text-gray-600">
+                  Welcome, <span className="font-medium">{user.full_name || user.email}</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => window.location.href = '/profile'} 
+                  className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleLogout} 
+                  className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                >
+                  Logout
+                </Button>
+              </div>
           )}
 
           {user && !user.is_subscribed && (
