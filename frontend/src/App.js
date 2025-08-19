@@ -766,17 +766,8 @@ function App() {
                 className="pl-10 border-gray-300 focus:border-purple-500 focus:ring-purple-500"
               />
             </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="selectAll"
-                checked={selectAll}
-                onCheckedChange={handleSelectAll}
-                className="border-gray-300"
-                disabled={!user}
-              />
-              <Label htmlFor="selectAll" className="text-gray-700 text-sm">
-                Select All ({filteredMentors.length})
-              </Label>
+            <div className="text-sm text-gray-600">
+              Select up to <span className="font-semibold">5 mentors</span> for your question ({selectedMentors.length}/5 selected)
             </div>
           </div>
 
