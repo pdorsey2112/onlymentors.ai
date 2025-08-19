@@ -870,7 +870,11 @@ function MainApp() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => window.location.href = '/profile'} 
+                  onClick={() => {
+                    // Use React Router navigate instead of window.location to preserve state
+                    window.history.pushState({}, '', '/profile');
+                    window.location.reload();
+                  }} 
                   className="border-gray-300 text-gray-600 hover:bg-gray-50 ml-3"
                 >
                   <User className="h-4 w-4 mr-2" />
