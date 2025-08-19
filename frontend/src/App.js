@@ -449,17 +449,7 @@ function App() {
       mentor.bio.toLowerCase().includes(searchTerm.toLowerCase())
     ) : [];
 
-  // Update selectAll state when filtered mentors change
-  useEffect(() => {
-    if (filteredMentors.length > 0) {
-      const allFilteredSelected = filteredMentors.every(mentor => 
-        selectedMentors.some(selected => selected.id === mentor.id)
-      );
-      setSelectAll(allFilteredSelected);
-    } else {
-      setSelectAll(false);
-    }
-  }, [selectedMentors, filteredMentors]);
+  // Removed selectAll useEffect - now limiting to 5 mentors max
 
   // Render functions
   const renderAuth = () => {
