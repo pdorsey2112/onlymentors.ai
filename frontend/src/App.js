@@ -1094,13 +1094,24 @@ function MainApp() {
                   <p className="text-gray-600 text-xs leading-tight line-clamp-2">{mentor.bio}</p>
                   
                   {/* Expertise Tags */}
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1 mb-2">
                     {mentor.expertise.split(', ').slice(0, 2).map((skill, index) => (
                       <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-700 text-xs px-1 py-0">
                         {skill}
                       </Badge>
                     ))}
                   </div>
+
+                  {/* View Profile Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => handleViewMentorProfile(mentor, e)}
+                    className="w-full text-xs py-1 h-7 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300"
+                  >
+                    <User className="h-3 w-3 mr-1" />
+                    View Profile
+                  </Button>
                 </CardContent>
 
                 {!user && (
