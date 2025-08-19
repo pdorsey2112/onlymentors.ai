@@ -1456,15 +1456,15 @@ function MainApp() {
                   {item.responses && item.responses.map((response, idx) => (
                     <div key={idx} className="border-l-2 border-purple-300 pl-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Avatar className="h-6 w-6">
+                        <div className="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center">
                           {response.mentor?.image_url ? (
-                            <AvatarImage src={response.mentor?.image_url} alt={response.mentor?.name} />
+                            <img src={response.mentor?.image_url} alt={response.mentor?.name} className="h-6 w-6 rounded-full object-cover" />
                           ) : (
-                            <AvatarFallback className="bg-purple-100 text-purple-600 text-xs">
+                            <div className="bg-purple-100 text-purple-600 text-xs h-6 w-6 rounded-full flex items-center justify-center">
                               <User className="h-3 w-3" />
-                            </AvatarFallback>
+                            </div>
                           )}
-                        </Avatar>
+                        </div>
                         <div className="text-gray-900 font-medium text-sm">{response.mentor?.name}</div>
                       </div>
                       <p className="text-gray-800 text-sm leading-relaxed">{response.response}</p>
