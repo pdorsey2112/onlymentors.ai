@@ -5,13 +5,14 @@ import time
 from datetime import datetime
 
 class OnlyMentorsAPITester:
-    def __init__(self, base_url="https://mentor-platform-2.preview.emergentagent.com"):
+    def __init__(self, base_url="https://b592306b-4180-42be-8f2c-1720405d0c6c.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None
         self.tests_run = 0
         self.tests_passed = 0
         self.llm_responses = []  # Store LLM responses for analysis
+        self.profile_test_results = []  # Store profile test results
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
