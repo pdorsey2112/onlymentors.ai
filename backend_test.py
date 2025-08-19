@@ -132,6 +132,388 @@ class OnlyMentorsAPITester:
             return True
         return False
 
+    # =============================================================================
+    # USER PROFILE MANAGEMENT TESTING - COMPLETE FLOW
+    # =============================================================================
+
+    def test_get_user_profile(self):
+        """Test getting user profile information"""
+        success, response = self.run_test("Get User Profile", "GET", "api/user/profile", 200)
+        if success:
+            # Validate profile structure
+            required_fields = ['user_id', 'email', 'full_name', 'questions_asked', 'is_subscribed']
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if not missing_fields:
+                print(f"✅ Profile data complete with all required fields")
+                print(f"   User ID: {response.get('user_id')}")
+                print(f"   Email: {response.get('email')}")
+                print(f"   Full Name: {response.get('full_name')}")
+                print(f"   Questions Asked: {response.get('questions_asked')}")
+                print(f"   Is Subscribed: {response.get('is_subscribed')}")
+                self.profile_test_results.append({"test": "get_profile", "status": "passed", "data": response})
+                return True, response
+            else:
+                print(f"❌ Missing required profile fields: {missing_fields}")
+                self.profile_test_results.append({"test": "get_profile", "status": "failed", "error": f"Missing fields: {missing_fields}"})
+        return False, {}
+
+    def test_update_user_profile(self, updates):
+        """Test updating user profile information"""
+        success, response = self.run_test("Update User Profile", "PUT", "api/user/profile", 200, data=updates)
+        if success:
+            if 'profile' in response and 'message' in response:
+                print(f"✅ Profile updated successfully")
+                print(f"   Message: {response.get('message')}")
+                
+                # Verify updates were applied
+                updated_profile = response['profile']
+                for key, expected_value in updates.items():
+                    if key in updated_profile and updated_profile[key] == expected_value:
+                        print(f"   ✅ {key} updated to: {expected_value}")
+                    else:
+                        print(f"   ❌ {key} not updated correctly")
+                        return False, {}
+                
+                self.profile_test_results.append({"test": "update_profile", "status": "passed", "updates": updates})
+                return True, response
+            else:
+                print(f"❌ Invalid response structure for profile update")
+                self.profile_test_results.append({"test": "update_profile", "status": "failed", "error": "Invalid response structure"})
+        return False, {}
+
+    def test_change_user_password(self, current_password, new_password):
+        """Test changing user password"""
+        password_data = {
+            "current_password": current_password,
+            "new_password": new_password
+        }
+        
+        success, response = self.run_test("Change User Password", "PUT", "api/user/password", 200, data=password_data)
+        if success:
+            if 'message' in response:
+                print(f"✅ Password changed successfully")
+                print(f"   Message: {response.get('message')}")
+                self.profile_test_results.append({"test": "change_password", "status": "passed"})
+                return True, response
+            else:
+                print(f"❌ Invalid response structure for password change")
+                self.profile_test_results.append({"test": "change_password", "status": "failed", "error": "Invalid response structure"})
+        return False, {}
+
+    def test_profile_authentication_required(self):
+        """Test that profile endpoints require authentication"""
+        # Temporarily remove token
+        original_token = self.token
+        self.token = None
+        
+        print(f"\n🔒 Testing Profile Authentication Requirements")
+        
+        # Test GET profile without auth
+        success1, _ = self.run_test("Get Profile - No Auth", "GET", "api/user/profile", 401)
+        
+        # Test PUT profile without auth
+        success2, _ = self.run_test("Update Profile - No Auth", "PUT", "api/user/profile", 401, 
+                                   data={"full_name": "Test Update"})
+        
+        # Test PUT password without auth
+        success3, _ = self.run_test("Change Password - No Auth", "PUT", "api/user/password", 401,
+                                   data={"current_password": "old", "new_password": "NewPass123!"})
+        
+        # Restore token
+        self.token = original_token
+        
+        auth_tests_passed = sum([success1, success2, success3])
+        if auth_tests_passed == 3:
+            print(f"✅ All profile endpoints properly require authentication")
+            self.profile_test_results.append({"test": "auth_required", "status": "passed"})
+            return True
+        else:
+            print(f"❌ Some profile endpoints don't require authentication ({auth_tests_passed}/3)")
+            self.profile_test_results.append({"test": "auth_required", "status": "failed", "passed": auth_tests_passed})
+        return False
+
+    def test_invalid_password_change(self):
+        """Test password change with invalid current password"""
+        password_data = {
+            "current_password": "wrong_password",
+            "new_password": "NewValidPass123!"
+        }
+        
+        success, response = self.run_test("Change Password - Wrong Current", "PUT", "api/user/password", 400, data=password_data)
+        if success:
+            print(f"✅ Correctly rejected invalid current password")
+            self.profile_test_results.append({"test": "invalid_password", "status": "passed"})
+            return True
+        else:
+            print(f"❌ Should have rejected invalid current password")
+            self.profile_test_results.append({"test": "invalid_password", "status": "failed"})
+        return False
+
+    def test_weak_password_validation(self):
+        """Test password validation for weak passwords"""
+        weak_passwords = [
+            "123",  # Too short
+            "password",  # No uppercase, numbers, special chars
+            "PASSWORD",  # No lowercase, numbers, special chars
+            "Password",  # No numbers, special chars
+            "Password123"  # No special chars
+        ]
+        
+        validation_tests_passed = 0
+        for weak_pass in weak_passwords:
+            password_data = {
+                "current_password": "TestPass123!",  # Assuming this is current
+                "new_password": weak_pass
+            }
+            
+            success, response = self.run_test(f"Weak Password Test - {weak_pass}", "PUT", "api/user/password", 400, data=password_data)
+            if success:
+                validation_tests_passed += 1
+                print(f"   ✅ Correctly rejected weak password: {weak_pass}")
+            else:
+                print(f"   ❌ Should have rejected weak password: {weak_pass}")
+        
+        if validation_tests_passed >= 3:  # At least 3/5 should be rejected
+            print(f"✅ Password validation working ({validation_tests_passed}/{len(weak_passwords)} rejected)")
+            self.profile_test_results.append({"test": "password_validation", "status": "passed", "rejected": validation_tests_passed})
+            return True
+        else:
+            print(f"❌ Password validation insufficient ({validation_tests_passed}/{len(weak_passwords)} rejected)")
+            self.profile_test_results.append({"test": "password_validation", "status": "failed", "rejected": validation_tests_passed})
+        return False
+
+    def test_profile_email_uniqueness(self):
+        """Test that email updates check for uniqueness"""
+        # Try to update to an email that might already exist
+        duplicate_email_data = {
+            "email": "admin@onlymentors.ai"  # This should already exist
+        }
+        
+        success, response = self.run_test("Update Profile - Duplicate Email", "PUT", "api/user/profile", 400, data=duplicate_email_data)
+        if success:
+            print(f"✅ Correctly prevented duplicate email update")
+            self.profile_test_results.append({"test": "email_uniqueness", "status": "passed"})
+            return True
+        else:
+            print(f"❌ Should have prevented duplicate email update")
+            self.profile_test_results.append({"test": "email_uniqueness", "status": "failed"})
+        return False
+
+    def test_token_validation_and_format(self):
+        """Test JWT token validation and format"""
+        if not self.token:
+            print(f"❌ No token available for validation testing")
+            return False
+        
+        print(f"\n🔑 Testing JWT Token Validation and Format")
+        
+        # Check token format (JWT should have 3 parts separated by dots)
+        token_parts = self.token.split('.')
+        if len(token_parts) == 3:
+            print(f"✅ Token has correct JWT format (3 parts)")
+        else:
+            print(f"❌ Token has incorrect format ({len(token_parts)} parts)")
+            return False
+        
+        # Test with invalid token
+        original_token = self.token
+        self.token = "invalid.token.here"
+        
+        success, _ = self.run_test("Invalid Token Test", "GET", "api/user/profile", 401)
+        
+        # Restore original token
+        self.token = original_token
+        
+        if success:
+            print(f"✅ Invalid token correctly rejected")
+            self.profile_test_results.append({"test": "token_validation", "status": "passed"})
+            return True
+        else:
+            print(f"❌ Invalid token should have been rejected")
+            self.profile_test_results.append({"test": "token_validation", "status": "failed"})
+        return False
+
+    def run_complete_user_profile_flow_test(self):
+        """Run the complete user profile management workflow test"""
+        print(f"\n{'='*80}")
+        print("🧑‍💼 COMPLETE USER PROFILE FLOW WITH AUTHENTICATION TESTING")
+        print(f"{'='*80}")
+        
+        # Generate unique test data
+        timestamp = datetime.now().strftime('%H%M%S')
+        test_email = f"profile_test_{timestamp}@example.com"
+        test_password = "TestPass123!"
+        test_name = "John Smith Profile Test"
+        new_password = "NewTestPass456!"
+        
+        profile_flow_results = {
+            "signup": False,
+            "login": False,
+            "get_profile": False,
+            "update_profile": False,
+            "change_password": False,
+            "login_with_new_password": False,
+            "auth_validation": False,
+            "error_handling": False
+        }
+        
+        print(f"\n📝 Step 1: Create Test User Account")
+        print(f"   Email: {test_email}")
+        print(f"   Password: {test_password}")
+        print(f"   Full Name: {test_name}")
+        
+        # Step 1: Create test user via signup
+        if self.test_signup(test_email, test_password, test_name):
+            profile_flow_results["signup"] = True
+            print(f"✅ Step 1 Complete: User account created successfully")
+        else:
+            print(f"❌ Step 1 Failed: Could not create user account")
+            return profile_flow_results
+        
+        print(f"\n🔑 Step 2: Login with Test User Credentials")
+        
+        # Step 2: Login to get auth token
+        if self.test_login(test_email, test_password):
+            profile_flow_results["login"] = True
+            print(f"✅ Step 2 Complete: User logged in successfully")
+            print(f"   Auth Token: {self.token[:20]}...")
+        else:
+            print(f"❌ Step 2 Failed: Could not login with test credentials")
+            return profile_flow_results
+        
+        print(f"\n👤 Step 3: Get User Profile Information")
+        
+        # Step 3: Get user profile
+        success, profile_data = self.test_get_user_profile()
+        if success:
+            profile_flow_results["get_profile"] = True
+            print(f"✅ Step 3 Complete: Profile data retrieved successfully")
+        else:
+            print(f"❌ Step 3 Failed: Could not retrieve profile data")
+            return profile_flow_results
+        
+        print(f"\n✏️ Step 4: Update User Profile Information")
+        
+        # Step 4: Update profile with new information
+        profile_updates = {
+            "full_name": "John Smith Updated",
+            "phone_number": "+1-555-123-4567"
+        }
+        
+        success, updated_profile = self.test_update_user_profile(profile_updates)
+        if success:
+            profile_flow_results["update_profile"] = True
+            print(f"✅ Step 4 Complete: Profile updated successfully")
+        else:
+            print(f"❌ Step 4 Failed: Could not update profile")
+            return profile_flow_results
+        
+        print(f"\n🔐 Step 5: Change User Password")
+        
+        # Step 5: Change password
+        if self.test_change_user_password(test_password, new_password):
+            profile_flow_results["change_password"] = True
+            print(f"✅ Step 5 Complete: Password changed successfully")
+        else:
+            print(f"❌ Step 5 Failed: Could not change password")
+            return profile_flow_results
+        
+        print(f"\n🔑 Step 6: Login with New Password")
+        
+        # Step 6: Login with new password to verify change
+        if self.test_login(test_email, new_password):
+            profile_flow_results["login_with_new_password"] = True
+            print(f"✅ Step 6 Complete: Login successful with new password")
+        else:
+            print(f"❌ Step 6 Failed: Could not login with new password")
+            return profile_flow_results
+        
+        print(f"\n🔒 Step 7: Authentication Validation Tests")
+        
+        # Step 7: Test authentication requirements
+        if self.test_profile_authentication_required():
+            profile_flow_results["auth_validation"] = True
+            print(f"✅ Step 7 Complete: Authentication validation working")
+        else:
+            print(f"❌ Step 7 Failed: Authentication validation issues")
+        
+        print(f"\n🚨 Step 8: Error Handling Tests")
+        
+        # Step 8: Test error handling scenarios
+        error_tests_passed = 0
+        error_tests_total = 4
+        
+        # Test invalid password change
+        if self.test_invalid_password_change():
+            error_tests_passed += 1
+        
+        # Test weak password validation
+        if self.test_weak_password_validation():
+            error_tests_passed += 1
+        
+        # Test email uniqueness
+        if self.test_profile_email_uniqueness():
+            error_tests_passed += 1
+        
+        # Test token validation
+        if self.test_token_validation_and_format():
+            error_tests_passed += 1
+        
+        if error_tests_passed >= 3:  # At least 3/4 error handling tests should pass
+            profile_flow_results["error_handling"] = True
+            print(f"✅ Step 8 Complete: Error handling working ({error_tests_passed}/{error_tests_total})")
+        else:
+            print(f"❌ Step 8 Failed: Error handling insufficient ({error_tests_passed}/{error_tests_total})")
+        
+        return profile_flow_results
+
+    def simulate_frontend_token_storage(self):
+        """Simulate frontend token storage and usage patterns"""
+        print(f"\n💾 Frontend Token Storage Simulation")
+        
+        if not self.token:
+            print(f"❌ No token available for frontend simulation")
+            return False
+        
+        # Simulate localStorage storage (what frontend would do)
+        simulated_storage = {
+            "authToken": self.token,
+            "tokenType": "Bearer",
+            "expiresIn": "7 days",  # Based on backend JWT config
+            "user": self.user_data
+        }
+        
+        print(f"✅ Simulated Frontend Token Storage:")
+        print(f"   Token Type: {simulated_storage['tokenType']}")
+        print(f"   Token Length: {len(self.token)} characters")
+        print(f"   Token Format: JWT (3 parts)")
+        print(f"   Expires In: {simulated_storage['expiresIn']}")
+        print(f"   User Data Stored: {bool(self.user_data)}")
+        
+        # Test token persistence simulation
+        print(f"\n🔄 Testing Token Persistence Patterns")
+        
+        # Simulate multiple API calls with same token (what frontend would do)
+        api_calls = [
+            ("GET", "api/user/profile"),
+            ("GET", "api/auth/me"),
+            ("GET", "api/questions/history")
+        ]
+        
+        persistent_calls_passed = 0
+        for method, endpoint in api_calls:
+            success, _ = self.run_test(f"Persistent Token - {endpoint}", method, endpoint, 200)
+            if success:
+                persistent_calls_passed += 1
+        
+        if persistent_calls_passed == len(api_calls):
+            print(f"✅ Token persistence simulation successful ({persistent_calls_passed}/{len(api_calls)})")
+            return True
+        else:
+            print(f"❌ Token persistence issues ({persistent_calls_passed}/{len(api_calls)})")
+        return False
+
     def test_llm_integration_single_mentor(self, category, mentor_id, question):
         """Test LLM integration with a single mentor"""
         print(f"\n🤖 Testing LLM Integration - Single Mentor ({mentor_id})")
