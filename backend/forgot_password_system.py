@@ -32,7 +32,7 @@ class PasswordResetConfig:
         self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
         self.from_email = os.getenv("FROM_EMAIL", "noreply@onlymentors.ai")
         self.reset_token_expiry_hours = 1  # 1 hour expiry
-        self.frontend_base_url = "https://mentor-platform-2.preview.emergentagent.com"
+        self.frontend_base_url = "https://onlymentors-debug.preview.emergentagent.com"
         
     def validate_config(self):
         """Validate SendGrid configuration"""

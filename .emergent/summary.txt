@@ -1,0 +1,89 @@
+<analysis>
+The AI engineer successfully transitioned the OnlyMentors.ai MVP into a robust platform. Key achievements include implementing Facebook Login, significantly optimizing performance (3x faster for multiple mentors, 200x for cached questions), and enforcing a 5-mentor selection limit. A major effort involved refactoring frontend routing to fix the Admin Console login and later addressing a critical user profile logout bug by standardizing authentication state persistence and React Router navigation. Throughout, the engineer debugged complex issues, including external OAuth domain configurations and internal JavaScript errors, demonstrating an iterative, problem-solving approach. The work concluded with the engineer believing they had fixed the mentor public profile view, which the user immediately contradicted, setting the current task.
+</analysis>
+
+<product_requirements>
+The OnlyMentors.ai platform is an AI-powered subscription service connecting users with AI-driven mentors across various categories, providing personality-driven wisdom. Users can ask questions, manage subscriptions via Stripe, and authenticate through email or social sign-on. The platform also features an OnlyFans-style mentor grid.
+
+Implemented features include: OpenAI API integration, expanded mentor database (270+ mentors), Stripe subscription management, and a Creator/Mentor marketplace with signup, profile creation, content upload, and dashboards.
+
+Recent focuses involved an Administrator Console for user/mentor management, critical reports, and an AI Integration Framework for content moderation, customer service, sales, and marketing. Enhancements included removing mentor/user count limits, replacing placeholder images with Wikipedia photos, expanding user authentication (Google, Apple, Twitter, Facebook), enhanced content management (CRUD), and a user question context retention system. A Forgot Password process was also added for users and mentors. The current task involved implementing Facebook Login, performance optimizations, limiting mentor selection, fixing admin login, and building a user profile page.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Full-stack Architecture:** React.js frontend, FastAPI backend, MongoDB database.
+-   **AI/LLM Integration:** OpenAI API via .
+-   **Authentication:** JWT, OAuth 2.0 (Google, Facebook), SendGrid for password reset.
+-   **Frontend State Management:** React Hooks.
+-   **Routing:** React Router DOM for SPA navigation.
+-   **Performance:** Asynchronous programming (), caching (TTL-based).
+-   **UI/UX:** Tailwind CSS for styling.
+</key_technical_concepts>
+
+<code_architecture>
+The application uses a full-stack architecture with a React.js frontend, a FastAPI backend, and MongoDB as its database.
+
+
+
+-   :
+    -   **Importance:** Centralizes all backend API routes and logic.
+    -   **Changes:** Integrated new API endpoints for Admin Console, creator/mentor marketplace, AI agent framework, content moderation, payout management. Now includes Google/Facebook OAuth, forgot/reset password, and content management. Modified to process mentor responses **concurrently** using . Added a **5-mentor limit validation** for question asking. Added new API endpoints for **User Profile management** (, , ).
+-   :
+    -   **Importance:** Encapsulates social OAuth authentication logic.
+    -   **Changes:** Updated Facebook OAuth logic to handle optional email fields gracefully and for potential fallback email generation if not provided by Facebook.
+-   :
+    -   **Importance:** Main React component for UI, routing, and overall application state.
+    -   **Changes:** Major refactoring to properly utilize  for distinct application areas (, , , , , ). Integrated the  component and its handlers. Removed Select All functionality and implemented client-side 5-mentor limit logic with visual feedback. Added routing for  and a Profile button in the header. Critically, fixed user data persistence in  and switched profile navigation to  to prevent full page reloads and maintain authentication state. Added  integration for mentor details.
+-   :
+    -   **Importance:** Stores environment variables for frontend.
+    -   **Changes:**  was present. Facebook related IDs were also intended to be here but are in backend.
+-   :
+    -   **Importance:** Stores environment variables for backend.
+    -   **Changes:** Added , , , , , and .
+-   :
+    -   **Importance:** React component for Facebook sign-in.
+    -   **Changes:** Refined initialization logic to handle timing issues with Facebook SDK loading. Corrected the  callback from  to a regular function with an internal async handler to resolve Expression is of type asyncfunction error.
+-   :
+    -   **Importance:** New static HTML file created to provide a basic privacy policy and data deletion instructions URL as required by Facebook.
+    -   **Changes:** Created with boilerplate privacy policy and data deletion instructions.
+-   :
+    -   **Importance:** New React component for user profile management.
+    -   **Changes:** Implements a tabbed interface for Personal Info and Password sections, interacting with new backend profile APIs.
+-   :
+    -   **Importance:** New React component to display detailed mentor profiles in a modal.
+    -   **Changes:** Created to show full biography, expertise, and achievements when View Profile is clicked on a mentor card.
+</code_architecture>
+
+<pending_tasks>
+-   **External Facebook App Configuration:** The Facebook App needs to be configured in Facebook Developer Console with the correct domain settings, privacy policy URL, and data deletion URL for full authentication to work.
+-   **External Google OAuth Configuration:** The Google OAuth client needs to be configured in Google Cloud Console to add  as an authorized JavaScript origin and redirect URI.
+-   **Additional User Authentication Methods:** Implement Apple Sign-In and Twitter OAuth.
+-   **Mentor Revenue Sharing Full Implementation:** Actual financial transaction processing for payouts.
+-   **User Profile Page - Phase 2 (Address Management):** Implement address form, multiple address support, validation, etc.
+-   **User Profile Page - Phase 3 (Payment Integration):** Integrate Stripe Customer Portal for payment method management and billing history.
+-   **User Profile Page - Phase 4 (Account Settings):** Implement email preferences, notification settings, and account deletion.
+</pending_tasks>
+
+<current_work>
+Immediately prior to this summary, the AI engineer was working on implementing the view public profile for mentor functionality. The user had initially reported that this feature was not working.
+
+The engineer's process for this task involved:
+1.  **Investigation:** Examining the mentor card rendering in  and identifying that there was *no existing functionality* to view detailed mentor profiles, only to select mentors for questions.
+2.  **Implementation Plan:** Decided to add a View Profile button to mentor cards and create a  component to display comprehensive mentor details (name, title, photo, bio, expertise, achievements, Why Ask? section).
+3.  **File Creation/Modification:**
+    *   Created  to house the modal's UI and logic.
+    *   Modified  to:
+        *   Add state management for showing/hiding the .
+        *   Add handlers () to open the modal with specific mentor data.
+        *   Integrate the  component into the main application's JSX.
+        *   Add a View Profile button to each mentor card, which triggers the modal.
+4.  **Initial Testing:** The engineer performed frontend tests, and believed the functionality was successfully implemented, reporting that mentor profile viewing was working perfectly.
+
+However, the user's very next message directly contradicted this, stating: view public profile for mentor does not work.! Do not charge me for the fix!!.
+
+The AI engineer has just acknowledged this critical feedback, apologized for the misdiagnosis, and is currently in the process of re-investigating the mentor card rendering and actual issue for a fix. The current state is that the mentor profile viewing functionality is *thought to be implemented* but is *not working* for the user, and the engineer is debugging it again.
+</current_work>
+
+<optional_next_step>
+Debug and fix the view public profile for mentor functionality as reported by the user.
+</optional_next_step>

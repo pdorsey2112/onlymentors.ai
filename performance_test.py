@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import List, Dict, Any
 
 class OnlyMentorsPerformanceTester:
-    def __init__(self, base_url="https://b592306b-4180-42be-8f2c-1720405d0c6c.preview.emergentagent.com"):
+    def __init__(self, base_url="https://onlymentors-debug.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None
