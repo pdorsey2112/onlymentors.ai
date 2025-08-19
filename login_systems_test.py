@@ -26,7 +26,7 @@ class OnlyMentorsLoginSystemsTester:
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None, auth_token=None):
         """Run a single API test with detailed error reporting"""
-        url = f"{self.api_base}/{endpoint}" if not endpoint.startswith('http') else endpoint
+        url = f"{self.api_base}/{endpoint}" if endpoint and not endpoint.startswith('http') else f"{self.api_base}/" if not endpoint else endpoint
         test_headers = {'Content-Type': 'application/json'}
         
         # Use specific auth token if provided, otherwise use default user token
