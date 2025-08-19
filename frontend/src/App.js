@@ -137,6 +137,14 @@ function CreatorApp() {
 }
 
 function ForgotPasswordApp() {
+  return <ForgotPasswordForm />;
+}
+
+function ResetPasswordApp() {
+  return <ResetPasswordForm />;
+}
+
+function MainApp() {
   // User states
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
