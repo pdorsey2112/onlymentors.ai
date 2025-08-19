@@ -398,7 +398,7 @@ class OnlyMentorsAPITester:
         # Step 4: Update profile with new information
         profile_updates = {
             "full_name": "John Smith Updated",
-            "phone_number": "+1-555-123-4567"
+            "phone_number": "15551234567"  # Valid format without special characters
         }
         
         success, updated_profile = self.test_update_user_profile(profile_updates)
