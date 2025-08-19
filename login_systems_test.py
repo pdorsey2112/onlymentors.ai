@@ -6,9 +6,9 @@ from datetime import datetime
 
 class OnlyMentorsLoginSystemsTester:
     def __init__(self):
-        # Use the correct backend URL from frontend/.env
-        self.base_url = "https://b592306b-4180-42be-8f2c-1720405d0c6c.preview.emergentagent.com"
-        self.api_base = f"{self.base_url}/api"
+        # Use localhost for testing since external URL has routing issues
+        self.base_url = "http://localhost:8001"
+        self.api_base = f"{self.base_url}"
         self.user_token = None
         self.admin_token = None
         self.creator_token = None
