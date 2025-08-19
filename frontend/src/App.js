@@ -1056,19 +1056,19 @@ function MainApp() {
 
                 {/* Mentor Image */}
                 <div className="relative">
-                  <Avatar className="w-full h-48 rounded-t-lg rounded-none">
+                  <div className="w-full h-48 rounded-t-lg bg-gray-200 flex items-center justify-center">
                     {mentor.image_url ? (
-                      <AvatarImage 
+                      <img 
                         src={mentor.image_url} 
                         alt={mentor.name}
-                        className="object-cover w-full h-full"
+                        className="object-cover w-full h-full rounded-t-lg"
                       />
                     ) : (
-                      <AvatarFallback className="bg-gray-100 text-gray-600 text-xl font-bold w-full h-full rounded-t-lg rounded-none flex items-center justify-center">
+                      <div className="bg-gray-100 text-gray-600 text-xl font-bold w-full h-full rounded-t-lg flex items-center justify-center">
                         <User className="h-12 w-12" />
-                      </AvatarFallback>
+                      </div>
                     )}
-                  </Avatar>
+                  </div>
                   
                   {/* Hover overlay */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-t-lg flex items-center justify-center">
