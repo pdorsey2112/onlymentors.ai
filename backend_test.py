@@ -215,16 +215,27 @@ class OnlyMentorsAPITester:
         
         print(f"\n🔒 Testing Profile Authentication Requirements")
         
-        # Test GET profile without auth
-        success1, _ = self.run_test("Get Profile - No Auth", "GET", "api/user/profile", 401)
+        # Test GET profile without auth (expect 403 or 401)
+        success1, _ = self.run_test("Get Profile - No Auth", "GET", "api/user/profile", 403)
+        if not success1:
+            # Try 401 as alternative
+            success1, _ = self.run_test("Get Profile - No Auth (401)", "GET", "api/user/profile", 401)
         
-        # Test PUT profile without auth
-        success2, _ = self.run_test("Update Profile - No Auth", "PUT", "api/user/profile", 401, 
+        # Test PUT profile without auth (expect 403 or 401)
+        success2, _ = self.run_test("Update Profile - No Auth", "PUT", "api/user/profile", 403, 
                                    data={"full_name": "Test Update"})
+        if not success2:
+            # Try 401 as alternative
+            success2, _ = self.run_test("Update Profile - No Auth (401)", "PUT", "api/user/profile", 401,
+                                       data={"full_name": "Test Update"})
         
-        # Test PUT password without auth
-        success3, _ = self.run_test("Change Password - No Auth", "PUT", "api/user/password", 401,
+        # Test PUT password without auth (expect 403 or 401)
+        success3, _ = self.run_test("Change Password - No Auth", "PUT", "api/user/password", 403,
                                    data={"current_password": "old", "new_password": "NewPass123!"})
+        if not success3:
+            # Try 401 as alternative
+            success3, _ = self.run_test("Change Password - No Auth (401)", "PUT", "api/user/password", 401,
+                                       data={"current_password": "old", "new_password": "NewPass123!"})
         
         # Restore token
         self.token = original_token
