@@ -355,6 +355,48 @@ function MainApp() {
     setQuestionHistory([]);
   };
 
+  // Creator auth handlers
+  const handleCreatorLoginSuccess = (creatorData) => {
+    setIsCreator(true);
+    setCreator(creatorData);
+    setShowCreatorAuth(false);
+  };
+
+  const handleCreatorSignupSuccess = (creatorData) => {
+    setIsCreator(true);
+    setCreator(creatorData);
+    setShowCreatorAuth(false);
+  };
+
+  const handleCreatorLogout = () => {
+    setIsCreator(false);
+    setCreator(null);
+    localStorage.removeItem('creatorToken');
+    localStorage.removeItem('creator');
+  };
+
+  const switchCreatorAuthMode = (mode) => {
+    setCreatorAuthMode(mode);
+  };
+
+  // Admin auth handlers
+  const handleAdminLoginSuccess = (adminData) => {
+    setIsAdmin(true);
+    setAdmin(adminData);
+    setShowAdminAuth(false);
+  };
+
+  const handleAdminLoginError = (error) => {
+    setError(error);
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdmin(false);
+    setAdmin(null);
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminData');
+  };
+
   const handleMentorSelect = (mentor) => {
     setSelectedMentors(prev => {
       const isSelected = prev.some(m => m.id === mentor.id);
