@@ -149,6 +149,15 @@ function MainApp() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   
+  // Auth states
+  const [showCreatorAuth, setShowCreatorAuth] = useState(false);
+  const [creatorAuthMode, setCreatorAuthMode] = useState('login');
+  const [isCreator, setIsCreator] = useState(false);
+  const [creator, setCreator] = useState(null);
+  const [showAdminAuth, setShowAdminAuth] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [admin, setAdmin] = useState(null);
+  
   // Main app states
   const [currentView, setCurrentView] = useState('categories');
   const [categories, setCategories] = useState([]);
