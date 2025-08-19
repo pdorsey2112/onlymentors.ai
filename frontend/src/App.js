@@ -264,6 +264,88 @@ function MainApp() {
     setError(typeof error === 'string' ? error : 'Facebook authentication failed');
   };
 
+  // API functions
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/categories`);
+      const data = await response.json();
+      setCategories(data.categories);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`${BACKEND_URL}/api/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+    }
+  };
+
+  const fetchQuestionHistory = async () => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`${BACKEND_URL}/api/questions/history`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setQuestionHistory(data.questions);
+      }
+    } catch (error) {
+      console.error('Failed to fetch question history:', error);
+    }
+  };
+
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/signup';
+      const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(authForm)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('auth_token', data.token);
+        setUser(data.user);
+        setSuccess(authMode === 'login' ? 'Welcome back!' : 'Account created successfully!');
+        setCurrentView('categories');
+        setAuthForm({ email: '', password: '', full_name: '' });
+      } else {
+        setError(data.detail || 'Authentication failed');
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    setUser(null);
+    setCurrentView('categories');
+    setSelectedCategory(null);
+    setSelectedMentors([]);
+    setResponses([]);
+    setQuestionHistory([]);
+  };
+
   const handleMentorSelect = (mentor) => {
     setSelectedMentors(prev => {
       const isSelected = prev.some(m => m.id === mentor.id);
