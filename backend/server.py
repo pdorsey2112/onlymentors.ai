@@ -940,6 +940,13 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
         )
     
     try:
+        # Enforce 5-mentor limit for performance and quality
+        if len(question_data.mentor_ids) > 5:
+            raise HTTPException(
+                status_code=400, 
+                detail="You can select a maximum of 5 mentors per question for optimal response time and quality."
+            )
+        
         # Validate mentors exist
         selected_mentors = []
         for mentor_id in question_data.mentor_ids:
