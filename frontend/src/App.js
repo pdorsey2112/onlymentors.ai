@@ -849,7 +849,7 @@ function MainApp() {
                   Logout
                 </Button>
               </div>
-          )}
+            </div>
 
           {user && !user.is_subscribed && (
             <Progress value={(user?.questions_asked || 0) * 10} className="w-64 mx-auto mb-4" />
