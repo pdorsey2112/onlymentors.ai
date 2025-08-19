@@ -1013,6 +1013,8 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
             "question": question_data.question,
             "responses": responses,
             "selected_mentors": selected_mentors,
+            "processing_time": f"{processing_time:.2f}s",  # Include performance info
+            "total_mentors": len(selected_mentors),
             "questions_remaining": max(0, 10 - (questions_asked + 1)) if not is_subscribed else None
         }
         
