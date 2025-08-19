@@ -16,7 +16,7 @@ class OnlyMentorsAPITester:
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
-        url = f"{self.base_url}/{endpoint}"
+        url = f"{self.base_url}/api/{endpoint}" if not endpoint.startswith('api/') else f"{self.base_url}/{endpoint}"
         test_headers = {'Content-Type': 'application/json'}
         
         if self.token:
@@ -34,6 +34,8 @@ class OnlyMentorsAPITester:
                 response = requests.get(url, headers=test_headers, timeout=30)
             elif method == 'POST':
                 response = requests.post(url, json=data, headers=test_headers, timeout=30)
+            elif method == 'PUT':
+                response = requests.put(url, json=data, headers=test_headers, timeout=30)
 
             success = response.status_code == expected_status
             if success:
