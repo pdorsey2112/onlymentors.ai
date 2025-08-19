@@ -229,6 +229,13 @@ def cache_response(cache_key: str, response: str):
 
 async def create_mentor_response(mentor, question):
     """Create AI-powered response from a mentor using their personality and expertise"""
+    
+    # Check cache first for speed
+    cache_key = get_cache_key(mentor['id'], question)
+    cached_response = get_cached_response(cache_key)
+    if cached_response:
+        return cached_response
+    
     try:
         # Create a unique session ID for this mentor-question combination
         session_id = f"mentor_{mentor['id']}_{hash(question) % 10000}"
@@ -254,16 +261,25 @@ Respond in your authentic voice with 2-3 paragraphs. Use personal experiences an
         import asyncio
         response = await asyncio.wait_for(chat.send_message(user_message), timeout=20.0)
         
-        print(f"✅ Response ready for {mentor['name']}: {len(response)} chars")
+        response_text = response.strip()
         
-        return response.strip()
+        # Cache the response for future use
+        cache_response(cache_key, response_text)
+        
+        print(f"✅ Response ready for {mentor['name']}: {len(response_text)} chars")
+        
+        return response_text
         
     except asyncio.TimeoutError:
         print(f"⏰ Timeout for {mentor['name']} - using fallback")
-        return f"Thank you for your question. Based on my experience in {mentor['expertise']}, this is an important topic. {mentor.get('wiki_description', '')[:200]}..."
+        fallback = f"Thank you for your question. Based on my experience in {mentor['expertise']}, this is an important topic. {mentor.get('wiki_description', '')[:200]}..."
+        cache_response(cache_key, fallback)  # Cache fallback too
+        return fallback
     except Exception as e:
         print(f"❌ Error for {mentor['name']}: {str(e)}")
-        return f"Thank you for your question. Based on my experience in {mentor['expertise']}, this is an important topic that requires thoughtful consideration."
+        fallback = f"Thank you for your question. Based on my experience in {mentor['expertise']}, this is an important topic that requires thoughtful consideration."
+        cache_response(cache_key, fallback)  # Cache fallback too
+        return fallback
 
 # Routes
 @app.get("/")
