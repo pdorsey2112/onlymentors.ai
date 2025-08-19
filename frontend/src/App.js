@@ -28,6 +28,22 @@ import './App.css';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/admin" element={<AdminApp />} />
+        <Route path="/admin/dashboard" element={<AdminApp />} />
+        <Route path="/creator" element={<CreatorApp />} />
+        <Route path="/creator/*" element={<CreatorApp />} />
+        <Route path="/forgot-password" element={<ForgotPasswordApp />} />
+        <Route path="/reset-password" element={<ResetPasswordApp />} />
+        <Route path="/*" element={<MainApp />} />
+      </Routes>
+    </Router>
+  );
+}
+
+function AdminApp() {
   // User states
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
