@@ -1161,15 +1161,15 @@ function MainApp() {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {selectedMentors.map((mentor) => (
                 <div key={mentor.id} className="text-center">
-                  <Avatar className="h-16 w-16 mx-auto mb-2">
+                  <div className="h-16 w-16 mx-auto mb-2 rounded-full bg-gray-200 flex items-center justify-center">
                     {mentor.image_url ? (
-                      <AvatarImage src={mentor.image_url} alt={mentor.name} />
+                      <img src={mentor.image_url} alt={mentor.name} className="h-16 w-16 rounded-full object-cover" />
                     ) : (
-                      <AvatarFallback className="bg-purple-100 text-purple-600 font-bold">
+                      <div className="bg-purple-100 text-purple-600 font-bold h-16 w-16 rounded-full flex items-center justify-center">
                         <User className="h-8 w-8" />
-                      </AvatarFallback>
+                      </div>
                     )}
-                  </Avatar>
+                  </div>
                   <p className="text-gray-900 text-sm font-medium leading-tight">{mentor.name}</p>
                   <p className="text-purple-600 text-xs">{mentor.title}</p>
                 </div>
