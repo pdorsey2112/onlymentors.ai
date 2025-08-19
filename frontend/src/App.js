@@ -268,6 +268,10 @@ function MainApp() {
   const [question, setQuestion] = useState('');
   const [responses, setResponses] = useState([]);
   const [authMode, setAuthMode] = useState('login');
+  
+  // Mentor profile modal state
+  const [showMentorProfile, setShowMentorProfile] = useState(false);
+  const [selectedMentorForProfile, setSelectedMentorForProfile] = useState(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordUserType, setForgotPasswordUserType] = useState('user');
   const [authForm, setAuthForm] = useState({ email: '', password: '', full_name: '' });
