@@ -44,6 +44,69 @@ function App() {
 }
 
 function AdminApp() {
+  const [admin, setAdmin] = useState(null);
+  const [showAdminAuth, setShowAdminAuth] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    // Check if admin is already logged in
+    const token = localStorage.getItem('admin_token');
+    const adminData = localStorage.getItem('admin_data');
+    
+    if (token && adminData) {
+      try {
+        const parsedAdmin = JSON.parse(adminData);
+        setAdmin(parsedAdmin);
+        setIsAdmin(true);
+        setShowAdminAuth(false);
+      } catch (e) {
+        // Clear invalid data
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_data');
+        setShowAdminAuth(true);
+      }
+    } else {
+      setShowAdminAuth(true);
+    }
+  }, []);
+
+  const handleAdminLoginSuccess = (adminData) => {
+    setAdmin(adminData.admin);
+    setIsAdmin(true);
+    setShowAdminAuth(false);
+    localStorage.setItem('admin_token', adminData.token);
+    localStorage.setItem('admin_data', JSON.stringify(adminData.admin));
+  };
+
+  const handleAdminLoginError = (error) => {
+    console.error('Admin login error:', error);
+    setShowAdminAuth(true);
+  };
+
+  const handleAdminLogout = () => {
+    setAdmin(null);
+    setIsAdmin(false);
+    setShowAdminAuth(true);
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_data');
+    window.location.href = '/'; // Redirect to main page
+  };
+
+  // Show admin login if not authenticated
+  if (showAdminAuth || !isAdmin) {
+    return (
+      <AdminLogin 
+        onLogin={handleAdminLoginSuccess}
+        onError={handleAdminLoginError}
+      />
+    );
+  }
+
+  // Show admin dashboard if authenticated
+  return <AdminDashboardSimple admin={admin} onLogout={handleAdminLogout} />;
+}
+
+function CreatorApp() {
   // User states
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
