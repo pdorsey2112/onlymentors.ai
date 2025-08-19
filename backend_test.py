@@ -16,7 +16,13 @@ class OnlyMentorsAPITester:
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
-        url = f"{self.base_url}/api/{endpoint}" if not endpoint.startswith('api/') else f"{self.base_url}/{endpoint}"
+        if endpoint == "":
+            url = self.base_url
+        elif endpoint.startswith('api/'):
+            url = f"{self.base_url}/{endpoint}"
+        else:
+            url = f"{self.base_url}/api/{endpoint}"
+            
         test_headers = {'Content-Type': 'application/json'}
         
         if self.token:
