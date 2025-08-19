@@ -927,6 +927,8 @@ async def send_password_reset_confirmation_email(email: str, user_name: str, use
 
 @app.post("/api/questions/ask")
 async def ask_question(question_data: QuestionRequest, current_user = Depends(get_current_user)):
+    start_time = time.time()  # Track performance
+    
     # Check if user can ask questions
     questions_asked = current_user.get("questions_asked", 0)
     is_subscribed = current_user.get("is_subscribed", False)
@@ -945,6 +947,8 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
             if not mentor:
                 raise HTTPException(status_code=404, detail=f"Mentor {mentor_id} not found")
             selected_mentors.append(mentor)
+        
+        print(f"🚀 Starting parallel processing for {len(selected_mentors)} mentors")
         
         # Create responses from all selected mentors CONCURRENTLY for speed
         import asyncio
@@ -981,6 +985,9 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
                     "response": fallback_response
                 })
         
+        processing_time = time.time() - start_time
+        print(f"⚡ Total processing time: {processing_time:.2f}s for {len(selected_mentors)} mentors")
+        
         # Save question and responses
         question_doc = {
             "question_id": str(uuid.uuid4()),
@@ -989,6 +996,7 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
             "mentor_ids": question_data.mentor_ids,
             "question": question_data.question,
             "responses": responses,
+            "processing_time": processing_time,  # Track performance
             "created_at": datetime.utcnow()
         }
         
