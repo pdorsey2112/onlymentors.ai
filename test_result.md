@@ -402,8 +402,9 @@ backend:
 
 test_plan:
   current_focus:
-    - "Comprehensive Login Systems Regression Testing Completed"
-  stuck_tasks: []
+    - "User Profile Frontend Functionality Testing Completed"
+  stuck_tasks:
+    - "User Profile Frontend Routing Issue"
   test_all: false
   test_priority: "high_first"
 
