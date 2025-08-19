@@ -146,29 +146,39 @@ function ProfileApp() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem('auth_token');
+    // Check if user is authenticated (check both token keys used in app)
+    const token = localStorage.getItem('auth_token') || localStorage.getItem('authToken');
     const userData = localStorage.getItem('user');
+    
+    console.log('ProfileApp auth check:', { token: !!token, userData: !!userData });
     
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
+        console.log('ProfileApp user loaded:', parsedUser.email);
         setUser(parsedUser);
+        setLoading(false);
+        return; // Important: don't redirect if user is authenticated
       } catch (e) {
+        console.error('ProfileApp invalid user data:', e);
         // Clear invalid data and redirect
         localStorage.removeItem('auth_token');
+        localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        window.location.href = '/';
       }
-    } else {
-      // Not authenticated, redirect to main page
-      window.location.href = '/';
     }
+    
+    // Not authenticated or invalid data, redirect to main page
+    console.log('ProfileApp redirecting to main page - no auth');
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 100); // Small delay to prevent immediate redirect
     
     setLoading(false);
   }, []);
 
   const handleProfileUpdate = (updatedProfile) => {
+    console.log('ProfileApp profile update:', updatedProfile);
     // Update local user data
     const updatedUser = { ...user, ...updatedProfile };
     setUser(updatedUser);
@@ -176,8 +186,10 @@ function ProfileApp() {
   };
 
   const handleLogout = () => {
+    console.log('ProfileApp logout');
     // Clear all auth data
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_data');
@@ -188,24 +200,37 @@ function ProfileApp() {
     window.location.href = '/';
   };
 
+  // Show loading while checking authentication
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
-    return null; // Will redirect
+  // Show profile if user is authenticated
+  if (user) {
+    console.log('ProfileApp rendering UserProfile for:', user.email);
+    return (
+      <UserProfile
+        user={user}
+        onProfileUpdate={handleProfileUpdate}
+        onLogout={handleLogout}
+      />
+    );
   }
 
+  // This should not render if redirecting properly
   return (
-    <UserProfile
-      user={user}
-      onProfileUpdate={handleProfileUpdate}
-      onLogout={handleLogout}
-    />
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+      <div className="text-center">
+        <p className="text-gray-600">Redirecting to login...</p>
+      </div>
+    </div>
   );
 }
 
