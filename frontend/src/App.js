@@ -58,7 +58,7 @@ function App() {
   const [success, setSuccess] = useState('');
   const [questionHistory, setQuestionHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectAll, setSelectAll] = useState(false);
+  // Removed selectAll state - now limiting to 5 mentors max
 
   // Category icons mapping
   const categoryIcons = {
