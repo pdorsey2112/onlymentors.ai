@@ -147,34 +147,41 @@ function ProfileApp() {
 
   useEffect(() => {
     // Check if user is authenticated (check both token keys used in app)
-    const token = localStorage.getItem('auth_token') || localStorage.getItem('authToken');
+    const token = localStorage.getItem('auth_token');
     const userData = localStorage.getItem('user');
     
-    console.log('ProfileApp auth check:', { token: !!token, userData: !!userData });
+    console.log('ProfileApp auth check:', { 
+      token: !!token, 
+      userData: !!userData,
+      tokenLength: token ? token.length : 0,
+      userDataValid: userData ? (() => {
+        try { JSON.parse(userData); return true; } catch { return false; }
+      })() : false
+    });
     
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
-        console.log('ProfileApp user loaded:', parsedUser.email);
-        setUser(parsedUser);
-        setLoading(false);
-        return; // Important: don't redirect if user is authenticated
+        if (parsedUser && parsedUser.email) {
+          console.log('ProfileApp user loaded successfully:', parsedUser.email);
+          setUser(parsedUser);
+          setLoading(false);
+          return; // Successfully authenticated, show profile
+        } else {
+          console.error('ProfileApp: parsed user data is invalid');
+        }
       } catch (e) {
-        console.error('ProfileApp invalid user data:', e);
-        // Clear invalid data and redirect
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
+        console.error('ProfileApp: failed to parse user data:', e);
       }
     }
     
-    // Not authenticated or invalid data, redirect to main page
-    console.log('ProfileApp redirecting to main page - no auth');
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 100); // Small delay to prevent immediate redirect
-    
+    // Only redirect if definitely not authenticated
+    // Don't clear tokens here - let the user try to re-authenticate
+    console.log('ProfileApp: user not authenticated, redirecting');
     setLoading(false);
+    setTimeout(() => {
+      window.location.href = '/?redirect=profile'; // Add redirect parameter
+    }, 1000); // Longer delay to see what's happening
   }, []);
 
   const handleProfileUpdate = (updatedProfile) => {
