@@ -46,19 +46,19 @@ const MentorProfileModal = ({ mentor, isOpen, onClose, onSelect, isSelected, use
         <div className="space-y-6">
           {/* Hero Section */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <Avatar className="w-24 h-24 sm:w-32 sm:h-32 mx-auto sm:mx-0">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto sm:mx-0 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
               {mentor.image_url ? (
-                <AvatarImage 
+                <img 
                   src={mentor.image_url} 
                   alt={mentor.name}
-                  className="object-cover w-full h-full"
+                  className="object-cover w-full h-full rounded-full"
                 />
               ) : (
-                <AvatarFallback className="bg-purple-100 text-purple-600 text-2xl font-bold">
+                <div className="bg-purple-100 text-purple-600 text-2xl font-bold w-full h-full rounded-full flex items-center justify-center">
                   <User className="h-16 w-16" />
-                </AvatarFallback>
+                </div>
               )}
-            </Avatar>
+            </div>
             
             <div className="flex-1 space-y-3">
               <div>
