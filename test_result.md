@@ -402,7 +402,7 @@ backend:
 
 test_plan:
   current_focus:
-    - "Complete User Profile Flow with Authentication Testing - COMPLETED"
+    - "Complete Authentication Flow Testing for Profile Button Issue - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
