@@ -315,29 +315,7 @@ function App() {
     });
   };
 
-  const handleSelectAll = () => {
-    const filteredMentors = selectedCategory.mentors.filter(mentor =>
-      mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mentor.bio.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    
-    if (selectAll) {
-      // Deselect all
-      setSelectedMentors(prev => prev.filter(selected => 
-        !filteredMentors.some(filtered => filtered.id === selected.id)
-      ));
-    } else {
-      // Select all filtered mentors that aren't already selected
-      setSelectedMentors(prev => {
-        const newSelections = filteredMentors.filter(mentor => 
-          !prev.some(selected => selected.id === mentor.id)
-        );
-        return [...prev, ...newSelections];
-      });
-    }
-    setSelectAll(!selectAll);
-  };
+  // Removed handleSelectAll function - now limiting to 5 mentors max
 
   const askQuestion = async () => {
     if (!question.trim() || selectedMentors.length === 0) return;
