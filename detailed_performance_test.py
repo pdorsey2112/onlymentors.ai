@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 class DetailedPerformanceTester:
-    def __init__(self, base_url="https://onlymentors-debug.preview.emergentagent.com"):
+    def __init__(self, base_url="https://admin-role-system.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         

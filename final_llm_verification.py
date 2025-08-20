@@ -5,7 +5,7 @@ import json
 
 def test_llm_quality():
     """Test LLM response quality and personality differences"""
-    base_url = "https://onlymentors-debug.preview.emergentagent.com"
+    base_url = "https://admin-role-system.preview.emergentagent.com"
     
     # Login
     login_data = {"email": "test@test.com", "password": "password123"}

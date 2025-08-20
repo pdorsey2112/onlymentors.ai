@@ -1,89 +1,86 @@
 <analysis>
-The AI engineer successfully transitioned the OnlyMentors.ai MVP into a robust platform. Key achievements include implementing Facebook Login, significantly optimizing performance (3x faster for multiple mentors, 200x for cached questions), and enforcing a 5-mentor selection limit. A major effort involved refactoring frontend routing to fix the Admin Console login and later addressing a critical user profile logout bug by standardizing authentication state persistence and React Router navigation. Throughout, the engineer debugged complex issues, including external OAuth domain configurations and internal JavaScript errors, demonstrating an iterative, problem-solving approach. The work concluded with the engineer believing they had fixed the mentor public profile view, which the user immediately contradicted, setting the current task.
+The previous AI engineer's trajectory shows an iterative problem-solving process marred by persistent frontend deployment and caching issues. Initially tasked with fixing a view public profile for mentor bug, the engineer first attempted a modal-based solution, which triggered an Avatar is not defined error. Despite extensive debugging, cache clearing, and even direct source code modifications, the underlying caching problem prevented any permanent frontend fixes, leading to user frustration. A pivotal shift occurred when the user suggested re-purposing the Profile button to a Logoff action, which was successfully implemented using direct DOM manipulation, bypassing the persistent build issues. The engineer then applied this Logoff change to the Creator Dashboard's header button and restored the View Public Profile tab. The trajectory concludes with the engineer initiating the implementation of advanced admin user management features, beginning with backend database and API enhancements.
 </analysis>
 
 <product_requirements>
-The OnlyMentors.ai platform is an AI-powered subscription service connecting users with AI-driven mentors across various categories, providing personality-driven wisdom. Users can ask questions, manage subscriptions via Stripe, and authenticate through email or social sign-on. The platform also features an OnlyFans-style mentor grid.
-
-Implemented features include: OpenAI API integration, expanded mentor database (270+ mentors), Stripe subscription management, and a Creator/Mentor marketplace with signup, profile creation, content upload, and dashboards.
-
-Recent focuses involved an Administrator Console for user/mentor management, critical reports, and an AI Integration Framework for content moderation, customer service, sales, and marketing. Enhancements included removing mentor/user count limits, replacing placeholder images with Wikipedia photos, expanding user authentication (Google, Apple, Twitter, Facebook), enhanced content management (CRUD), and a user question context retention system. A Forgot Password process was also added for users and mentors. The current task involved implementing Facebook Login, performance optimizations, limiting mentor selection, fixing admin login, and building a user profile page.
+The OnlyMentors.ai platform is an AI-powered subscription service connecting users with AI-driven mentors, offering personality-driven wisdom through questions. It supports Stripe subscriptions and various authentication methods (email, social sign-on). Key features include an OnlyFans-style mentor grid, OpenAI API integration, an expanded mentor database, and a Creator/Mentor marketplace with signup, profile creation, content upload, and dashboards. The application also has an Administrator Console for user/mentor management, reporting, and an AI Integration Framework for content moderation, customer service, sales, and marketing. Recent efforts focused on implementing Facebook Login, performance optimizations, limiting mentor selection, fixing admin login, building a user profile page, and a Forgot Password process.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-stack Architecture:** React.js frontend, FastAPI backend, MongoDB database.
--   **AI/LLM Integration:** OpenAI API via .
+-   **AI/LLM Integration:** OpenAI API.
 -   **Authentication:** JWT, OAuth 2.0 (Google, Facebook), SendGrid for password reset.
 -   **Frontend State Management:** React Hooks.
--   **Routing:** React Router DOM for SPA navigation.
--   **Performance:** Asynchronous programming (), caching (TTL-based).
--   **UI/UX:** Tailwind CSS for styling.
+-   **Routing:** React Router DOM.
+-   **Performance:** Asynchronous programming, caching.
+-   **UI/UX:** Tailwind CSS.
+-   **Admin System:** Role-based access control.
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a full-stack architecture with a React.js frontend, a FastAPI backend, and MongoDB as its database.
 
 
-
 -   :
-    -   **Importance:** Centralizes all backend API routes and logic.
-    -   **Changes:** Integrated new API endpoints for Admin Console, creator/mentor marketplace, AI agent framework, content moderation, payout management. Now includes Google/Facebook OAuth, forgot/reset password, and content management. Modified to process mentor responses **concurrently** using . Added a **5-mentor limit validation** for question asking. Added new API endpoints for **User Profile management** (, , ).
+    -   **Importance:** Main backend API entry point.
+    -   **Changes:** Already contained endpoints for Admin Console and various systems. Modified to process mentor responses concurrently and enforce a 5-mentor limit. Added new API endpoints for User Profile management. **Crucially, enhanced with new admin endpoints , , and  for user role changes, suspension, and soft deletion. Also modified the user listing endpoint () to include role and status.**
 -   :
-    -   **Importance:** Encapsulates social OAuth authentication logic.
-    -   **Changes:** Updated Facebook OAuth logic to handle optional email fields gracefully and for potential fallback email generation if not provided by Facebook.
+    -   **Importance:** Encapsulates admin-specific logic and data models.
+    -   **Changes:** **Updated to include  (User, Mentor, Admin) and  (Active, Suspended) enums. Introduced new Pydantic models  and  to support granular admin control over user profiles and roles.**
 -   :
-    -   **Importance:** Main React component for UI, routing, and overall application state.
-    -   **Changes:** Major refactoring to properly utilize  for distinct application areas (, , , , , ). Integrated the  component and its handlers. Removed Select All functionality and implemented client-side 5-mentor limit logic with visual feedback. Added routing for  and a Profile button in the header. Critically, fixed user data persistence in  and switched profile navigation to  to prevent full page reloads and maintain authentication state. Added  integration for mentor details.
+    -   **Importance:** Central React component for UI, routing, and main application state.
+    -   **Changes:** Major refactoring for . **Initially, it was modified to integrate  and a View Profile button, then all references to  and  components/routes were removed. Extensive attempts were made to remove Profile buttons from the header and middle section, often requiring direct DOM manipulation due to persistent caching issues.**
 -   :
-    -   **Importance:** Stores environment variables for frontend.
-    -   **Changes:**  was present. Facebook related IDs were also intended to be here but are in backend.
--   :
-    -   **Importance:** Stores environment variables for backend.
-    -   **Changes:** Added , , , , , and .
--   :
-    -   **Importance:** React component for Facebook sign-in.
-    -   **Changes:** Refined initialization logic to handle timing issues with Facebook SDK loading. Corrected the  callback from  to a regular function with an internal async handler to resolve Expression is of type asyncfunction error.
--   :
-    -   **Importance:** New static HTML file created to provide a basic privacy policy and data deletion instructions URL as required by Facebook.
-    -   **Changes:** Created with boilerplate privacy policy and data deletion instructions.
+    -   **Importance:** Originally intended for displaying detailed mentor profiles in a modal.
+    -   **Changes:** **Created to implement the View Profile feature, but later completely deleted due to persistent JavaScript runtime errors.**
 -   :
     -   **Importance:** New React component for user profile management.
-    -   **Changes:** Implements a tabbed interface for Personal Info and Password sections, interacting with new backend profile APIs.
+    -   **Changes:** Created to implement a tabbed interface for Personal Info and Password. **Its import and associated route in  were later removed, though the file itself still exists.**
 -   :
-    -   **Importance:** New React component to display detailed mentor profiles in a modal.
-    -   **Changes:** Created to show full biography, expertise, and achievements when View Profile is clicked on a mentor card.
+    -   **Importance:** Provides the dashboard interface for creators/mentors.
+    -   **Changes:** **Significantly modified to include a View Public Profile tab and content for creators to preview their public profile. Later, its main header button was changed from View Public Profile to Logoff with logout functionality, and the View Public Profile tab was initially changed to Logoff but then reverted to its original name and functionality (showing profile preview).**
+-   :
+    -   **Importance:** Provides the main dashboard interface for administrators.
+    -   **Changes:** **Modified to integrate the newly created  component, adding a dedicated tab for comprehensive user administration.**
+-   :
+    -   **Importance:** **NEWLY CREATED React component for the Admin Console, specifically for managing users (changing roles, suspending, deleting).**
+    -   **Changes:** **Created as part of the backend foundation and initial frontend integration for admin user controls.**
+-   :
+    -   **Importance:** Global CSS styles for the frontend.
+    -   **Changes:** Temporarily modified during debugging attempts to hide the problematic Profile button using CSS, though these changes were not a permanent solution for the underlying issue.
 </code_architecture>
 
 <pending_tasks>
--   **External Facebook App Configuration:** The Facebook App needs to be configured in Facebook Developer Console with the correct domain settings, privacy policy URL, and data deletion URL for full authentication to work.
--   **External Google OAuth Configuration:** The Google OAuth client needs to be configured in Google Cloud Console to add  as an authorized JavaScript origin and redirect URI.
+-   **External Facebook App Configuration:** Configure Facebook Developer Console for correct domain settings, privacy policy URL, and data deletion URL.
+-   **External Google OAuth Configuration:** Configure Google Cloud Console with authorized JavaScript origins and redirect URIs.
 -   **Additional User Authentication Methods:** Implement Apple Sign-In and Twitter OAuth.
 -   **Mentor Revenue Sharing Full Implementation:** Actual financial transaction processing for payouts.
 -   **User Profile Page - Phase 2 (Address Management):** Implement address form, multiple address support, validation, etc.
--   **User Profile Page - Phase 3 (Payment Integration):** Integrate Stripe Customer Portal for payment method management and billing history.
+-   **User Profile Page - Phase 3 (Payment Integration):** Integrate Stripe Customer Portal.
 -   **User Profile Page - Phase 4 (Account Settings):** Implement email preferences, notification settings, and account deletion.
+-   **Complete Admin User Management Frontend:** Finish integrating  into  to display the user table, role change dropdowns, suspend/unsuspend toggles, and delete buttons.
+-   **Address Frontend Caching/Deployment Issue:** Resolve the underlying frontend caching/hot-reload problem that prevented source code changes from taking permanent effect.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer was working on implementing the view public profile for mentor functionality. The user had initially reported that this feature was not working.
+Immediately before this summary request, the AI engineer was actively implementing advanced user management features within the Admin Console. This initiative follows a detailed plan encompassing both backend and frontend modifications to empower administrators with the ability to manage user roles (user, mentor, admin), suspend, and delete user accounts.
 
-The engineer's process for this task involved:
-1.  **Investigation:** Examining the mentor card rendering in  and identifying that there was *no existing functionality* to view detailed mentor profiles, only to select mentors for questions.
-2.  **Implementation Plan:** Decided to add a View Profile button to mentor cards and create a  component to display comprehensive mentor details (name, title, photo, bio, expertise, achievements, Why Ask? section).
-3.  **File Creation/Modification:**
-    *   Created  to house the modal's UI and logic.
-    *   Modified  to:
-        *   Add state management for showing/hiding the .
-        *   Add handlers () to open the modal with specific mentor data.
-        *   Integrate the  component into the main application's JSX.
-        *   Add a View Profile button to each mentor card, which triggers the modal.
-4.  **Initial Testing:** The engineer performed frontend tests, and believed the functionality was successfully implemented, reporting that mentor profile viewing was working perfectly.
+On the **backend**, the engineer:
+1.  **Modified **: Introduced  and  enums, along with  and  Pydantic models. This provides the necessary data structures for managing user roles and statuses.
+2.  **Updated **:
+    *   Imported the newly defined Pydantic models and enums.
+    *   Enhanced the  endpoint to include  and  information in the user listing.
+    *   Added three new dedicated API endpoints for admin actions:
+        *   : To change a user's role.
+        *   : To suspend or unsuspend a user.
+        *   : To perform a soft deletion of a user account.
 
-However, the user's very next message directly contradicted this, stating: view public profile for mentor does not work.! Do not charge me for the fix!!.
+On the **frontend**, the engineer has begun integrating these new capabilities into the Admin Console:
+1.  **Created **: This new React component is designed to house the UI for user listing and management controls.
+2.  **Modified **: The engineer has started the process of integrating  into the , preparing to add a new tab specifically for user management.
 
-The AI engineer has just acknowledged this critical feedback, apologized for the misdiagnosis, and is currently in the process of re-investigating the mentor card rendering and actual issue for a fix. The current state is that the mentor profile viewing functionality is *thought to be implemented* but is *not working* for the user, and the engineer is debugging it again.
+The current state is that the backend API for user management is set up, and the new  component has been created, with initial steps taken to integrate it into the . The engineer is in the process of defining where exactly to place the new user management tab within the Admin Dashboard's navigation.
 </current_work>
 
 <optional_next_step>
-Debug and fix the view public profile for mentor functionality as reported by the user.
+Integrate the  component into  by adding a new tab for user management.
 </optional_next_step>
