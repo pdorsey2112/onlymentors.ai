@@ -10,8 +10,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Trash2, Edit3, Shield, UserX, History } from 'lucide-react';
+import { getBackendURL } from '../config';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = getBackendURL();
 
 const UserManagement = ({ admin }) => {
     const [users, setUsers] = useState([]);
