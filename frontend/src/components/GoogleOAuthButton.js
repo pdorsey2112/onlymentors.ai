@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { getBackendURL } from '../config';
 
 const GoogleOAuthButton = ({ onSuccess, onError, disabled = false, text = "Sign in with Google" }) => {
   const [config, setConfig] = useState(null);
