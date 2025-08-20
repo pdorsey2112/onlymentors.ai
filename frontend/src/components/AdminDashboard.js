@@ -71,29 +71,6 @@ const AdminDashboard = ({ admin, onLogout }) => {
         }
     };
 
-    const manageUsers = async (action) => {
-        if (selectedUsers.length === 0) return;
-
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/users/manage`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({
-                    user_ids: selectedUsers,
-                    action: action,
-                    reason: `Admin ${action} action`
-                })
-            });
-            if (response.ok) {
-                alert(`Successfully ${action}ed ${selectedUsers.length} users`);
-                setSelectedUsers([]);
-                fetchUsers();
-            }
-        } catch (error) {
-            console.error('Error managing users:', error);
-        }
-    };
-
     const manageMentors = async (action) => {
         if (selectedMentors.length === 0) return;
 
