@@ -304,6 +304,144 @@ const CreatorDashboard = () => {
               </div>
             )}
 
+            {activeTab === 'public-profile' && (
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">Your Public Profile Preview</h2>
+                
+                {creator && (
+                  <div className="max-w-4xl">
+                    {/* Profile Header */}
+                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 mb-6">
+                      <div className="flex flex-col sm:flex-row gap-6">
+                        {/* Profile Image */}
+                        <div className="w-32 h-32 mx-auto sm:mx-0 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {creator.profile_image ? (
+                            <img 
+                              src={creator.profile_image} 
+                              alt={creator.account_name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="bg-purple-100 text-purple-600 text-4xl font-bold w-full h-full flex items-center justify-center">
+                              {creator.account_name ? creator.account_name.charAt(0).toUpperCase() : 'M'}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Profile Info */}
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-2">{creator.account_name || 'Creator'}</h3>
+                          <p className="text-purple-600 font-medium mb-3">${creator.monthly_price || 0}/month</p>
+                          <p className="text-gray-700 leading-relaxed mb-4">
+                            {creator.description || 'Professional creator sharing expertise and insights.'}
+                          </p>
+                          
+                          {/* Stats Row */}
+                          <div className="flex flex-wrap gap-4 text-sm">
+                            <div className="bg-white px-3 py-2 rounded-lg shadow-sm">
+                              <span className="text-gray-600">Category:</span>
+                              <span className="font-medium ml-1">{creator.category || 'General'}</span>
+                            </div>
+                            <div className="bg-white px-3 py-2 rounded-lg shadow-sm">
+                              <span className="text-gray-600">Subscribers:</span>
+                              <span className="font-medium ml-1">{stats.subscriber_count || 0}</span>
+                            </div>
+                            <div className="bg-white px-3 py-2 rounded-lg shadow-sm">
+                              <span className="text-gray-600">Content:</span>
+                              <span className="font-medium ml-1">{stats.content_count || 0} pieces</span>
+                            </div>
+                            <div className="bg-white px-3 py-2 rounded-lg shadow-sm">
+                              <span className="text-gray-600">Rating:</span>
+                              <span className="font-medium ml-1">{(stats.average_rating || 5.0).toFixed(1)} ⭐</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expertise Section */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <span className="text-purple-600">🎯</span>
+                        Areas of Expertise
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {creator.expertise_areas && creator.expertise_areas.length > 0 ? (
+                          creator.expertise_areas.map((skill, index) => (
+                            <span 
+                              key={index} 
+                              className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium"
+                            >
+                              {skill}
+                            </span>
+                          ))
+                        ) : (
+                          <p className="text-gray-600">Add your expertise areas in Settings</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Why Choose This Creator */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span className="text-purple-600">✨</span>
+                        Why Choose {creator.account_name}?
+                      </h4>
+                      <div className="grid gap-4">
+                        <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+                          <div className="bg-purple-100 p-2 rounded-lg flex-shrink-0">
+                            <span className="text-purple-600">💡</span>
+                          </div>
+                          <div>
+                            <h5 className="font-medium text-gray-900">Expert Knowledge</h5>
+                            <p className="text-gray-600 text-sm mt-1">Deep expertise in {creator.category || 'their field'} with proven results</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+                          <div className="bg-purple-100 p-2 rounded-lg flex-shrink-0">
+                            <span className="text-purple-600">📚</span>
+                          </div>
+                          <div>
+                            <h5 className="font-medium text-gray-900">Quality Content</h5>
+                            <p className="text-gray-600 text-sm mt-1">High-quality content and personalized guidance</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+                          <div className="bg-purple-100 p-2 rounded-lg flex-shrink-0">
+                            <span className="text-purple-600">⭐</span>
+                          </div>
+                          <div>
+                            <h5 className="font-medium text-gray-900">Proven Results</h5>
+                            <p className="text-gray-600 text-sm mt-1">{(stats.average_rating || 5.0).toFixed(1)} star rating from satisfied subscribers</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Call to Action */}
+                    <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg p-6 text-center">
+                      <h4 className="text-xl font-bold mb-2">Ready to Learn from {creator.account_name}?</h4>
+                      <p className="mb-4 opacity-90">Join {stats.subscriber_count || 0} other subscribers getting exclusive content</p>
+                      <div className="text-2xl font-bold mb-4">${creator.monthly_price || 0}/month</div>
+                      <button className="bg-white text-purple-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                        Subscribe Now
+                      </button>
+                    </div>
+
+                    {/* Note for creator */}
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-blue-800 text-sm">
+                        <span className="font-medium">💡 Note:</span> This is how your profile appears to potential subscribers. 
+                        You can update your information in the Settings tab.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {activeTab === 'content' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
