@@ -768,6 +768,13 @@ function MainApp() {
                     {10 - user.questions_asked} free questions left
                   </Badge>
                 )}
+                {/* PROFILE BUTTON REMOVED - was causing issues */}
+                {false && (
+                  <Button variant="outline" size="sm" className="border-gray-300 text-gray-600 hover:bg-gray-50">
+                    <User className="h-4 w-4 mr-2" />
+                    Profile
+                  </Button>
+                )}
                 <Button 
                   variant="outline" 
                   size="sm" 
