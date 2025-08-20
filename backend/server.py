@@ -2928,13 +2928,21 @@ async def get_user_audit_history(
             {"target_user_id": user_id}
         ).sort("timestamp", -1).to_list(50)
         
-        # Enrich with admin information
+        # Clean audit logs and enrich with admin information
+        cleaned_logs = []
         for log in audit_logs:
-            admin = await db.admins.find_one({"admin_id": log["admin_id"]})
+            # Remove MongoDB _id field
+            if "_id" in log:
+                del log["_id"]
+            
+            # Enrich with admin information
+            admin = await admin_db.admins.find_one({"admin_id": log["admin_id"]})
             if admin:
                 log["admin_name"] = admin.get("full_name", "Unknown Admin")
+            
+            cleaned_logs.append(log)
         
-        return {"audit_history": audit_logs}
+        return {"audit_history": cleaned_logs}
         
     except HTTPException:
         raise
