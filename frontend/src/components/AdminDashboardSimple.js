@@ -304,6 +304,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Questions</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Subscription</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Joined</th>
+                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
