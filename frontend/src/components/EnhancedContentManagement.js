@@ -43,7 +43,8 @@ const EnhancedContentManagement = ({ creatorId, onClose, onUploadSuccess }) => {
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/creators/${creatorId}/content?limit=50`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/creators/${creatorId}/content?limit=50`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
