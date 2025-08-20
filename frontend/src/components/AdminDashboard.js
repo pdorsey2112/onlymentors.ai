@@ -33,7 +33,8 @@ const AdminDashboard = ({ admin, onLogout }) => {
 
     const fetchMentors = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/mentors?limit=100`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/mentors?limit=100`, {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
@@ -47,7 +48,8 @@ const AdminDashboard = ({ admin, onLogout }) => {
 
     const fetchUserActivityReport = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/reports/user-activity`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/reports/user-activity`, {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
@@ -61,7 +63,8 @@ const AdminDashboard = ({ admin, onLogout }) => {
 
     const fetchFinancialReport = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/reports/financial`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/reports/financial`, {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
