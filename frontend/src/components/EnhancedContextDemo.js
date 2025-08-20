@@ -117,8 +117,9 @@ const EnhancedContextDemo = ({ onClose }) => {
       setLoading(true);
       setError('');
       const token = localStorage.getItem('auth_token');
+      const backendURL = getBackendURL();
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/questions/ask-contextual`, {
+      const response = await fetch(`${backendURL}/api/questions/ask-contextual`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
