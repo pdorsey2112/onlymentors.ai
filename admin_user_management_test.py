@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-BACKEND_URL = os.getenv("REACT_APP_BACKEND_URL", "https://admin-role-system.preview.emergentagent.com")
+BACKEND_URL = "http://localhost:8001"  # Use local backend for testing
 API_BASE = f"{BACKEND_URL}/api"
 
 # Admin credentials
