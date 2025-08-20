@@ -183,6 +183,7 @@ class AdminUserManagementTester:
                 f"{API_BASE}/admin/users/{self.test_user_id}/role",
                 headers=self.get_auth_headers(),
                 json={
+                    "user_id": self.test_user_id,  # API expects user_id in body too
                     "new_role": "mentor",
                     "reason": "Testing role change functionality"
                 }
@@ -198,6 +199,7 @@ class AdminUserManagementTester:
                         f"{API_BASE}/admin/users/{self.test_user_id}/role",
                         headers=self.get_auth_headers(),
                         json={
+                            "user_id": self.test_user_id,
                             "new_role": "user",
                             "reason": "Reverting role change for testing"
                         }
@@ -217,6 +219,7 @@ class AdminUserManagementTester:
                 f"{API_BASE}/admin/users/{self.test_user_id}/role",
                 headers=self.get_auth_headers(),
                 json={
+                    "user_id": self.test_user_id,
                     "new_role": "invalid_role",
                     "reason": "Testing invalid role"
                 }
