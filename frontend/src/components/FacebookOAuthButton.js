@@ -160,7 +160,8 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
               console.log('Facebook login successful:', response);
               
               // Send the access token to our backend
-              const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/facebook`, {
+              const backendURL = getBackendURL();
+              const authResponse = await fetch(`${backendURL}/api/auth/facebook`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
