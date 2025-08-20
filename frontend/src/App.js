@@ -311,7 +311,8 @@ function MainApp() {
   const fetchQuestionHistory = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`${BACKEND_URL}/api/questions/history`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/questions/history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
