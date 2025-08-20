@@ -130,6 +130,22 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         { id: 'ai-agents', name: 'AI Agents' }
     ];
 
+    // Placeholder functions for user management actions (Step 1 complete)
+    const handleResetPassword = (userId) => {
+        // TODO: Implement reset password functionality
+        console.log('Reset password for user:', userId);
+    };
+
+    const handleSuspendUser = (userId) => {
+        // TODO: Implement suspend user functionality
+        console.log('Suspend user:', userId);
+    };
+
+    const handleDeleteUser = (userId) => {
+        // TODO: Implement delete user functionality
+        console.log('Delete user:', userId);
+    };
+
     if (loading) {
         return (
             <div style={{
