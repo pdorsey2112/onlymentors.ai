@@ -24,7 +24,8 @@ const CreatorLogin = ({ onSuccess, onSwitchToSignup, onForgotPassword }) => {
     setErrors({});
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/creators/login`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/creators/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
