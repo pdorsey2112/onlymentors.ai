@@ -146,8 +146,9 @@ const EnhancedContentManagement = ({ creatorId, onClose, onUploadSuccess }) => {
 
       const token = localStorage.getItem('creator_token') || localStorage.getItem('auth_token');
       
+      const backendURL = getBackendURL();
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/creators/${creatorId}/content/${contentId}`,
+        `${backendURL}/api/creators/${creatorId}/content/${contentId}`,
         {
           method: 'DELETE',
           headers: {
