@@ -43,8 +43,7 @@ function App() {
 
 function AdminApp() {
   const [admin, setAdmin] = useState(null);
-  const [showAdminAuth, setShowAdminAuth] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check if admin is already logged in
@@ -55,53 +54,55 @@ function AdminApp() {
       try {
         const parsedAdmin = JSON.parse(adminData);
         setAdmin(parsedAdmin);
-        setIsAdmin(true);
-        setShowAdminAuth(false);
       } catch (e) {
         // Clear invalid data
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_data');
-        setShowAdminAuth(true);
       }
-    } else {
-      setShowAdminAuth(true);
     }
+    setIsLoading(false);
   }, []);
 
   const handleAdminLoginSuccess = (adminData) => {
     setAdmin(adminData.admin);
-    setIsAdmin(true);
-    setShowAdminAuth(false);
     localStorage.setItem('admin_token', adminData.token);
     localStorage.setItem('admin_data', JSON.stringify(adminData.admin));
   };
 
   const handleAdminLoginError = (error) => {
     console.error('Admin login error:', error);
-    setShowAdminAuth(true);
   };
 
   const handleAdminLogout = () => {
     setAdmin(null);
-    setIsAdmin(false);
-    setShowAdminAuth(true);
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_data');
     window.location.href = '/'; // Redirect to main page
   };
 
-  // Show admin login if not authenticated
-  if (showAdminAuth || !isAdmin) {
+  // Show loading state
+  if (isLoading) {
     return (
-      <AdminLogin 
-        onLogin={handleAdminLoginSuccess}
-        onError={handleAdminLoginError}
-      />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <h2 className="text-2xl font-bold mb-4">Loading...</h2>
+        </div>
+      </div>
     );
   }
 
   // Show admin dashboard if authenticated
-  return <AdminDashboard admin={admin} onLogout={handleAdminLogout} />;
+  if (admin) {
+    return <AdminDashboard admin={admin} onLogout={handleAdminLogout} />;
+  }
+
+  // Show admin login if not authenticated
+  return (
+    <AdminLogin 
+      onLogin={handleAdminLoginSuccess}
+      onError={handleAdminLoginError}
+    />
+  );
 }
 
 function CreatorApp() {
