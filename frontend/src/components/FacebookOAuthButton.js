@@ -11,7 +11,8 @@ const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Con
     // Fetch Facebook OAuth config from backend first
     const fetchConfig = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/facebook/config`);
+        const backendURL = getBackendURL();
+        const response = await fetch(`${backendURL}/api/auth/facebook/config`);
         if (response.ok) {
           const configData = await response.json();
           console.log('Facebook OAuth config loaded:', configData);
