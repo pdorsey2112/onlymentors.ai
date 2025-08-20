@@ -1,10 +1,17 @@
 // Dynamic configuration for different environments
 export const getBackendURL = () => {
   // Defensive check for environment variables
-  const processEnv = (typeof process !== 'undefined' && process.env) ? process.env.REACT_APP_BACKEND_URL : undefined;
-  const importMetaEnv = (typeof import !== 'undefined' && import.meta && import.meta.env) ? import.meta.env.REACT_APP_BACKEND_URL : undefined;
+  let envBackendURL = '';
   
-  const envBackendURL = processEnv || importMetaEnv;
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_BACKEND_URL) {
+      envBackendURL = process.env.REACT_APP_BACKEND_URL;
+    } else if (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.REACT_APP_BACKEND_URL) {
+      envBackendURL = import.meta.env.REACT_APP_BACKEND_URL;
+    }
+  } catch (error) {
+    console.warn('Environment variable access error:', error);
+  }
   
   if (envBackendURL && envBackendURL.trim() !== '') {
     return envBackendURL;
