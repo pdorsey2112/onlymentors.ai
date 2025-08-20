@@ -93,7 +93,7 @@ function AdminApp() {
 
   // Show admin dashboard if authenticated
   if (admin) {
-    return <AdminDashboard admin={admin} onLogout={handleAdminLogout} />;
+    return <AdminDashboardSimple admin={admin} onLogout={handleAdminLogout} />;
   }
 
   // Show admin login if not authenticated
