@@ -80,7 +80,8 @@ const AdminDashboard = ({ admin, onLogout }) => {
         if (selectedMentors.length === 0) return;
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/mentors/manage`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/mentors/manage`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
