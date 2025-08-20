@@ -8,7 +8,7 @@ import CreatorLogin from './components/CreatorLogin';
 import CreatorDashboard from './components/CreatorDashboard';
 import CreatorVerification from './components/CreatorVerification';
 import AdminLogin from './components/AdminLogin';
-import AdminDashboard from './components/AdminDashboard';
+import AdminDashboardSimple from './components/AdminDashboardSimple';
 import GoogleOAuthButton from './components/GoogleOAuthButton';
 import FacebookOAuthButton from './components/FacebookOAuthButton';
 import ForgotPasswordForm from './components/ForgotPasswordForm';
