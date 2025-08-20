@@ -56,7 +56,8 @@ const GoogleOAuthButton = ({ onSuccess, onError, disabled = false, text = "Sign 
       console.log('Sending to backend:', requestBody);
 
       // Send the credential to our backend
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/google`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
