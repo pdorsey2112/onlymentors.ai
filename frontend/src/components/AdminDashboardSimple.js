@@ -76,7 +76,8 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
 
     const fetchUserActivityReport = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/reports/user-activity`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/reports/user-activity`, {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
