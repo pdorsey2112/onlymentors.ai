@@ -225,7 +225,7 @@ class AdminUserManagementTester:
                 }
             )
             
-            if response.status_code == 400:
+            if response.status_code == 422:  # Validation error is correct
                 self.log_test("Change User Role - Invalid Role", True, "Correctly rejected invalid role")
             else:
                 self.log_test("Change User Role - Invalid Role", False, f"Should have rejected invalid role: {response.status_code}")
