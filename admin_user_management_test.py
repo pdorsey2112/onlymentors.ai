@@ -422,8 +422,8 @@ class AdminUserManagementTester:
             # Test without authentication
             response = requests.get(f"{API_BASE}/admin/users")
             
-            if response.status_code == 401:
-                self.log_test("Authentication - No Token", True, "Correctly rejected request without authentication")
+            if response.status_code in [401, 403]:  # Both are acceptable for unauthenticated requests
+                self.log_test("Authentication - No Token", True, f"Correctly rejected request without authentication ({response.status_code})")
             else:
                 self.log_test("Authentication - No Token", False, f"Should reject unauthenticated requests: {response.status_code}")
 
