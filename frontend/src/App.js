@@ -295,7 +295,8 @@ function MainApp() {
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`${BACKEND_URL}/api/auth/me`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
