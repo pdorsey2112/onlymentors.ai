@@ -67,8 +67,9 @@ const ResetPasswordForm = () => {
       setValidatingToken(true);
       setError('');
 
+      const backendURL = getBackendURL();
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/auth/validate-reset-token?token=${encodeURIComponent(tokenValue)}&user_type=${typeValue}`,
+        `${backendURL}/api/auth/validate-reset-token?token=${encodeURIComponent(tokenValue)}&user_type=${typeValue}`,
         {
           method: 'POST',
           headers: {
