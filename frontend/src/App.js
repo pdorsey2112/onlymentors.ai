@@ -30,14 +30,14 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/admin/*" element={<AdminApp />} />
         <Route path="/admin" element={<AdminApp />} />
-        <Route path="/admin/dashboard" element={<AdminApp />} />
-        <Route path="/creator" element={<CreatorApp />} />
         <Route path="/creator/*" element={<CreatorApp />} />
+        <Route path="/creator" element={<CreatorApp />} />
         <Route path="/forgot-password" element={<ForgotPasswordApp />} />
         <Route path="/reset-password" element={<ResetPasswordApp />} />
         <Route path="/" element={<MainApp />} />
-        <Route path="/*" element={<MainApp />} />
+        <Route path="*" element={<MainApp />} />
       </Routes>
     </Router>
   );
