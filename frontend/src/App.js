@@ -102,7 +102,7 @@ function AdminApp() {
   }
 
   // Show admin dashboard if authenticated
-  return <AdminDashboardSimple admin={admin} onLogout={handleAdminLogout} />;
+  return <AdminDashboard admin={admin} onLogout={handleAdminLogout} />;
 }
 
 function CreatorApp() {
