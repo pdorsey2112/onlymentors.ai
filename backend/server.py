@@ -35,8 +35,9 @@ from creator_system import (
     ALLOWED_VIDEO_TYPES, ALLOWED_DOCUMENT_TYPES, MAX_VIDEO_SIZE, MAX_DOCUMENT_SIZE
 )
 from admin_system import (
-    AdminRole, AdminStatus, UserAction, MentorAction,
+    AdminRole, AdminStatus, UserAction, MentorAction, UserRole,
     AdminSignupRequest, AdminLoginRequest, UserManagementRequest, MentorManagementRequest,
+    UserRoleChangeRequest, UserSuspendRequest,
     generate_admin_id, get_admin_public_profile, create_initial_super_admin_doc,
     calculate_user_metrics, calculate_mentor_metrics, calculate_financial_metrics,
     has_permission, INITIAL_SUPER_ADMIN
