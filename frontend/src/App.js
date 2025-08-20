@@ -22,6 +22,7 @@ import { Progress } from './components/ui/progress';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { Checkbox } from './components/ui/checkbox';
 import { Brain, Users, Heart, Atom, Crown, MessageSquare, Sparkles, Star, Lock, Zap, Search, Filter, CheckCircle, User } from 'lucide-react';
+import { getBackendURL } from './config';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
