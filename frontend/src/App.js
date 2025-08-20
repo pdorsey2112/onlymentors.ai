@@ -488,7 +488,8 @@ function MainApp() {
       const token = localStorage.getItem('auth_token');
       const origin = window.location.origin;
 
-      const response = await fetch(`${BACKEND_URL}/api/payments/checkout`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/payments/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
