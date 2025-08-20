@@ -527,17 +527,7 @@ function MainApp() {
     });
   };
 
-  // Handle mentor profile viewing
-  const handleViewMentorProfile = (mentor, e) => {
-    e.stopPropagation(); // Prevent mentor selection when clicking profile button
-    setSelectedMentorForProfile(mentor);
-    setShowMentorProfile(true);
-  };
 
-  const handleCloseMentorProfile = () => {
-    setShowMentorProfile(false);
-    setSelectedMentorForProfile(null);
-  };
 
   // Removed handleSelectAll function - now limiting to 5 mentors max
 
