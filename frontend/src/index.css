@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* HIDE ALL PROFILE BUTTONS - EMERGENCY FIX */
+button:has(*:contains("Profile")),
+button[aria-label*="Profile"],
+a:has(*:contains("Profile")) {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Alternative approach - hide Profile text directly */
+*:has(> *:only-child):has-text("Profile") {
+    display: none !important;
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
