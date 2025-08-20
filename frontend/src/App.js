@@ -283,7 +283,8 @@ function MainApp() {
   // API functions
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/categories`);
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/categories`);
       const data = await response.json();
       setCategories(data.categories);
     } catch (error) {
