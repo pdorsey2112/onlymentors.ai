@@ -4,12 +4,10 @@ import UserManagement from './UserManagement';
 const AdminDashboard = ({ admin, onLogout }) => {
     const [activeTab, setActiveTab] = useState('overview');
     const [dashboardData, setDashboardData] = useState(null);
-    const [users, setUsers] = useState([]);
     const [mentors, setMentors] = useState([]);
     const [userActivityReport, setUserActivityReport] = useState(null);
     const [financialReport, setFinancialReport] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedMentors, setSelectedMentors] = useState([]);
 
     const getAuthHeaders = () => ({
