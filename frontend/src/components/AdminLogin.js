@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getBackendURL } from '../config';
 
 const AdminLogin = ({ onLogin, onError }) => {
     const [formData, setFormData] = useState({
@@ -12,7 +13,8 @@ const AdminLogin = ({ onLogin, onError }) => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/login`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
