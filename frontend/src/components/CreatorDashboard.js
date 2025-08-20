@@ -163,17 +163,10 @@ const CreatorDashboard = () => {
             </div>
             
             <button 
-              onClick={() => {
-                // Clear localStorage and redirect to home (logout)
-                localStorage.removeItem('creator_token');
-                localStorage.removeItem('creator_data');
-                localStorage.removeItem('auth_token');
-                localStorage.removeItem('user');
-                window.location.href = '/';
-              }}
+              onClick={() => setActiveTab('public-profile')}
               className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
             >
-              Logoff
+              View Public Profile
             </button>
           </div>
         </div>
