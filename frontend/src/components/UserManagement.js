@@ -35,7 +35,7 @@ const UserManagement = ({ admin }) => {
     const [actionLoading, setActionLoading] = useState(false);
 
     const getAuthHeaders = () => ({
-        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
         'Content-Type': 'application/json'
     });
 
