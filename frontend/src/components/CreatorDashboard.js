@@ -258,10 +258,17 @@ const CreatorDashboard = () => {
                 onClick={setActiveTab}
               />
               <TabButton
-                id="public-profile"
-                label="View Public Profile"
-                active={activeTab === 'public-profile'}
-                onClick={setActiveTab}
+                id="logoff"
+                label="Logoff"
+                active={activeTab === 'logoff'}
+                onClick={(tab) => {
+                  // Perform logout instead of showing profile
+                  localStorage.removeItem('creator_token');
+                  localStorage.removeItem('creator_data');  
+                  localStorage.removeItem('auth_token');
+                  localStorage.removeItem('user');
+                  window.location.href = '/';
+                }}
               />
               <TabButton
                 id="content"
