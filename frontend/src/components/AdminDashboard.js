@@ -29,28 +29,6 @@ const AdminDashboard = ({ admin, onLogout }) => {
         }
     };
 
-    const fetchUsers = async () => {
-        try {
-            console.log('🔍 Fetching users...');
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/users?limit=100`, {
-                headers: getAuthHeaders()
-            });
-            console.log('📡 Response status:', response.status);
-            if (response.ok) {
-                const data = await response.json();
-                console.log('📊 Users data received:', data.users?.length, 'users');
-                console.log('📋 First user:', data.users?.[0]);
-                setUsers(data.users);
-            } else {
-                console.error('❌ Failed to fetch users:', response.status, response.statusText);
-                const errorText = await response.text();
-                console.error('Error details:', errorText);
-            }
-        } catch (error) {
-            console.error('❌ Error fetching users:', error);
-        }
-    };
-
     const fetchMentors = async () => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/mentors?limit=100`, {
