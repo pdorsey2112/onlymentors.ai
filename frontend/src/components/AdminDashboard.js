@@ -144,7 +144,6 @@ const AdminDashboard = ({ admin, onLogout }) => {
             setLoading(true);
             await Promise.all([
                 fetchDashboardData(),
-                fetchUsers(),
                 fetchMentors(),
                 fetchUserActivityReport(),
                 fetchFinancialReport()
