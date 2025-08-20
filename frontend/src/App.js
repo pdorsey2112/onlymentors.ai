@@ -1622,15 +1622,6 @@ function MainApp() {
         })()}
       </main>
 
-      {/* Mentor Profile Modal */}
-      <MentorProfileModal
-        mentor={selectedMentorForProfile}
-        isOpen={showMentorProfile}
-        onClose={handleCloseMentorProfile}
-        onSelect={handleMentorSelect}
-        isSelected={selectedMentorForProfile ? selectedMentors.some(m => m.id === selectedMentorForProfile.id) : false}
-        user={user}
-      />
     </div>
   );
 }
