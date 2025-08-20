@@ -119,6 +119,9 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         loadData();
     }, []);
 
+    const [resetPasswordModal, setResetPasswordModal] = useState({ show: false, userId: null });
+    const [resetPasswordReason, setResetPasswordReason] = useState('');
+
     const tabs = [
         { id: 'overview', name: 'Overview' },
         { id: 'users', name: 'Users' },
