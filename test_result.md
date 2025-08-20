@@ -305,11 +305,11 @@ frontend:
 
   - task: "Complete Admin User Management Frontend Integration"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/components/AdminDashboard.js, /app/frontend/src/components/UserManagement.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -317,6 +317,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "Successfully integrated UserManagement component into AdminDashboard.js. Fixed App.js to import and use AdminDashboard instead of AdminDashboardSimple which was causing runtime errors. Replaced the basic renderUsers() function with comprehensive UserManagement component that includes: user listing with filters/search, role change dropdowns, suspend/unsuspend toggles, delete buttons, audit history viewing, statistics display, and professional UI with proper authentication."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL FRONTEND ROUTING ISSUE FOUND: Admin login is not working due to React Router configuration problems. When navigating to /admin route, the AdminApp component is not being rendered correctly - instead showing the main app login form. Backend admin authentication is working perfectly (tested via curl - returns valid JWT token), but frontend routing to AdminApp component is broken. Fixed token storage inconsistencies (adminToken vs admin_token) and Admin Console button routing, but core issue remains: /admin route not rendering AdminApp component. This prevents access to the UserManagement component and all admin functionality. REQUIRES IMMEDIATE FRONTEND ROUTING FIX."
 
   - task: "Complete Creator Marketplace Frontend Workflow"
     implemented: true
