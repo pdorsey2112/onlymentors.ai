@@ -130,20 +130,98 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         { id: 'ai-agents', name: 'AI Agents' }
     ];
 
-    // Placeholder functions for user management actions (Step 1 complete)
-    const handleResetPassword = (userId) => {
-        // TODO: Implement reset password functionality
-        console.log('Reset password for user:', userId);
+    // User management action functions (Step 2: Actual functionality)
+    const handleResetPassword = async (userId) => {
+        const reason = prompt('Please enter a reason for resetting this user\'s password:');
+        if (!reason || reason.trim() === '') {
+            alert('Password reset cancelled. Reason is required.');
+            return;
+        }
+
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/users/${userId}/reset-password`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ reason: reason.trim() })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(`Password reset successful! New temporary password: ${data.temporary_password}`);
+            } else {
+                const errorData = await response.json();
+                alert(`Error resetting password: ${errorData.detail || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            alert('Network error. Please try again.');
+        }
     };
 
-    const handleSuspendUser = (userId) => {
-        // TODO: Implement suspend user functionality
-        console.log('Suspend user:', userId);
+    const handleSuspendUser = async (userId) => {
+        const reason = prompt('Please enter a reason for suspending this user:');
+        if (!reason || reason.trim() === '') {
+            alert('User suspension cancelled. Reason is required.');
+            return;
+        }
+
+        if (confirm('Are you sure you want to suspend this user? They will not be able to access the platform.')) {
+            try {
+                const backendURL = getBackendURL();
+                const response = await fetch(`${backendURL}/api/admin/users/${userId}/suspend`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ 
+                        suspend: true,
+                        reason: reason.trim() 
+                    })
+                });
+
+                if (response.ok) {
+                    alert('User suspended successfully!');
+                    // Refresh the users list
+                    fetchUsers();
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error suspending user: ${errorData.detail || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error suspending user:', error);
+                alert('Network error. Please try again.');
+            }
+        }
     };
 
-    const handleDeleteUser = (userId) => {
-        // TODO: Implement delete user functionality
-        console.log('Delete user:', userId);
+    const handleDeleteUser = async (userId) => {
+        const reason = prompt('Please enter a reason for deleting this user:');
+        if (!reason || reason.trim() === '') {
+            alert('User deletion cancelled. Reason is required.');
+            return;
+        }
+
+        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            try {
+                const backendURL = getBackendURL();
+                const response = await fetch(`${backendURL}/api/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ reason: reason.trim() })
+                });
+
+                if (response.ok) {
+                    alert('User deleted successfully!');
+                    // Refresh the users list
+                    fetchUsers();
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error deleting user: ${errorData.detail || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Network error. Please try again.');
+            }
+        }
     };
 
     if (loading) {
