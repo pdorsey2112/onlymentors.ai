@@ -2854,6 +2854,71 @@ async def suspend_user(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to suspend user: {str(e)}")
 
+@app.post("/api/admin/users/{user_id}/reset-password")
+async def admin_reset_user_password(
+    user_id: str,
+    request: dict,
+    current_admin = Depends(get_current_admin)
+):
+    """Admin reset user password - generates temporary password"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Prevent admin from resetting their own password this way
+        if user_id == current_admin.get("user_id"):
+            raise HTTPException(status_code=400, detail="Cannot reset your own password")
+        
+        # Verify user exists
+        user = await db.users.find_one({"user_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Generate temporary password (8 characters, alphanumeric)
+        import secrets
+        import string
+        temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(8))
+        
+        # Hash the temporary password
+        import bcrypt
+        hashed_password = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt())
+        
+        # Update user password
+        await db.users.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "password": hashed_password.decode('utf-8'),
+                    "password_reset_by_admin": current_admin["admin_id"],
+                    "password_reset_at": datetime.utcnow(),
+                    "must_change_password": True  # Force user to change password on next login
+                }
+            }
+        )
+        
+        # Create audit log entry
+        audit_entry = {
+            "audit_id": str(uuid.uuid4()),
+            "action": "reset_password",
+            "admin_id": current_admin["admin_id"],
+            "target_user_id": user_id,
+            "reason": request.get("reason", "No reason provided"),
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_audit_log.insert_one(audit_entry)
+        
+        return {
+            "message": "Password reset successfully",
+            "user_id": user_id,
+            "temporary_password": temp_password,
+            "note": "User must change password on next login"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reset user password: {str(e)}")
+
 @app.delete("/api/admin/users/{user_id}")
 async def delete_user(
     user_id: str,
