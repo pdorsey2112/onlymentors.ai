@@ -12,8 +12,6 @@ import { Label } from './ui/label';
 import { Trash2, Edit3, Shield, UserX, History } from 'lucide-react';
 import { getBackendURL } from '../config';
 
-const BACKEND_URL = getBackendURL();
-
 const UserManagement = ({ admin }) => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -21,6 +19,9 @@ const UserManagement = ({ admin }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
+
+    // Get backend URL dynamically
+    const BACKEND_URL = getBackendURL();
     
     // Modal states
     const [selectedUser, setSelectedUser] = useState(null);
