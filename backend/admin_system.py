@@ -55,6 +55,16 @@ class UserManagementRequest(BaseModel):
     reason: Optional[str] = None
     new_role: Optional[str] = None  # For role changes
 
+class UserRoleChangeRequest(BaseModel):
+    user_id: str
+    new_role: UserRole
+    reason: Optional[str] = None
+
+class UserSuspendRequest(BaseModel):
+    user_id: str
+    reason: str
+    suspend: bool = True
+
 class MentorManagementRequest(BaseModel):
     creator_ids: List[str] 
     action: MentorAction
