@@ -133,25 +133,31 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         { id: 'ai-agents', name: 'AI Agents' }
     ];
 
-    // User management action functions (Step 2: Actual functionality)
-    const handleResetPassword = async (userId) => {
-        const reason = prompt('Please enter a reason for resetting this user\'s password:');
-        if (!reason || reason.trim() === '') {
-            alert('Password reset cancelled. Reason is required.');
+    // User management action functions (Step 2: Updated reset password with dropdown)
+    const handleResetPassword = (userId) => {
+        setResetPasswordModal({ show: true, userId: userId });
+        setResetPasswordReason('');
+    };
+
+    const confirmResetPassword = async () => {
+        if (!resetPasswordReason) {
+            alert('Please select a reason for resetting the password.');
             return;
         }
 
         try {
             const backendURL = getBackendURL();
-            const response = await fetch(`${backendURL}/api/admin/users/${userId}/reset-password`, {
+            const response = await fetch(`${backendURL}/api/admin/users/${resetPasswordModal.userId}/reset-password`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
-                body: JSON.stringify({ reason: reason.trim() })
+                body: JSON.stringify({ reason: resetPasswordReason })
             });
 
             if (response.ok) {
                 const data = await response.json();
                 alert(`Password reset successful! New temporary password: ${data.temporary_password}`);
+                setResetPasswordModal({ show: false, userId: null });
+                setResetPasswordReason('');
             } else {
                 const errorData = await response.json();
                 alert(`Error resetting password: ${errorData.detail || 'Unknown error'}`);
@@ -160,6 +166,11 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
             console.error('Error resetting password:', error);
             alert('Network error. Please try again.');
         }
+    };
+
+    const cancelResetPassword = () => {
+        setResetPasswordModal({ show: false, userId: null });
+        setResetPasswordReason('');
     };
 
     const handleSuspendUser = async (userId) => {
