@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getBackendURL } from '../config';
 
 const FacebookOAuthButton = ({ onSuccess, onError, disabled = false, text = "Continue with Facebook" }) => {
   const [config, setConfig] = useState(null);
