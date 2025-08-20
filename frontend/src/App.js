@@ -774,7 +774,7 @@ function MainApp() {
                   onClick={handleLogout} 
                   className="border-gray-300 text-gray-600 hover:bg-gray-50"
                 >
-                  Logout
+                  Logout UPDATED
                 </Button>
               </div>
             </div>
