@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import UserManagement from './UserManagement';
 
 const AdminDashboard = ({ admin, onLogout }) => {
     const [activeTab, setActiveTab] = useState('overview');
