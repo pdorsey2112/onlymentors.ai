@@ -2,18 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* NUCLEAR CSS APPROACH - Hide Profile buttons */
-button {
-    &:has-text("Profile") {
-        display: none !important;
-    }
-}
-
-/* Brute force approach */
-*:contains("Profile") {
-    display: none !important;
-}
-
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
