@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getBackendURL } from '../config';
 
 const CreatorVerification = ({ creatorId, onVerificationComplete }) => {
   const [verificationStatus, setVerificationStatus] = useState(null);
