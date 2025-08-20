@@ -98,8 +98,9 @@ const EnhancedContentManagement = ({ creatorId, onClose, onUploadSuccess }) => {
         is_featured: editForm.is_featured
       };
 
+      const backendURL = getBackendURL();
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/creators/${creatorId}/content/${editingContent.content_id}`,
+        `${backendURL}/api/creators/${creatorId}/content/${editingContent.content_id}`,
         {
           method: 'PUT',
           headers: {
