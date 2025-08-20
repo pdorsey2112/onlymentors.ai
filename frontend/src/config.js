@@ -7,16 +7,8 @@ export const getBackendURL = () => {
     return envBackendURL;
   }
   
-  // Determine backend URL based on current host
-  const currentHost = window.location.host;
-  
-  if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
-    // Local development - use localhost:8001 directly
-    return 'http://localhost:8001';
-  } else {
-    // Preview/production environment - use same origin (Kubernetes ingress handles /api routing)
-    return '';
-  }
+  // For all environments, use empty string to rely on proxy configuration
+  return '';
 };
 
 export const API_BASE_URL = getBackendURL();
