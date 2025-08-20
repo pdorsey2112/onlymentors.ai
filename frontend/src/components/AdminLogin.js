@@ -22,9 +22,9 @@ const AdminLogin = ({ onLogin, onError }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('adminToken', data.token);
-                localStorage.setItem('adminData', JSON.stringify(data.admin));
-                onLogin(data.admin);
+                localStorage.setItem('admin_token', data.token);
+                localStorage.setItem('admin_data', JSON.stringify(data.admin));
+                onLogin(data);
             } else {
                 const error = await response.json();
                 onError(error.detail || 'Login failed');
