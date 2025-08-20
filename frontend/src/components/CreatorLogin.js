@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getBackendURL } from '../config';
 
 const CreatorLogin = ({ onSuccess, onSwitchToSignup, onForgotPassword }) => {
   const [formData, setFormData] = useState({
