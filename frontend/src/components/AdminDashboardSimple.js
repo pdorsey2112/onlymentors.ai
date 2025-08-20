@@ -46,7 +46,8 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/users?limit=100`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/users?limit=100`, {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
