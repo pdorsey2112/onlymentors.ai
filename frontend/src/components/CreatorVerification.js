@@ -94,7 +94,8 @@ const CreatorVerification = ({ creatorId, onVerificationComplete }) => {
     formData.append('id_document', idFile);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/creators/${creatorId}/id-verification`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/creators/${creatorId}/id-verification`, {
         method: 'POST',
         body: formData,
       });
