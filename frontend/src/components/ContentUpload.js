@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getBackendURL } from '../config';
 
 const ContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
   const [uploadData, setUploadData] = useState({
