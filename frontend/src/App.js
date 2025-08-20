@@ -768,13 +768,14 @@ function MainApp() {
                     {10 - user.questions_asked} free questions left
                   </Badge>
                 )}
+                {/* ONLY LOGOUT BUTTON - PROFILE COMPLETELY REMOVED */}
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={handleLogout} 
                   className="border-gray-300 text-gray-600 hover:bg-gray-50"
                 >
-                  Logout FINAL TEST
+                  Logout NUCLEAR
                 </Button>
               </div>
             </div>
