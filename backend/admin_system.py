@@ -53,6 +53,7 @@ class UserManagementRequest(BaseModel):
     user_ids: List[str]
     action: UserAction
     reason: Optional[str] = None
+    new_role: Optional[str] = None  # For role changes
 
 class MentorManagementRequest(BaseModel):
     creator_ids: List[str] 
