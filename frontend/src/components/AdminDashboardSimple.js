@@ -331,6 +331,55 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                     <td style={{ padding: '15px', color: '#6b7280' }}>
                                         {new Date(user.created_at).toLocaleDateString()}
                                     </td>
+                                    <td style={{ padding: '15px' }}>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                onClick={() => handleResetPassword(user.user_id)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: '#3b82f6',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Reset Password
+                                            </button>
+                                            <button
+                                                onClick={() => handleSuspendUser(user.user_id)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: '#f59e0b',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Suspend
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteUser(user.user_id)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: '#dc2626',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
