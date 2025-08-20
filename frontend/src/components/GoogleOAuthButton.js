@@ -11,7 +11,8 @@ const GoogleOAuthButton = ({ onSuccess, onError, disabled = false, text = "Sign 
     // Fetch Google OAuth config from backend
     const fetchConfig = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/google/config`);
+        const backendURL = getBackendURL();
+        const response = await fetch(`${backendURL}/api/auth/google/config`);
         if (response.ok) {
           const configData = await response.json();
           setConfig(configData);
