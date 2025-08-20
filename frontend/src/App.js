@@ -604,7 +604,7 @@ function MainApp() {
                 Become a Mentor
               </Button>
               <Button 
-                onClick={() => setShowAdminAuth(true)} 
+                onClick={() => window.location.href = '/admin'} 
                 variant="outline"
                 className="text-red-600 border-red-600 hover:bg-red-50"
               >
