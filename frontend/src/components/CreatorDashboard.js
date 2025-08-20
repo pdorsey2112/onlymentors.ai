@@ -251,6 +251,12 @@ const CreatorDashboard = () => {
                 onClick={setActiveTab}
               />
               <TabButton
+                id="public-profile"
+                label="View Public Profile"
+                active={activeTab === 'public-profile'}
+                onClick={setActiveTab}
+              />
+              <TabButton
                 id="content"
                 label="Content"
                 active={activeTab === 'content'}
