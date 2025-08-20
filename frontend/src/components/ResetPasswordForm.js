@@ -114,7 +114,8 @@ const ResetPasswordForm = () => {
       setLoading(true);
       setError('');
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/reset-password`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/auth/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
