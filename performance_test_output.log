@@ -1,0 +1,156 @@
+🚀 OnlyMentors.ai Performance Testing Suite
+Testing parallel processing, caching, and performance improvements
+======================================================================
+🔐 Setting up authentication...
+✅ Authentication setup successful
+
+🎯 Starting Performance Tests...
+
+======================================================================
+🚀 TEST 1: PARALLEL PROCESSING PERFORMANCE
+======================================================================
+
+📊 Testing Single Mentor Response Time (Baseline)...
+✅ Single mentor response time: 0.07s
+   Backend processing time: 0.00s
+   Response length: 1653 chars
+
+📊 Testing Multiple Mentors Response Time (Parallel Processing)...
+✅ Multiple mentors response time: 0.03s
+   Backend processing time: 0.00s
+   Total mentors: 5
+   Responses received: 5
+
+📈 PARALLEL PROCESSING ANALYSIS:
+   Expected sequential time: 0.35s (5 × 0.07s)
+   Actual parallel time: 0.03s
+   Speed improvement: 13.7x faster
+   Time saved: 0.33s
+   Unique responses: 5/5
+✅ PARALLEL PROCESSING IS WORKING CORRECTLY!
+   Achieved 13.7x speed improvement (target: ≥2.0x)
+
+======================================================================
+💾 TEST 2: CACHING SYSTEM PERFORMANCE
+======================================================================
+
+📊 First request (should create cache entry)...
+✅ First request completed: 0.03s
+   Backend processing time: 0.00s
+   Response length: 1530 chars
+   Response preview: My philosophy on value investing centers around the simple yet powerful idea that it's not about tim...
+
+⏳ Waiting 2 seconds for cache to be set...
+
+📊 Second request (should use cached response)...
+✅ Second request completed: 0.02s
+   Backend processing time: 0.00s
+   Response length: 1530 chars
+   Response preview: My philosophy on value investing centers around the simple yet powerful idea that it's not about tim...
+
+📈 CACHING SYSTEM ANALYSIS:
+   First request time: 0.03s
+   Second request time: 0.02s
+   Speed improvement: 1.2x faster
+   Time saved: 0.00s
+   Responses identical: True
+❌ CACHING SYSTEM MAY NOT BE WORKING OPTIMALLY
+   Speed improvement 1.2x is below target (≥2.0x)
+
+======================================================================
+📊 TEST 3: PERFORMANCE MONITORING METRICS
+======================================================================
+
+📊 Testing performance metrics in API response...
+✅ Found processing_time: 0.00s
+✅ Found total_mentors: 2
+✅ Found selected_mentors: 2 mentors
+✅ Found responses: 2 responses
+❌ Processing time is invalid: 0.00s
+✅ Total mentors count is correct: 2
+
+📈 PERFORMANCE MONITORING ANALYSIS:
+   Required metrics found: 4/2
+   Metrics validation: ❌ FAILED
+❌ PERFORMANCE MONITORING HAS ISSUES
+   Some metrics have invalid values
+
+======================================================================
+⏰ TEST 4: TIMEOUT HANDLING & ERROR RESILIENCE
+======================================================================
+
+📊 Testing timeout handling with complex question...
+   Using long, complex question to potentially trigger timeouts
+   Testing with 4 mentors
+✅ Request completed: 0.02s
+   Backend processing time: 0.00s
+   Expected mentors: 4
+   Responses received: 4
+   📝 Warren Buffett: 2702 chars (success)
+   📝 Steve Jobs: 2361 chars (success)
+   📝 Bill Gates: 2194 chars (success)
+   📝 Elon Musk: 2279 chars (success)
+
+📈 TIMEOUT HANDLING ANALYSIS:
+   Successful responses: 4
+   Fallback responses: 0
+   Total responses: 4
+   Response rate: 4/4 (100.0%)
+   Average response length: 2384 chars
+✅ TIMEOUT HANDLING IS WORKING CORRECTLY!
+   All mentors provided responses (including fallbacks)
+   No mentors were completely blocked by timeouts
+   4 mentors provided full responses
+
+======================================================================
+🛡️ TEST 5: ERROR RESILIENCE
+======================================================================
+
+📊 Testing error resilience with multiple mentors...
+   Testing with 3 mentors
+✅ Request completed: 0.03s
+   Expected mentors: 3
+   Responses received: 3
+   ✅ Warren Buffett: 1858 chars (valid)
+   ✅ Steve Jobs: 2081 chars (valid)
+   ✅ Bill Gates: 1911 chars (valid)
+
+📈 ERROR RESILIENCE ANALYSIS:
+   Valid responses: 3
+   Error responses: 0
+   Total responses: 3
+   Success rate: 100.0%
+   Unique responses: 3/3 (100.0%)
+✅ ERROR RESILIENCE IS WORKING CORRECTLY!
+   100.0% of mentors provided valid responses
+   100.0% of responses are unique
+   Individual mentor failures don't block others
+
+======================================================================
+📋 COMPREHENSIVE PERFORMANCE REPORT
+======================================================================
+
+🎯 OVERALL TEST RESULTS:
+   Tests completed: 5
+   Tests passed: 3
+   Success rate: 60.0%
+
+⚡ PARALLEL PROCESSING PERFORMANCE:
+   Single mentor time: 0.07s
+   Multiple mentors time: 0.03s
+   Mentors tested: 5
+   Speed improvement: 13.7x faster
+   Unique responses: 5/5
+   🏆 EXCELLENT: 3x+ speed improvement achieved!
+
+💾 CACHING SYSTEM PERFORMANCE:
+   First request: 0.03s
+   Second request: 0.02s
+   Cache speed improvement: 1.2x faster
+   Time saved: 0.00s
+   Cache hit confirmed: True
+   ⚠️  NEEDS IMPROVEMENT: Less than 2x cache improvement
+
+🎉 PERFORMANCE IMPROVEMENTS SUMMARY:
+   ⚠️  Some performance improvements need attention
+   Only 3/5 tests passed
