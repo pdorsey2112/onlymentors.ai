@@ -26,7 +26,8 @@ const CreatorVerification = ({ creatorId, onVerificationComplete }) => {
 
   const fetchVerificationStatus = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/creators/${creatorId}/verification-status`);
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/creators/${creatorId}/verification-status`);
       if (response.ok) {
         const status = await response.json();
         setVerificationStatus(status);
