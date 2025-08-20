@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import UserManagement from './UserManagement';
+import { getBackendURL } from '../config';
 
 const AdminDashboard = ({ admin, onLogout }) => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -17,7 +18,8 @@ const AdminDashboard = ({ admin, onLogout }) => {
 
     const fetchDashboardData = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL}/api/admin/dashboard`, {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/dashboard`, {
                 headers: getAuthHeaders()
             });
             if (response.ok) {
