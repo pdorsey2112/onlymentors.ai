@@ -2730,6 +2730,217 @@ async def manage_users(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to manage users: {str(e)}")
 
+@app.put("/api/admin/users/{user_id}/role")
+async def change_user_role(
+    user_id: str,
+    request: UserRoleChangeRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Change a user's role"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Prevent admin from changing their own role
+        if user_id == current_admin.get("user_id"):
+            raise HTTPException(status_code=400, detail="Cannot change your own role")
+        
+        # Verify user exists
+        user = await db.users.find_one({"user_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Validate role transition
+        valid_roles = ["user", "mentor", "admin"]
+        if request.new_role not in valid_roles:
+            raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
+        
+        # Update user role
+        await db.users.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "role": request.new_role,
+                    "role_changed_at": datetime.utcnow(),
+                    "role_changed_by": current_admin["admin_id"]
+                }
+            }
+        )
+        
+        # Create audit log entry
+        audit_entry = {
+            "audit_id": str(uuid.uuid4()),
+            "action": "role_change",
+            "admin_id": current_admin["admin_id"],
+            "target_user_id": user_id,
+            "old_role": user.get("role", "user"),
+            "new_role": request.new_role,
+            "reason": request.reason,
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_audit_log.insert_one(audit_entry)
+        
+        return {
+            "message": f"User role changed to {request.new_role}",
+            "user_id": user_id,
+            "old_role": user.get("role", "user"),
+            "new_role": request.new_role
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to change user role: {str(e)}")
+
+@app.put("/api/admin/users/{user_id}/suspend")
+async def suspend_user(
+    user_id: str,
+    request: UserSuspendRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Suspend or unsuspend a user"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Prevent admin from suspending themselves
+        if user_id == current_admin.get("user_id"):
+            raise HTTPException(status_code=400, detail="Cannot suspend your own account")
+        
+        # Verify user exists
+        user = await db.users.find_one({"user_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Update suspension status
+        update_data = {
+            "is_suspended": request.suspend,
+            "suspension_reason": request.reason if request.suspend else None,
+            "suspended_by": current_admin["admin_id"] if request.suspend else None
+        }
+        
+        if request.suspend:
+            update_data["suspended_at"] = datetime.utcnow()
+        else:
+            update_data["suspended_at"] = None
+            update_data["unsuspended_at"] = datetime.utcnow()
+            update_data["unsuspended_by"] = current_admin["admin_id"]
+        
+        await db.users.update_one(
+            {"user_id": user_id},
+            {"$set": update_data}
+        )
+        
+        # Create audit log entry
+        audit_entry = {
+            "audit_id": str(uuid.uuid4()),
+            "action": "suspend" if request.suspend else "unsuspend",
+            "admin_id": current_admin["admin_id"],
+            "target_user_id": user_id,
+            "reason": request.reason,
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_audit_log.insert_one(audit_entry)
+        
+        return {
+            "message": f"User {'suspended' if request.suspend else 'unsuspended'} successfully",
+            "user_id": user_id,
+            "is_suspended": request.suspend,
+            "reason": request.reason
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to suspend user: {str(e)}")
+
+@app.delete("/api/admin/users/{user_id}")
+async def delete_user(
+    user_id: str,
+    reason: str = "",
+    current_admin = Depends(get_current_admin)
+):
+    """Soft delete a user (preserves data for audit)"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Prevent admin from deleting themselves
+        if user_id == current_admin.get("user_id"):
+            raise HTTPException(status_code=400, detail="Cannot delete your own account")
+        
+        # Verify user exists and is not already deleted
+        user = await db.users.find_one({"user_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        if user.get("deleted_at"):
+            raise HTTPException(status_code=400, detail="User is already deleted")
+        
+        # Soft delete - mark as deleted but preserve data
+        await db.users.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "deleted_at": datetime.utcnow(),
+                    "deleted_by": current_admin["admin_id"],
+                    "deletion_reason": reason,
+                    "is_suspended": True  # Also suspend the account
+                }
+            }
+        )
+        
+        # Create audit log entry
+        audit_entry = {
+            "audit_id": str(uuid.uuid4()),
+            "action": "delete_user",
+            "admin_id": current_admin["admin_id"],
+            "target_user_id": user_id,
+            "reason": reason,
+            "timestamp": datetime.utcnow()
+        }
+        await db.admin_audit_log.insert_one(audit_entry)
+        
+        return {
+            "message": "User deleted successfully",
+            "user_id": user_id,
+            "deleted_at": datetime.utcnow().isoformat(),
+            "reason": reason
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
+
+@app.get("/api/admin/users/{user_id}/audit")
+async def get_user_audit_history(
+    user_id: str,
+    current_admin = Depends(get_current_admin)
+):
+    """Get audit history for a specific user"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Get audit history
+        audit_logs = await db.admin_audit_log.find(
+            {"target_user_id": user_id}
+        ).sort("timestamp", -1).to_list(50)
+        
+        # Enrich with admin information
+        for log in audit_logs:
+            admin = await db.admins.find_one({"admin_id": log["admin_id"]})
+            if admin:
+                log["admin_name"] = admin.get("full_name", "Unknown Admin")
+        
+        return {"audit_history": audit_logs}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get audit history: {str(e)}")
+
 @app.post("/api/admin/mentors/manage")
 async def manage_mentors(
     request: MentorManagementRequest,
