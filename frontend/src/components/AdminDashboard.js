@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import UserManagement from './UserManagement';
 
 const AdminDashboard = ({ admin, onLogout }) => {
-    console.log('AdminDashboard rendered with admin:', admin);
-    
     const [activeTab, setActiveTab] = useState('overview');
     const [dashboardData, setDashboardData] = useState(null);
     const [mentors, setMentors] = useState([]);
