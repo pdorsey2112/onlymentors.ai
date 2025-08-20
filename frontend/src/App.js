@@ -1406,7 +1406,7 @@ function MainApp() {
 
   // Render admin dashboard
   if (isAdmin && admin) {
-    return <AdminDashboard admin={admin} onLogout={handleAdminLogout} />;
+    return <AdminDashboardSimple admin={admin} onLogout={handleAdminLogout} />;
   }
 
   // Render creator dashboard
