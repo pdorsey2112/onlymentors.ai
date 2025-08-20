@@ -6,7 +6,7 @@ import sys
 
 def test_llm_integration():
     """Quick test of LLM integration"""
-    base_url = "https://admin-role-system.preview.emergentagent.com"
+    base_url = "https://admin-console-4.preview.emergentagent.com"
     
     # First, signup/login to get a token
     print("🔐 Signing up user...")
