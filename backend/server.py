@@ -2594,11 +2594,17 @@ async def get_all_users(
                 "user_id": user["user_id"],
                 "email": user["email"],
                 "full_name": user["full_name"],
+                "role": user.get("role", "user"),  # Default to 'user' role
+                "status": "suspended" if user.get("is_suspended", False) else "active",
+                "is_suspended": user.get("is_suspended", False),
+                "suspended_at": user.get("suspended_at"),
+                "suspended_by": user.get("suspended_by"),
                 "questions_asked": user.get("questions_asked", 0),
                 "is_subscribed": user.get("is_subscribed", False),
                 "subscription_expires": user.get("subscription_expires"),
                 "created_at": user["created_at"],
-                "last_active": user.get("last_active")
+                "last_active": user.get("last_active"),
+                "deleted_at": user.get("deleted_at")  # For soft deletes
             })
         
         return {
