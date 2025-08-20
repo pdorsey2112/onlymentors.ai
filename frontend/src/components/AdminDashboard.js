@@ -110,6 +110,18 @@ const AdminDashboard = ({ admin, onLogout }) => {
         loadData();
     }, []);
 
+    if (!admin) {
+        console.error('AdminDashboard: admin prop is missing or undefined');
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+                <div className="text-white text-center">
+                    <h2 className="text-2xl font-bold mb-4">Loading Admin Dashboard...</h2>
+                    <p>Please wait while we load your admin session.</p>
+                </div>
+            </div>
+        );
+    }
+
     const tabs = [
         { id: 'overview', name: 'Overview', icon: '📊' },
         { id: 'users', name: 'Users', icon: '👥' },
