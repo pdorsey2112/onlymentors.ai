@@ -31,7 +31,8 @@ const ForgotPasswordForm = ({ userType, onBack, onSuccess }) => {
       setLoading(true);
       setError('');
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/forgot-password`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
