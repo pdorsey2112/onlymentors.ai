@@ -331,7 +331,8 @@ function MainApp() {
 
     try {
       const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/signup';
-      const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(authForm)
