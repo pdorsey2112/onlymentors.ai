@@ -1088,16 +1088,7 @@ function MainApp() {
                     ))}
                   </div>
 
-                  {/* View Profile Button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => handleViewMentorProfile(mentor, e)}
-                    className="w-full text-xs py-1 h-7 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300"
-                  >
-                    <User className="h-3 w-3 mr-1" />
-                    View Profile
-                  </Button>
+
                 </CardContent>
 
                 {!user && (
