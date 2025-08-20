@@ -808,6 +808,104 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                     onClose={() => setShowContextDemo(false)}
                 />
             )}
+
+            {/* Reset Password Modal */}
+            {resetPasswordModal.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '30px',
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        width: '400px',
+                        maxWidth: '90vw'
+                    }}>
+                        <h3 style={{
+                            margin: '0 0 20px 0',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            color: '#1f2937'
+                        }}>
+                            Reset User Password
+                        </h3>
+                        
+                        <p style={{
+                            margin: '0 0 20px 0',
+                            color: '#6b7280',
+                            fontSize: '14px'
+                        }}>
+                            Please select a reason for resetting this user's password:
+                        </p>
+
+                        <select
+                            value={resetPasswordReason}
+                            onChange={(e) => setResetPasswordReason(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                marginBottom: '20px',
+                                backgroundColor: 'white'
+                            }}
+                        >
+                            <option value="">Select a reason...</option>
+                            <option value="Customer Service">Customer Service</option>
+                            <option value="Internal User">Internal User</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <button
+                                onClick={cancelResetPassword}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmResetPassword}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Reset Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
