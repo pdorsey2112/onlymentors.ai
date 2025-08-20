@@ -5,10 +5,12 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { User, Lock, Phone, Mail, Save, Eye, EyeOff } from 'lucide-react';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+import { getBackendURL } from '../config';
 
 const UserProfile = ({ user, onProfileUpdate, onLogout }) => {
+  // Get backend URL dynamically
+  const BACKEND_URL = getBackendURL();
+  
   // Profile state
   const [profileData, setProfileData] = useState({
     full_name: '',
