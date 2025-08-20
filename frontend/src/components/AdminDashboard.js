@@ -11,7 +11,7 @@ const AdminDashboard = ({ admin, onLogout }) => {
     const [selectedMentors, setSelectedMentors] = useState([]);
 
     const getAuthHeaders = () => ({
-        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
         'Content-Type': 'application/json'
     });
 
