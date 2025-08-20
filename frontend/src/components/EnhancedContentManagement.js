@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getBackendURL } from '../config';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
