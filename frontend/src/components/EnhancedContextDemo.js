@@ -37,8 +37,9 @@ const EnhancedContextDemo = ({ onClose }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('auth_token');
+      const backendURL = getBackendURL();
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/conversations/threads`, {
+      const response = await fetch(`${backendURL}/api/conversations/threads`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
