@@ -2,17 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* HIDE ALL PROFILE BUTTONS - EMERGENCY FIX */
-button:has(*:contains("Profile")),
-button[aria-label*="Profile"],
-a:has(*:contains("Profile")) {
+/* SIMPLE APPROACH - Hide Profile buttons */
+button:contains("Profile") {
     display: none !important;
-    visibility: hidden !important;
 }
 
-/* Alternative approach - hide Profile text directly */
-*:has(> *:only-child):has-text("Profile") {
+/* Alternative - hide any button with Profile text */
+*[role="button"]:contains("Profile"),
+button:contains("Profile"),
+a:contains("Profile") {
     display: none !important;
+    visibility: hidden !important;
 }
 
 body {
