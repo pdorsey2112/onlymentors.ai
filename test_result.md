@@ -402,7 +402,7 @@ backend:
 
 test_plan:
   current_focus:
-    - "Mentor Profiles API Testing - COMPLETED"
+    - "Comprehensive Frontend Regression Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
