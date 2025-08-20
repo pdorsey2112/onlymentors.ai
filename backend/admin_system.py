@@ -24,6 +24,12 @@ class UserAction(str, Enum):
     SUSPEND = "suspend"
     REACTIVATE = "reactivate"
     DELETE = "delete"
+    CHANGE_ROLE = "change_role"
+
+class UserRole(str, Enum):
+    USER = "user"
+    MENTOR = "mentor" 
+    ADMIN = "admin"
 
 class MentorAction(str, Enum):
     APPROVE = "approve"
