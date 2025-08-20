@@ -440,7 +440,8 @@ function MainApp() {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`${BACKEND_URL}/api/questions/ask`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/questions/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
