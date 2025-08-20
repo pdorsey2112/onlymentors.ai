@@ -249,6 +249,7 @@ class AdminUserManagementTester:
                 f"{API_BASE}/admin/users/{self.test_user_id}/suspend",
                 headers=self.get_auth_headers(),
                 json={
+                    "user_id": self.test_user_id,  # API expects user_id in body too
                     "suspend": True,
                     "reason": "Testing suspension functionality"
                 }
@@ -264,6 +265,7 @@ class AdminUserManagementTester:
                         f"{API_BASE}/admin/users/{self.test_user_id}/suspend",
                         headers=self.get_auth_headers(),
                         json={
+                            "user_id": self.test_user_id,
                             "suspend": False,
                             "reason": "Testing unsuspension functionality"
                         }
@@ -287,6 +289,7 @@ class AdminUserManagementTester:
                 f"{API_BASE}/admin/users/{self.test_user_id}/suspend",
                 headers=self.get_auth_headers(),
                 json={
+                    "user_id": self.test_user_id,
                     "suspend": True
                     # Missing reason
                 }
