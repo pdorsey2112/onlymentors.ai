@@ -84,7 +84,8 @@ const CreatorSignup = ({ onSuccess }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/creators/signup`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/creators/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
