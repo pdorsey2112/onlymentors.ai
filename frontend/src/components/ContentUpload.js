@@ -117,7 +117,8 @@ const ContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
         setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 200);
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/creators/${creatorId}/content`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/creators/${creatorId}/content`, {
         method: 'POST',
         body: formData,
       });
