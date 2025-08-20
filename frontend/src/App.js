@@ -535,7 +535,8 @@ function MainApp() {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`${BACKEND_URL}/api/payments/status/${sessionId}`, {
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/payments/status/${sessionId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
