@@ -177,69 +177,85 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         setResetPasswordReason('');
     };
 
-    const handleSuspendUser = async (userId) => {
-        const reason = prompt('Please enter a reason for suspending this user:');
-        if (!reason || reason.trim() === '') {
-            alert('User suspension cancelled. Reason is required.');
+    const handleSuspendUser = (userId) => {
+        setSuspendUserModal({ show: true, userId: userId });
+        setSuspendUserReason('');
+    };
+
+    const confirmSuspendUser = async () => {
+        if (!suspendUserReason) {
+            alert('Please select a reason for suspending the user.');
             return;
         }
 
-        if (confirm('Are you sure you want to suspend this user? They will not be able to access the platform.')) {
-            try {
-                const backendURL = getBackendURL();
-                const response = await fetch(`${backendURL}/api/admin/users/${userId}/suspend`, {
-                    method: 'PUT',
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify({ 
-                        suspend: true,
-                        reason: reason.trim() 
-                    })
-                });
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/users/${suspendUserModal.userId}/suspend`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ 
+                    suspend: true,
+                    reason: suspendUserReason 
+                })
+            });
 
-                if (response.ok) {
-                    alert('User suspended successfully!');
-                    // Refresh the users list
-                    fetchUsers();
-                } else {
-                    const errorData = await response.json();
-                    alert(`Error suspending user: ${errorData.detail || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('Error suspending user:', error);
-                alert('Network error. Please try again.');
+            if (response.ok) {
+                alert('User suspended successfully!');
+                setSuspendUserModal({ show: false, userId: null });
+                setSuspendUserReason('');
+                fetchUsers();
+            } else {
+                const errorData = await response.json();
+                alert(`Error suspending user: ${errorData.detail || 'Unknown error'}`);
             }
+        } catch (error) {
+            console.error('Error suspending user:', error);
+            alert('Network error. Please try again.');
         }
     };
 
-    const handleDeleteUser = async (userId) => {
-        const reason = prompt('Please enter a reason for deleting this user:');
-        if (!reason || reason.trim() === '') {
-            alert('User deletion cancelled. Reason is required.');
+    const cancelSuspendUser = () => {
+        setSuspendUserModal({ show: false, userId: null });
+        setSuspendUserReason('');
+    };
+
+    const handleDeleteUser = (userId) => {
+        setDeleteUserModal({ show: true, userId: userId });
+        setDeleteUserReason('');
+    };
+
+    const confirmDeleteUser = async () => {
+        if (!deleteUserReason) {
+            alert('Please select a reason for deleting the user.');
             return;
         }
 
-        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-            try {
-                const backendURL = getBackendURL();
-                const response = await fetch(`${backendURL}/api/admin/users/${userId}`, {
-                    method: 'DELETE',
-                    headers: getAuthHeaders(),
-                    body: JSON.stringify({ reason: reason.trim() })
-                });
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/users/${deleteUserModal.userId}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ reason: deleteUserReason })
+            });
 
-                if (response.ok) {
-                    alert('User deleted successfully!');
-                    // Refresh the users list
-                    fetchUsers();
-                } else {
-                    const errorData = await response.json();
-                    alert(`Error deleting user: ${errorData.detail || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                alert('Network error. Please try again.');
+            if (response.ok) {
+                alert('User deleted successfully!');
+                setDeleteUserModal({ show: false, userId: null });
+                setDeleteUserReason('');
+                fetchUsers();
+            } else {
+                const errorData = await response.json();
+                alert(`Error deleting user: ${errorData.detail || 'Unknown error'}`);
             }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('Network error. Please try again.');
         }
+    };
+
+    const cancelDeleteUser = () => {
+        setDeleteUserModal({ show: false, userId: null });
+        setDeleteUserReason('');
     };
 
     if (loading) {
