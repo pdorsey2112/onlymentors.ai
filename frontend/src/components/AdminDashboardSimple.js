@@ -926,6 +926,202 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                     </div>
                 </div>
             )}
+
+            {/* Suspend User Modal */}
+            {suspendUserModal.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '30px',
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        width: '400px',
+                        maxWidth: '90vw'
+                    }}>
+                        <h3 style={{
+                            margin: '0 0 20px 0',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            color: '#1f2937'
+                        }}>
+                            Suspend User
+                        </h3>
+                        
+                        <p style={{
+                            margin: '0 0 20px 0',
+                            color: '#6b7280',
+                            fontSize: '14px'
+                        }}>
+                            Please select a reason for suspending this user:
+                        </p>
+
+                        <select
+                            value={suspendUserReason}
+                            onChange={(e) => setSuspendUserReason(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                marginBottom: '20px',
+                                backgroundColor: 'white'
+                            }}
+                        >
+                            <option value="">Select a reason...</option>
+                            <option value="Policy violation">Policy violation</option>
+                            <option value="Non-Payment">Non-Payment</option>
+                            <option value="Internal user">Internal user</option>
+                        </select>
+
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <button
+                                onClick={cancelSuspendUser}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmSuspendUser}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#f59e0b',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Suspend User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete User Modal */}
+            {deleteUserModal.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '30px',
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        width: '400px',
+                        maxWidth: '90vw'
+                    }}>
+                        <h3 style={{
+                            margin: '0 0 20px 0',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            color: '#1f2937'
+                        }}>
+                            Delete User
+                        </h3>
+                        
+                        <p style={{
+                            margin: '0 0 20px 0',
+                            color: '#6b7280',
+                            fontSize: '14px'
+                        }}>
+                            Please select a reason for deleting this user. <strong>This action cannot be undone.</strong>
+                        </p>
+
+                        <select
+                            value={deleteUserReason}
+                            onChange={(e) => setDeleteUserReason(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                marginBottom: '20px',
+                                backgroundColor: 'white'
+                            }}
+                        >
+                            <option value="">Select a reason...</option>
+                            <option value="Policy violations">Policy violations</option>
+                            <option value="Non-Payment">Non-Payment</option>
+                            <option value="Employee Termination">Employee Termination</option>
+                        </select>
+
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <button
+                                onClick={cancelDeleteUser}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDeleteUser}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#dc2626',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Delete User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
