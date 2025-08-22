@@ -2888,7 +2888,7 @@ async def admin_reset_user_password(
             {"user_id": user_id},
             {
                 "$set": {
-                    "password": hashed_password.decode('utf-8'),
+                    "password_hash": hashed_password.decode('utf-8'),
                     "password_reset_by_admin": current_admin["admin_id"],
                     "password_reset_at": datetime.utcnow(),
                     "must_change_password": True  # Force user to change password on next login
