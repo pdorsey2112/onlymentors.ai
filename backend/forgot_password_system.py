@@ -77,68 +77,84 @@ def generate_reset_token_id() -> str:
     """Generate a unique reset token ID"""
     return f"reset_{uuid.uuid4().hex[:16]}"
 
-async def send_email_smtp(to_email: str, subject: str, html_content: str, text_content: str = None):
-    """Send email using SMTP with fallback to console logging"""
+async def send_email_unified(to_email: str, subject: str, html_content: str, text_content: str = None):
+    """Unified email sending with SendGrid > SMTP > Console fallback"""
     try:
         reset_config.validate_config()
         
-        if reset_config.use_console_logging:
-            # Console logging fallback for development/testing
-            print("\n" + "="*80)
-            print(f"📧 EMAIL NOTIFICATION (Console Mode)")
-            print("="*80)
-            print(f"To: {to_email}")
-            print(f"From: {reset_config.from_email}")
-            print(f"Subject: {subject}")
-            print("\n--- EMAIL CONTENT ---")
-            print(text_content or "No text content provided")
-            print("\n--- HTML CONTENT ---")
-            print(html_content[:500] + "..." if len(html_content) > 500 else html_content)
-            print("="*80)
-            return True
+        # Priority 1: SendGrid
+        if reset_config.use_sendgrid:
+            try:
+                sg = sendgrid.SendGridAPIClient(api_key=reset_config.sendgrid_api_key)
+                
+                from_email = Email(reset_config.from_email)
+                to_email_obj = To(to_email)
+                plain_content_obj = Content("text/plain", text_content or "")
+                html_content_obj = Content("text/html", html_content)
+                
+                mail = Mail(from_email, to_email_obj, subject, plain_content_obj)
+                mail.add_content(html_content_obj)
+                
+                response = sg.client.mail.send.post(request_body=mail.get())
+                
+                if response.status_code in [200, 202]:
+                    print(f"✅ SendGrid email sent successfully to {to_email}")
+                    return True
+                else:
+                    print(f"❌ SendGrid failed: {response.status_code}, falling back to SMTP/console")
+                    
+            except Exception as e:
+                print(f"❌ SendGrid error: {str(e)}, falling back to SMTP/console")
         
-        # Create SMTP email
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = subject
-        msg['From'] = reset_config.from_email
-        msg['To'] = to_email
+        # Priority 2: SMTP
+        if reset_config.use_smtp:
+            try:
+                msg = MIMEMultipart('alternative')
+                msg['Subject'] = subject
+                msg['From'] = reset_config.from_email
+                msg['To'] = to_email
+                
+                if text_content:
+                    part1 = MIMEText(text_content, 'plain')
+                    msg.attach(part1)
+                
+                part2 = MIMEText(html_content, 'html')
+                msg.attach(part2)
+                
+                context = ssl.create_default_context()
+                
+                with smtplib.SMTP(reset_config.smtp_server, reset_config.smtp_port) as server:
+                    server.ehlo()
+                    server.starttls(context=context)
+                    server.ehlo()
+                    server.login(reset_config.smtp_username, reset_config.smtp_password)
+                    
+                    text = msg.as_string()
+                    server.sendmail(reset_config.from_email, to_email, text)
+                
+                print(f"✅ SMTP email sent successfully to {to_email}")
+                return True
+                
+            except Exception as e:
+                print(f"❌ SMTP error: {str(e)}, falling back to console")
         
-        # Add text and HTML parts
-        if text_content:
-            part1 = MIMEText(text_content, 'plain')
-            msg.attach(part1)
-        
-        part2 = MIMEText(html_content, 'html')
-        msg.attach(part2)
-        
-        # Create secure connection and send
-        context = ssl.create_default_context()
-        
-        with smtplib.SMTP(reset_config.smtp_server, reset_config.smtp_port) as server:
-            server.ehlo()
-            server.starttls(context=context)
-            server.ehlo()
-            server.login(reset_config.smtp_username, reset_config.smtp_password)
-            
-            text = msg.as_string()
-            server.sendmail(reset_config.from_email, to_email, text)
-        
-        print(f"✅ SMTP email sent successfully to {to_email}")
+        # Priority 3: Console logging fallback
+        print("\n" + "="*80)
+        print(f"📧 EMAIL NOTIFICATION (Console Mode)")
+        print("="*80)
+        print(f"To: {to_email}")
+        print(f"From: {reset_config.from_email}")
+        print(f"Subject: {subject}")
+        print("\n--- TEXT CONTENT ---")
+        print(text_content or "No text content provided")
+        print("\n--- HTML CONTENT PREVIEW ---")
+        print(html_content[:500] + "..." if len(html_content) > 500 else html_content)
+        print("="*80)
         return True
         
     except Exception as e:
-        print(f"❌ SMTP email error: {str(e)}")
-        
-        # Fallback to console logging
-        print("\n" + "="*80)
-        print(f"📧 EMAIL NOTIFICATION (Fallback Mode)")
-        print("="*80)
-        print(f"To: {to_email}")
-        print(f"Subject: {subject}")
-        print("\n--- EMAIL CONTENT ---")
-        print(text_content or "No text content provided")
-        print("="*80)
-        return True  # Return True for graceful handling
+        print(f"❌ Unified email error: {str(e)}")
+        return True  # Always return True for graceful handling
 
 async def send_password_reset_email(email: str, reset_token: str, user_type: str, user_name: str = "User"):
     """Send password reset email using SendGrid"""
@@ -270,7 +286,7 @@ async def send_password_reset_email(email: str, reset_token: str, user_type: str
         return False
 
 async def send_admin_password_reset_email(email: str, reset_token: str, user_name: str = "User", admin_reason: str = "Administrative action"):
-    """Send password reset email for admin-initiated password reset using SMTP"""
+    """Send password reset email for admin-initiated password reset using unified email system"""
     try:
         # Create reset link
         reset_link = f"{reset_config.frontend_base_url}/reset-password?token={reset_token}&type=user"
@@ -369,8 +385,8 @@ The OnlyMentors.ai Team
         </html>
         """
         
-        # Send using new SMTP system
-        email_sent = await send_email_smtp(email, subject, html_content, text_content)
+        # Send using unified email system
+        email_sent = await send_email_unified(email, subject, html_content, text_content)
         
         if email_sent:
             print(f"✅ Admin password reset email sent to {email}")
