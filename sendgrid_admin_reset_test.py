@@ -9,6 +9,10 @@ import aiohttp
 import json
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv('/app/backend/.env')
 
 # Configuration
 BACKEND_URL = "https://admin-console-4.preview.emergentagent.com/api"
