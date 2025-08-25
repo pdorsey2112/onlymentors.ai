@@ -348,7 +348,8 @@ def main():
     print("👥 STEP 3: ADMIN USERS ENDPOINT")
     print(f"{'='*50}")
     
-    test_results["users_endpoint"] = tester.test_admin_users_endpoint()
+    success, users_response = tester.test_admin_users_endpoint()
+    test_results["users_endpoint"] = success
     
     # 4. Test authentication requirements
     print(f"\n{'='*50}")
