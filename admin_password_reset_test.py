@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Admin Password Reset Email System Test
-Tests the improved POST /api/admin/users/{user_id}/reset-password endpoint
-with better error handling and email-based reset functionality
+Admin Password Reset Test for pdorsey@dorseyandassociates.com
+Tests the complete admin password reset flow as requested in the review.
 """
 
 import requests
@@ -16,6 +15,10 @@ from datetime import datetime
 BACKEND_URL = "https://admin-console-4.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
+TARGET_EMAIL = "pdorsey@dorseyandassociates.com"
+TARGET_PASSWORD = "TestPassword123!"
+TARGET_NAME = "Paul Dorsey"
+RESET_REASON = "Customer Service"
 
 class AdminPasswordResetTester:
     def __init__(self):
