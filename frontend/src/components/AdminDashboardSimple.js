@@ -279,7 +279,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
             }
         } catch (error) {
             console.error('Error deleting user:', error);
-            alert('Network error. Please try again.');
+            alert(`Network error deleting user: ${error.message || error.toString()}`);
         }
     };
 
