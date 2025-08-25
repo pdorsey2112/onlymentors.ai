@@ -204,7 +204,9 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
             });
 
             if (response.ok) {
-                alert('User suspended successfully!');
+                const data = await response.json();
+                const emailStatus = data.email_sent ? '📧 Notification email sent to user' : '⚠️ Notification email pending';
+                alert(`✅ ${data.message}\n${emailStatus}\n\nReason: ${suspendUserReason}\n\nThe user has been suspended and will receive an email explaining the action.`);
                 setSuspendUserModal({ show: false, userId: null });
                 setSuspendUserReason('');
                 fetchUsers();
