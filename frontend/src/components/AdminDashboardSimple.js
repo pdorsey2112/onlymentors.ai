@@ -227,7 +227,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
             }
         } catch (error) {
             console.error('Error suspending user:', error);
-            alert('Network error. Please try again.');
+            alert(`Network error suspending user: ${error.message || error.toString()}`);
         }
     };
 
