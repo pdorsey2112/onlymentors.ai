@@ -245,7 +245,9 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
             });
 
             if (response.ok) {
-                alert('User deleted successfully!');
+                const data = await response.json();
+                const emailStatus = data.email_sent ? '📧 Notification email sent to user' : '⚠️ Notification email pending';
+                alert(`✅ ${data.message}\n${emailStatus}\n\nReason: ${deleteUserReason}\n\n⚠️ This action cannot be undone. The user has been notified via email about the account deletion.`);
                 setDeleteUserModal({ show: false, userId: null });
                 setDeleteUserReason('');
                 fetchUsers();
