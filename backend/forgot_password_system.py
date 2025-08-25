@@ -78,35 +78,11 @@ def generate_reset_token_id() -> str:
     return f"reset_{uuid.uuid4().hex[:16]}"
 
 async def send_email_unified(to_email: str, subject: str, html_content: str, text_content: str = None):
-    """Unified email sending with SendGrid > SMTP > Console fallback"""
+    """Unified email sending with SMTP2GO > SendGrid > Console fallback"""
     try:
         reset_config.validate_config()
         
-        # Priority 1: SendGrid
-        if reset_config.use_sendgrid:
-            try:
-                sg = sendgrid.SendGridAPIClient(api_key=reset_config.sendgrid_api_key)
-                
-                from_email = Email(reset_config.from_email)
-                to_email_obj = To(to_email)
-                plain_content_obj = Content("text/plain", text_content or "")
-                html_content_obj = Content("text/html", html_content)
-                
-                mail = Mail(from_email, to_email_obj, subject, plain_content_obj)
-                mail.add_content(html_content_obj)
-                
-                response = sg.client.mail.send.post(request_body=mail.get())
-                
-                if response.status_code in [200, 202]:
-                    print(f"✅ SendGrid email sent successfully to {to_email}")
-                    return True
-                else:
-                    print(f"❌ SendGrid failed: {response.status_code}, falling back to SMTP/console")
-                    
-            except Exception as e:
-                print(f"❌ SendGrid error: {str(e)}, falling back to SMTP/console")
-        
-        # Priority 2: SMTP
+        # Priority 1: SMTP2GO
         if reset_config.use_smtp:
             try:
                 msg = MIMEMultipart('alternative')
@@ -132,11 +108,35 @@ async def send_email_unified(to_email: str, subject: str, html_content: str, tex
                     text = msg.as_string()
                     server.sendmail(reset_config.from_email, to_email, text)
                 
-                print(f"✅ SMTP email sent successfully to {to_email}")
+                print(f"✅ SMTP2GO email sent successfully to {to_email}")
                 return True
                 
             except Exception as e:
-                print(f"❌ SMTP error: {str(e)}, falling back to console")
+                print(f"❌ SMTP2GO error: {str(e)}, falling back to SendGrid/console")
+        
+        # Priority 2: SendGrid (Fallback)
+        if reset_config.use_sendgrid:
+            try:
+                sg = sendgrid.SendGridAPIClient(api_key=reset_config.sendgrid_api_key)
+                
+                from_email = Email(reset_config.from_email)
+                to_email_obj = To(to_email)
+                plain_content_obj = Content("text/plain", text_content or "")
+                html_content_obj = Content("text/html", html_content)
+                
+                mail = Mail(from_email, to_email_obj, subject, plain_content_obj)
+                mail.add_content(html_content_obj)
+                
+                response = sg.client.mail.send.post(request_body=mail.get())
+                
+                if response.status_code in [200, 202]:
+                    print(f"✅ SendGrid fallback email sent successfully to {to_email}")
+                    return True
+                else:
+                    print(f"❌ SendGrid fallback failed: {response.status_code}, falling back to console")
+                    
+            except Exception as e:
+                print(f"❌ SendGrid fallback error: {str(e)}, falling back to console")
         
         # Priority 3: Console logging fallback
         print("\n" + "="*80)
