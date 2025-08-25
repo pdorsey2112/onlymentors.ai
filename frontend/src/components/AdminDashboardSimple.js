@@ -159,15 +159,16 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                alert(`Password reset successful! New temporary password: ${data.temporary_password}`);
+                alert(`✅ Password reset email sent successfully!\n\n📧 Email: ${data.email}\n⏰ Link expires in: ${data.expires_in}\n🔒 User account locked until password is reset\n\nThe user will receive an email with a secure link to set their new password.`);
                 setResetPasswordModal({ show: false, userId: null });
                 setResetPasswordReason('');
+                fetchUsers(); // Refresh users to show locked status
             } else {
                 const errorData = await response.json();
-                alert(`Error resetting password: ${errorData.detail || 'Unknown error'}`);
+                alert(`Error sending password reset email: ${errorData.detail || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error resetting password:', error);
+            console.error('Error sending password reset email:', error);
             alert('Network error. Please try again.');
         }
     };
