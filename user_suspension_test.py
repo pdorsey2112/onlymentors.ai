@@ -77,7 +77,7 @@ class UserSuspensionTester:
             "password": "SuperAdmin2024!"
         }
         
-        success, response = self.make_request('POST', 'admin/auth/login', login_data, expected_status=200)
+        success, response = self.make_request('POST', 'admin/login', login_data, expected_status=200)
         
         if success and 'token' in response:
             self.admin_token = response['token']
