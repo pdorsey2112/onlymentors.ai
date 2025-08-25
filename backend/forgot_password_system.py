@@ -262,20 +262,36 @@ async def send_password_reset_email(email: str, reset_token: str, user_type: str
         return False
 
 async def send_admin_password_reset_email(email: str, reset_token: str, user_name: str = "User", admin_reason: str = "Administrative action"):
-    """Send password reset email for admin-initiated password reset"""
+    """Send password reset email for admin-initiated password reset using SMTP"""
     try:
-        reset_config.validate_config()
-        
-        # Create SendGrid client
-        sg = sendgrid.SendGridAPIClient(api_key=reset_config.sendgrid_api_key)
-        
-        # Create reset link (always for users in admin context)
+        # Create reset link
         reset_link = f"{reset_config.frontend_base_url}/reset-password?token={reset_token}&type=user"
         
-        # Email subject and content for admin-initiated reset
+        # Email subject
         subject = "Password Reset Required - OnlyMentors.ai"
         
-        # HTML email content
+        # Text content for fallback
+        text_content = f"""
+OnlyMentors.ai - Password Reset Required
+
+Hello {user_name},
+
+Your password has been reset by an administrator for the following reason: {admin_reason}
+
+For security reasons, you need to set a new password for your OnlyMentors.ai account.
+
+Click this link to create your new password: {reset_link}
+
+Important:
+- This link expires in 1 hour for security
+- You will not be able to log in until you set a new password
+- Choose a strong password with at least 8 characters
+
+Best regards,
+The OnlyMentors.ai Team
+        """
+        
+        # HTML content
         html_content = f"""
         <!DOCTYPE html>
         <html>
@@ -290,7 +306,6 @@ async def send_admin_password_reset_email(email: str, reset_token: str, user_nam
                 .header h1 {{ color: white; margin: 0; font-size: 24px; }}
                 .content {{ background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
                 .button {{ display: inline-block; background: #f59e0b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }}
-                .button:hover {{ background: #d97706; }}
                 .admin-notice {{ background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 15px; border-radius: 5px; margin: 20px 0; }}
                 .warning {{ background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 15px; border-radius: 5px; margin: 20px 0; }}
                 .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
@@ -346,49 +361,21 @@ async def send_admin_password_reset_email(email: str, reset_token: str, user_nam
         </html>
         """
         
-        # Plain text content as fallback
-        plain_content = f"""
-        OnlyMentors.ai - Password Reset Required
+        # Send using new SMTP system
+        email_sent = await send_email_smtp(email, subject, html_content, text_content)
         
-        Hello {user_name},
-        
-        Your password has been reset by an administrator for the following reason: {admin_reason}
-        
-        For security reasons, you need to set a new password for your OnlyMentors.ai account.
-        
-        Click this link to create your new password: {reset_link}
-        
-        Important:
-        - This link expires in 1 hour for security
-        - You will not be able to log in until you set a new password
-        - Choose a strong password with at least 8 characters
-        
-        Best regards,
-        The OnlyMentors.ai Team
-        """
-        
-        # Create and send email
-        from_email = Email(reset_config.from_email)
-        to_email = To(email)
-        plain_content_obj = Content("text/plain", plain_content)
-        html_content_obj = Content("text/html", html_content)
-        
-        mail = Mail(from_email, to_email, subject, plain_content_obj)
-        mail.add_content(html_content_obj)
-        
-        response = sg.client.mail.send.post(request_body=mail.get())
-        
-        if response.status_code in [200, 202]:
+        if email_sent:
             print(f"✅ Admin password reset email sent to {email}")
-            return True
         else:
-            print(f"❌ Failed to send admin password reset email: {response.status_code}")
-            print(f"   Response body: {response.body}")
-            return False
-            
+            print(f"❌ Failed to send admin password reset email to {email}")
+            # Log the reset link for manual delivery
+            print(f"🔗 Manual reset link for {email}: {reset_link}")
+        
+        return email_sent
+        
     except Exception as e:
         print(f"❌ Admin password reset email error: {str(e)}")
-        # Log the reset link for manual delivery if needed
+        # Log the reset link for manual delivery
         reset_link = f"{reset_config.frontend_base_url}/reset-password?token={reset_token}&type=user"
         print(f"🔗 Manual reset link for {email}: {reset_link}")
         return False
