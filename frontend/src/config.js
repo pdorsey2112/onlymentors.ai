@@ -1,7 +1,7 @@
 // Dynamic configuration for different environments
 export const getBackendURL = () => {
-  // Simple check - just return empty string for proxy
-  return '';
+  // Return the configured backend URL from environment variable
+  return process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 };
 
-export const API_BASE_URL = '';
+export const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
