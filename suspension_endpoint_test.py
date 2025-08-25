@@ -215,7 +215,7 @@ class UserSuspensionTester:
             return False
 
     def verify_user_suspended_in_database(self):
-        """Verify the user is actually suspended in the database"""
+        """Verify the user is actually suspended by checking the users list"""
         print("\n" + "="*60)
         print("🔍 VERIFYING USER SUSPENSION IN DATABASE")
         print("="*60)
@@ -224,27 +224,39 @@ class UserSuspensionTester:
             print("❌ No test user ID available")
             return False
         
-        # Get user details from admin endpoint
+        # Get all users and find our test user
         success, response = self.run_test(
-            "Get User Details",
+            "Get All Users to Verify Suspension",
             "GET",
-            f"api/admin/users/{self.test_user_id}",
+            "api/admin/users",
             200
         )
         
-        if success and 'user' in response:
-            user = response['user']
-            status = user.get('status', 'unknown')
+        if success and 'users' in response:
+            users = response['users']
             
-            if status == 'suspended':
-                print("✅ User is properly suspended in database")
-                print(f"   Status: {status}")
-                return True
+            # Find our test user
+            test_user = next((u for u in users if u['user_id'] == self.test_user_id), None)
+            
+            if test_user:
+                status = test_user.get('status', 'unknown')
+                is_suspended = test_user.get('is_suspended', False)
+                
+                if status == 'suspended' and is_suspended:
+                    print("✅ User is properly suspended in database")
+                    print(f"   Status: {status}")
+                    print(f"   Is Suspended: {is_suspended}")
+                    print(f"   Suspended At: {test_user.get('suspended_at', 'N/A')}")
+                    print(f"   Suspended By: {test_user.get('suspended_by', 'N/A')}")
+                    return True
+                else:
+                    print(f"❌ User status is '{status}', is_suspended: {is_suspended}")
+                    return False
             else:
-                print(f"❌ User status is '{status}', expected 'suspended'")
+                print("❌ Test user not found in users list")
                 return False
         else:
-            print("❌ Failed to get user details")
+            print("❌ Failed to get users list")
             return False
 
     def test_suspended_user_login(self):
