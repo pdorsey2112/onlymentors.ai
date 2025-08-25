@@ -3013,6 +3013,19 @@ async def delete_user(
         if user.get("deleted_at"):
             raise HTTPException(status_code=400, detail="User is already deleted")
         
+        # Send deletion email before deleting the account
+        from forgot_password_system import send_account_deletion_email
+        
+        user_name = user.get("full_name", "User")
+        admin_reason = reason or "Policy violations"
+        
+        email_sent = await send_account_deletion_email(
+            user["email"], 
+            user_name, 
+            admin_reason,
+            current_admin["admin_id"]
+        )
+        
         # Soft delete - mark as deleted but preserve data
         await db.users.update_one(
             {"user_id": user_id},
@@ -3032,16 +3045,26 @@ async def delete_user(
             "action": "delete_user",
             "admin_id": current_admin["admin_id"],
             "target_user_id": user_id,
+            "target_email": user["email"],
             "reason": reason,
+            "email_sent": email_sent,
             "timestamp": datetime.utcnow()
         }
         await db.admin_audit_log.insert_one(audit_entry)
         
+        # Generate response message
+        message = "User deleted successfully"
+        if email_sent:
+            message += " and notification email sent"
+        else:
+            message += " (notification email pending)"
+        
         return {
-            "message": "User deleted successfully",
+            "message": message,
             "user_id": user_id,
             "deleted_at": datetime.utcnow().isoformat(),
-            "reason": reason
+            "reason": reason,
+            "email_sent": email_sent
         }
         
     except HTTPException:
