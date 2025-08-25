@@ -37,27 +37,35 @@ class ForgotPasswordResponse(BaseModel):
 # Password Reset Configuration
 class PasswordResetConfig:
     def __init__(self):
-        # SMTP Configuration (more reliable than SendGrid API)
+        # SendGrid Configuration (Primary)
+        self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
+        self.from_email = os.getenv("FROM_EMAIL", "noreply@onlymentors.ai")
+        
+        # SMTP Configuration (Backup)
         self.smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.smtp_username = os.getenv("SMTP_USERNAME", "")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
-        self.from_email = os.getenv("FROM_EMAIL", "noreply@onlymentors.ai")
+        
         self.reset_token_expiry_hours = 1  # 1 hour expiry
         self.frontend_base_url = "https://admin-console-4.preview.emergentagent.com"
         
-        # Fallback to console logging if SMTP not configured
-        self.use_console_logging = not all([self.smtp_username, self.smtp_password])
+        # Determine email method priority: SendGrid > SMTP > Console
+        self.use_sendgrid = bool(self.sendgrid_api_key)
+        self.use_smtp = bool(self.smtp_username and self.smtp_password) and not self.use_sendgrid
+        self.use_console_logging = not (self.use_sendgrid or self.use_smtp)
         
     def validate_config(self):
         """Validate email configuration"""
-        if self.use_console_logging:
-            print("⚠️ SMTP not configured - using console logging for emails")
+        if self.use_sendgrid:
+            print("✅ Using SendGrid for email delivery")
             return True
-        
-        if not self.smtp_username or not self.smtp_password:
-            raise ValueError("SMTP credentials not configured")
-        return True
+        elif self.use_smtp:
+            print("✅ Using SMTP for email delivery")
+            return True
+        else:
+            print("⚠️ Using console logging for email delivery")
+            return True
 
 reset_config = PasswordResetConfig()
 
