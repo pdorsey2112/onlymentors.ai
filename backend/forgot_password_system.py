@@ -50,10 +50,10 @@ class PasswordResetConfig:
         self.reset_token_expiry_hours = 1  # 1 hour expiry
         self.frontend_base_url = "https://admin-console-4.preview.emergentagent.com"
         
-        # Determine email method priority: SendGrid > SMTP > Console
-        self.use_sendgrid = bool(self.sendgrid_api_key)
-        self.use_smtp = bool(self.smtp_username and self.smtp_password) and not self.use_sendgrid
-        self.use_console_logging = not (self.use_sendgrid or self.use_smtp)
+        # Determine email method priority: SMTP2GO > SendGrid > Console
+        self.use_smtp = bool(self.smtp_username and self.smtp_password)
+        self.use_sendgrid = bool(self.sendgrid_api_key) and not self.use_smtp
+        self.use_console_logging = not (self.use_smtp or self.use_sendgrid)
         
     def validate_config(self):
         """Validate email configuration"""
