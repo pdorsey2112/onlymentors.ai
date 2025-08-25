@@ -498,7 +498,7 @@ backend:
 
   - task: "Admin Password Reset Email System"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py, /app/backend/forgot_password_system.py"
     stuck_count: 0
     priority: "high"
