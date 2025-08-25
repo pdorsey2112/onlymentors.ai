@@ -247,6 +247,14 @@ class SMTP2GOAdminResetTester:
         """Test 4: Initiate admin password reset with SMTP2GO"""
         print("\n🔄 Test 4: Admin Password Reset Initiation")
         
+        if not hasattr(self, 'test_user_id'):
+            self.log_test_result(
+                "Admin Password Reset", 
+                False, 
+                "No test user ID available"
+            )
+            return False
+        
         headers = {"Authorization": f"Bearer {self.admin_token}"}
         reset_data = {"reason": self.reset_reason}
         
