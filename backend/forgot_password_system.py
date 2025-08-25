@@ -10,6 +10,10 @@ from pydantic import BaseModel, EmailStr
 from fastapi import HTTPException
 import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Password Reset Models
 class ForgotPasswordRequest(BaseModel):
