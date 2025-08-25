@@ -131,12 +131,25 @@ class SMTP2GOAdminResetTester:
         """Test 2: Verify SMTP2GO configuration is loaded"""
         print("\n📧 Test 2: SMTP2GO Configuration Verification")
         
-        # Check environment variables
-        smtp_server = os.getenv("SMTP_SERVER")
-        smtp_port = os.getenv("SMTP_PORT")
-        smtp_username = os.getenv("SMTP_USERNAME")
-        smtp_password = os.getenv("SMTP_PASSWORD")
-        from_email = os.getenv("FROM_EMAIL")
+        # Load environment variables from backend .env
+        backend_env_path = "/app/backend/.env"
+        env_vars = {}
+        
+        try:
+            with open(backend_env_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        env_vars[key] = value.strip('"')
+        except Exception as e:
+            print(f"⚠️ Could not read backend .env: {e}")
+        
+        smtp_server = env_vars.get("SMTP_SERVER")
+        smtp_port = env_vars.get("SMTP_PORT")
+        smtp_username = env_vars.get("SMTP_USERNAME")
+        smtp_password = env_vars.get("SMTP_PASSWORD")
+        from_email = env_vars.get("FROM_EMAIL")
         
         config_correct = (
             smtp_server == self.expected_smtp_config["server"] and
