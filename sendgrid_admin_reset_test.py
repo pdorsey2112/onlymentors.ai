@@ -46,7 +46,7 @@ class SendGridAdminResetTester:
             "password": ADMIN_PASSWORD
         }
         
-        async with self.session.post(f"{BACKEND_URL}/admin/auth/login", json=login_data) as response:
+        async with self.session.post(f"{BACKEND_URL}/admin/login", json=login_data) as response:
             if response.status == 200:
                 data = await response.json()
                 self.admin_token = data.get("token")
