@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Admin Password Reset Functionality Test
-Tests the POST /api/admin/users/{user_id}/reset-password endpoint
+Admin Password Reset Email System Test
+Tests the improved POST /api/admin/users/{user_id}/reset-password endpoint
+with better error handling and email-based reset functionality
 """
 
 import requests
