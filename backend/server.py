@@ -2860,7 +2860,7 @@ async def admin_reset_user_password(
     request: dict,
     current_admin = Depends(get_current_admin)
 ):
-    """Admin reset user password - generates temporary password"""
+    """Admin reset user password - sends email with reset link"""
     try:
         if not has_permission(AdminRole(current_admin["role"]), "manage_users"):
             raise HTTPException(status_code=403, detail="Insufficient permissions")
@@ -2874,24 +2874,38 @@ async def admin_reset_user_password(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Generate temporary password (8 characters, alphanumeric)
-        import secrets
-        import string
-        temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(8))
+        # Import password reset functions
+        from forgot_password_system import create_password_reset_token, send_admin_password_reset_email
         
-        # Hash the temporary password
-        import bcrypt
-        hashed_password = bcrypt.hashpw(temp_password.encode('utf-8'), bcrypt.gensalt())
+        # Create password reset token
+        reset_token = await create_password_reset_token(db, user["email"], "user")
+        if not reset_token:
+            raise HTTPException(status_code=500, detail="Failed to create password reset token")
         
-        # Update user password
+        # Get reason for email content
+        admin_reason = request.get("reason", "Administrative action")
+        user_name = user.get("full_name", "User")
+        
+        # Send password reset email
+        email_sent = await send_admin_password_reset_email(
+            user["email"], 
+            reset_token, 
+            user_name, 
+            admin_reason
+        )
+        
+        if not email_sent:
+            raise HTTPException(status_code=500, detail="Failed to send password reset email")
+        
+        # Update user record to indicate admin-initiated reset
         await db.users.update_one(
             {"user_id": user_id},
             {
                 "$set": {
-                    "password_hash": hashed_password.decode('utf-8'),
                     "password_reset_by_admin": current_admin["admin_id"],
-                    "password_reset_at": datetime.utcnow(),
-                    "must_change_password": True  # Force user to change password on next login
+                    "password_reset_initiated_at": datetime.utcnow(),
+                    "password_reset_reason": admin_reason,
+                    "account_locked": True  # Lock account until password is reset
                 }
             }
         )
@@ -2899,25 +2913,29 @@ async def admin_reset_user_password(
         # Create audit log entry
         audit_entry = {
             "audit_id": str(uuid.uuid4()),
-            "action": "reset_password",
+            "action": "admin_password_reset_initiated",
             "admin_id": current_admin["admin_id"],
             "target_user_id": user_id,
-            "reason": request.get("reason", "No reason provided"),
+            "target_email": user["email"],
+            "reason": admin_reason,
+            "method": "email_reset_link",
             "timestamp": datetime.utcnow()
         }
         await db.admin_audit_log.insert_one(audit_entry)
         
         return {
-            "message": "Password reset successfully",
+            "message": "Password reset email sent successfully",
             "user_id": user_id,
-            "temporary_password": temp_password,
-            "note": "User must change password on next login"
+            "email": user["email"],
+            "reset_method": "email_link",
+            "expires_in": "1 hour",
+            "note": "User account is locked until password is reset via email link"
         }
         
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to reset user password: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to initiate password reset: {str(e)}")
 
 @app.delete("/api/admin/users/{user_id}")
 async def delete_user(
