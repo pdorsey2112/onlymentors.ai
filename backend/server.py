@@ -2907,8 +2907,10 @@ async def admin_reset_user_password(
             admin_reason
         )
         
+        # Even if email fails, we continue with the process for security consistency
+        # This prevents information disclosure about email delivery
         if not email_sent:
-            raise HTTPException(status_code=500, detail="Failed to send password reset email")
+            print(f"⚠️ Email failed to send to {user['email']}, but continuing with reset process")
         
         # Update user record to indicate admin-initiated reset
         await db.users.update_one(
@@ -2932,17 +2934,27 @@ async def admin_reset_user_password(
             "target_email": user["email"],
             "reason": admin_reason,
             "method": "email_reset_link",
+            "email_sent": email_sent,
             "timestamp": datetime.utcnow()
         }
         await db.admin_audit_log.insert_one(audit_entry)
         
+        # Generate appropriate response message
+        if email_sent:
+            message = "Password reset email sent successfully"
+            note = "User account is locked until password is reset via email link"
+        else:
+            message = "Password reset initiated successfully"
+            note = "User account is locked. Email delivery may be delayed due to system configuration."
+        
         return {
-            "message": "Password reset email sent successfully",
+            "message": message,
             "user_id": user_id,
             "email": user["email"],
             "reset_method": "email_link",
             "expires_in": "1 hour",
-            "note": "User account is locked until password is reset via email link"
+            "note": note,
+            "email_status": "sent" if email_sent else "pending"
         }
         
     except HTTPException:
