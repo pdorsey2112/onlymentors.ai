@@ -34,7 +34,7 @@ class ForgotPasswordResponse(BaseModel):
 class PasswordResetConfig:
     def __init__(self):
         self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
-        self.from_email = os.getenv("FROM_EMAIL", "noreply@onlymentors.ai")
+        self.from_email = os.getenv("FROM_EMAIL", "support@emergentagent.com")  # Use verified domain
         self.reset_token_expiry_hours = 1  # 1 hour expiry
         self.frontend_base_url = "https://admin-console-4.preview.emergentagent.com"
         
