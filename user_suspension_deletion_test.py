@@ -17,19 +17,8 @@ load_dotenv()
 
 class UserSuspensionDeletionTester:
     def __init__(self):
-        # Get backend URL from environment
-        frontend_env_path = "/app/frontend/.env"
-        backend_url = "http://localhost:8001"  # Default fallback
-        
-        try:
-            with open(frontend_env_path, 'r') as f:
-                for line in f:
-                    if line.startswith('REACT_APP_BACKEND_URL='):
-                        backend_url = line.split('=', 1)[1].strip()
-                        break
-        except:
-            pass
-            
+        # Use local backend URL for testing
+        backend_url = "http://localhost:8001"
         self.base_url = f"{backend_url}/api"
         self.admin_token = None
         self.test_users = []
