@@ -159,7 +159,10 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                alert(`✅ Password reset email sent successfully!\n\n📧 Email: ${data.email}\n⏰ Link expires in: ${data.expires_in}\n🔒 User account locked until password is reset\n\nThe user will receive an email with a secure link to set their new password.`);
+                const emailStatus = data.email_status === 'sent' ? '✅' : '⚠️';
+                const statusText = data.email_status === 'sent' ? 'sent successfully' : 'initiated (delivery pending)';
+                
+                alert(`${emailStatus} Password reset ${statusText}!\n\n📧 Email: ${data.email}\n⏰ Link expires in: ${data.expires_in}\n🔒 ${data.note}\n\nThe user will receive an email with a secure link to set their new password.`);
                 setResetPasswordModal({ show: false, userId: null });
                 setResetPasswordReason('');
                 fetchUsers(); // Refresh users to show locked status
