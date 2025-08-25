@@ -106,7 +106,7 @@ class SMTP2GOAdminResetTester:
         
         status, response = await self.make_request(
             "POST", 
-            "/admin/auth/login",
+            "/admin/login",
             self.admin_credentials
         )
         
