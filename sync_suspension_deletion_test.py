@@ -12,8 +12,8 @@ import time
 
 class UserSuspensionDeletionTester:
     def __init__(self):
-        # Use local backend URL for testing
-        self.base_url = "http://localhost:8001/api"
+        # Use external backend URL for testing
+        self.base_url = "https://admin-console-4.preview.emergentagent.com/api"
         self.admin_token = None
         self.test_users = []
         
