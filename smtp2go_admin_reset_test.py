@@ -178,6 +178,14 @@ class SMTP2GOAdminResetTester:
         """Test 3: Create or find test user for password reset"""
         print("\n👤 Test 3: Test User Setup")
         
+        if not self.admin_token:
+            self.log_test_result(
+                "Test User Setup", 
+                False, 
+                "No admin token available"
+            )
+            return False
+        
         # First try to find existing user
         headers = {"Authorization": f"Bearer {self.admin_token}"}
         status, response = await self.make_request(
