@@ -87,7 +87,7 @@ class UserSuspensionTester:
         success, response = self.run_test(
             "Admin Login",
             "POST",
-            "api/admin/auth/login",
+            "api/admin/login",
             200,
             data={
                 "email": "admin@onlymentors.ai",
