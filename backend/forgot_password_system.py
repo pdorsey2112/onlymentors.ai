@@ -33,17 +33,26 @@ class ForgotPasswordResponse(BaseModel):
 # Password Reset Configuration
 class PasswordResetConfig:
     def __init__(self):
-        self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
-        self.from_email = os.getenv("FROM_EMAIL", "support@emergentagent.com")  # Use verified domain
+        # SMTP Configuration (more reliable than SendGrid API)
+        self.smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+        self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
+        self.smtp_username = os.getenv("SMTP_USERNAME", "")
+        self.smtp_password = os.getenv("SMTP_PASSWORD", "")
+        self.from_email = os.getenv("FROM_EMAIL", "noreply@onlymentors.ai")
         self.reset_token_expiry_hours = 1  # 1 hour expiry
         self.frontend_base_url = "https://admin-console-4.preview.emergentagent.com"
         
+        # Fallback to console logging if SMTP not configured
+        self.use_console_logging = not all([self.smtp_username, self.smtp_password])
+        
     def validate_config(self):
-        """Validate SendGrid configuration"""
-        if not self.sendgrid_api_key:
-            raise ValueError("SendGrid API key not configured")
-        if not self.from_email:
-            raise ValueError("From email not configured")
+        """Validate email configuration"""
+        if self.use_console_logging:
+            print("⚠️ SMTP not configured - using console logging for emails")
+            return True
+        
+        if not self.smtp_username or not self.smtp_password:
+            raise ValueError("SMTP credentials not configured")
         return True
 
 reset_config = PasswordResetConfig()
