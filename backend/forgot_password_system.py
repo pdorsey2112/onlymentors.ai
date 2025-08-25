@@ -307,10 +307,14 @@ async def send_admin_password_reset_email(email: str, reset_token: str, user_nam
             return True
         else:
             print(f"❌ Failed to send admin password reset email: {response.status_code}")
+            print(f"   Response body: {response.body}")
             return False
             
     except Exception as e:
         print(f"❌ Admin password reset email error: {str(e)}")
+        # Log the reset link for manual delivery if needed
+        reset_link = f"{reset_config.frontend_base_url}/reset-password?token={reset_token}&type=user"
+        print(f"🔗 Manual reset link for {email}: {reset_link}")
         return False
 
 async def create_password_reset_token(db, email: str, user_type: str) -> Optional[str]:
