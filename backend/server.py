@@ -793,7 +793,10 @@ async def reset_password(request: ResetPasswordRequest):
                     "$set": {
                         "password_hash": new_password_hash,
                         "password_reset_at": datetime.utcnow(),
-                        "last_login": None  # Force re-login
+                        "last_login": None,  # Force re-login
+                        "account_locked": False,  # Unlock account after successful reset
+                        "password_reset_by_admin": None,  # Clear admin reset flag
+                        "password_reset_reason": None  # Clear reset reason
                     }
                 }
             )
@@ -804,7 +807,10 @@ async def reset_password(request: ResetPasswordRequest):
                     "$set": {
                         "password_hash": new_password_hash,
                         "password_reset_at": datetime.utcnow(),
-                        "last_login": None  # Force re-login
+                        "last_login": None,  # Force re-login
+                        "account_locked": False,  # Unlock account after successful reset
+                        "password_reset_by_admin": None,  # Clear admin reset flag
+                        "password_reset_reason": None  # Clear reset reason
                     }
                 }
             )
