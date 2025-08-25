@@ -24,9 +24,10 @@ class AdminPasswordResetTester:
     def __init__(self):
         self.admin_token = None
         self.test_user_id = None
-        self.test_user_email = None
-        self.original_password = "TestUser123!"
-        self.temporary_password = None
+        self.test_user_email = TARGET_EMAIL
+        self.original_password = TARGET_PASSWORD
+        self.test_name = TARGET_NAME
+        self.reset_reason = RESET_REASON
         self.results = []
         
     def log_result(self, test_name, success, message, details=None):
