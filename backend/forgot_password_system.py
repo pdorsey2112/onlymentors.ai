@@ -4,12 +4,16 @@
 import os
 import uuid
 import secrets
+import ssl
+import smtplib
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from pydantic import BaseModel, EmailStr
 from fastapi import HTTPException
 import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from dotenv import load_dotenv
 
 # Load environment variables
