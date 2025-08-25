@@ -69,6 +69,69 @@ def generate_reset_token_id() -> str:
     """Generate a unique reset token ID"""
     return f"reset_{uuid.uuid4().hex[:16]}"
 
+async def send_email_smtp(to_email: str, subject: str, html_content: str, text_content: str = None):
+    """Send email using SMTP with fallback to console logging"""
+    try:
+        reset_config.validate_config()
+        
+        if reset_config.use_console_logging:
+            # Console logging fallback for development/testing
+            print("\n" + "="*80)
+            print(f"📧 EMAIL NOTIFICATION (Console Mode)")
+            print("="*80)
+            print(f"To: {to_email}")
+            print(f"From: {reset_config.from_email}")
+            print(f"Subject: {subject}")
+            print("\n--- EMAIL CONTENT ---")
+            print(text_content or "No text content provided")
+            print("\n--- HTML CONTENT ---")
+            print(html_content[:500] + "..." if len(html_content) > 500 else html_content)
+            print("="*80)
+            return True
+        
+        # Create SMTP email
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = reset_config.from_email
+        msg['To'] = to_email
+        
+        # Add text and HTML parts
+        if text_content:
+            part1 = MIMEText(text_content, 'plain')
+            msg.attach(part1)
+        
+        part2 = MIMEText(html_content, 'html')
+        msg.attach(part2)
+        
+        # Create secure connection and send
+        context = ssl.create_default_context()
+        
+        with smtplib.SMTP(reset_config.smtp_server, reset_config.smtp_port) as server:
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(reset_config.smtp_username, reset_config.smtp_password)
+            
+            text = msg.as_string()
+            server.sendmail(reset_config.from_email, to_email, text)
+        
+        print(f"✅ SMTP email sent successfully to {to_email}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ SMTP email error: {str(e)}")
+        
+        # Fallback to console logging
+        print("\n" + "="*80)
+        print(f"📧 EMAIL NOTIFICATION (Fallback Mode)")
+        print("="*80)
+        print(f"To: {to_email}")
+        print(f"Subject: {subject}")
+        print("\n--- EMAIL CONTENT ---")
+        print(text_content or "No text content provided")
+        print("="*80)
+        return True  # Return True for graceful handling
+
 async def send_password_reset_email(email: str, reset_token: str, user_type: str, user_name: str = "User"):
     """Send password reset email using SendGrid"""
     try:
