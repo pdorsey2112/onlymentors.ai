@@ -61,7 +61,6 @@ class UserRoleChangeRequest(BaseModel):
     reason: Optional[str] = None
 
 class UserSuspendRequest(BaseModel):
-    user_id: str
     reason: str
     suspend: bool = True
 
