@@ -2825,6 +2825,21 @@ async def suspend_user(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
+        # Send suspension email if suspending (not unsuspending)
+        email_sent = False
+        if request.suspend:
+            from forgot_password_system import send_account_suspension_email
+            
+            user_name = user.get("full_name", "User")
+            admin_reason = request.reason or "Policy violation"
+            
+            email_sent = await send_account_suspension_email(
+                user["email"], 
+                user_name, 
+                admin_reason,
+                current_admin["admin_id"]
+            )
+        
         # Update suspension status
         update_data = {
             "is_suspended": request.suspend,
@@ -2850,16 +2865,29 @@ async def suspend_user(
             "action": "suspend" if request.suspend else "unsuspend",
             "admin_id": current_admin["admin_id"],
             "target_user_id": user_id,
+            "target_email": user["email"],
             "reason": request.reason,
+            "email_sent": email_sent if request.suspend else None,
             "timestamp": datetime.utcnow()
         }
         await db.admin_audit_log.insert_one(audit_entry)
         
+        # Generate response message
+        if request.suspend:
+            message = "User suspended successfully"
+            if email_sent:
+                message += " and notification email sent"
+            else:
+                message += " (notification email pending)"
+        else:
+            message = "User unsuspended successfully"
+        
         return {
-            "message": f"User {'suspended' if request.suspend else 'unsuspended'} successfully",
+            "message": message,
             "user_id": user_id,
             "is_suspended": request.suspend,
-            "reason": request.reason
+            "reason": request.reason,
+            "email_sent": email_sent if request.suspend else None
         }
         
     except HTTPException:
