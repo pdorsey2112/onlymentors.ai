@@ -432,6 +432,13 @@ async def login(login_data: UserLogin):
     if not user or not verify_password(login_data.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    # Check if account is locked due to admin password reset
+    if user.get("account_locked", False):
+        raise HTTPException(
+            status_code=423,  # HTTP 423 Locked
+            detail="Your account is temporarily locked. Please check your email for password reset instructions from an administrator."
+        )
+    
     # Create access token
     token = create_access_token({"user_id": user["user_id"]})
     
