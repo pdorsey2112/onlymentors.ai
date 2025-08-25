@@ -263,8 +263,19 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                 setDeleteUserReason('');
                 fetchUsers();
             } else {
-                const errorData = await response.json();
-                alert(`Error deleting user: ${errorData.detail || 'Unknown error'}`);
+                let errorMessage = 'Unknown error';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.detail || errorData.message || JSON.stringify(errorData);
+                } catch (parseError) {
+                    // If JSON parsing fails, use response text
+                    try {
+                        errorMessage = await response.text() || `HTTP ${response.status}`;
+                    } catch (textError) {
+                        errorMessage = `HTTP ${response.status} - ${response.statusText}`;
+                    }
+                }
+                alert(`Error deleting user: ${errorMessage}`);
             }
         } catch (error) {
             console.error('Error deleting user:', error);
