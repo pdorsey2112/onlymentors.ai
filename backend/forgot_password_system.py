@@ -404,6 +404,277 @@ The OnlyMentors.ai Team
         print(f"🔗 Manual reset link for {email}: {reset_link}")
         return False
 
+async def send_account_suspension_email(email: str, user_name: str = "User", admin_reason: str = "Policy violation", admin_id: str = "admin"):
+    """Send account suspension notification email"""
+    try:
+        # Create reset link for appeals
+        subject = "Account Suspended - OnlyMentors.ai"
+        
+        # Text content for fallback
+        text_content = f"""
+OnlyMentors.ai - Account Suspension Notice
+
+Dear {user_name},
+
+Your OnlyMentors.ai account has been suspended due to: {admin_reason}
+
+What this means:
+- You cannot log in to your account
+- Your profile and content are temporarily hidden
+- You cannot access mentor sessions or ask questions
+
+Next Steps:
+- Review our Community Guidelines: https://onlymentors.ai/guidelines
+- If you believe this was done in error, contact our support team
+- Include your email address and reference ID in your appeal
+
+Support Contact:
+- Email: support@onlymentors.ai
+- Subject: "Account Suspension Appeal - {email}"
+
+We take community safety seriously while also believing in fair treatment. If you have questions about this action, please don't hesitate to reach out.
+
+Best regards,
+The OnlyMentors.ai Team
+        """
+        
+        # HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Account Suspended - OnlyMentors.ai</title>
+            <style>
+                body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+                .content {{ background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
+                .suspension-notice {{ background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 20px; border-radius: 5px; margin: 20px 0; }}
+                .restrictions {{ background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .appeal-box {{ background: #f0f9ff; border: 1px solid #0ea5e9; color: #0c4a6e; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .contact-info {{ background: #f7fafc; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🧠 OnlyMentors.ai</h1>
+                </div>
+                <div class="content">
+                    <h2>⚠️ Account Suspension Notice</h2>
+                    <p>Dear {user_name},</p>
+                    
+                    <div class="suspension-notice">
+                        <strong>📋 Account Action Taken:</strong><br>
+                        Your OnlyMentors.ai account has been <strong>suspended</strong> for the following reason:<br>
+                        <strong>"{admin_reason}"</strong>
+                    </div>
+                    
+                    <h3>What This Means</h3>
+                    <div class="restrictions">
+                        <strong>🚫 Account Restrictions:</strong>
+                        <ul>
+                            <li>You cannot log in to your account</li>
+                            <li>Your profile and content are temporarily hidden</li>
+                            <li>You cannot access mentor sessions or ask questions</li>
+                            <li>You cannot interact with the OnlyMentors.ai community</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Next Steps</h3>
+                    <div class="appeal-box">
+                        <strong>📝 Appeal Process:</strong>
+                        <ul>
+                            <li>Review our <a href="https://onlymentors.ai/guidelines" style="color: #0ea5e9;">Community Guidelines</a></li>
+                            <li>If you believe this was done in error, contact our support team</li>
+                            <li>Include your email address and reference this suspension notice</li>
+                            <li>Our team will review your appeal within 5 business days</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="contact-info">
+                        <strong>📞 Support Contact:</strong><br>
+                        <strong>Email:</strong> <a href="mailto:support@onlymentors.ai">support@onlymentors.ai</a><br>
+                        <strong>Subject:</strong> "Account Suspension Appeal - {email}"<br>
+                        <strong>Reference ID:</strong> {admin_id}-{datetime.utcnow().strftime('%Y%m%d')}
+                    </div>
+                    
+                    <p>We take community safety seriously while also believing in fair treatment. If you have questions about this action or believe it was made in error, please don't hesitate to reach out to our support team.</p>
+                    
+                    <p>Best regards,<br>
+                    The OnlyMentors.ai Team</p>
+                </div>
+                <div class="footer">
+                    <p>© 2024 OnlyMentors.ai - Building a Safe Learning Community</p>
+                    <p>This email was sent to {email}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Send using unified email system
+        email_sent = await send_email_unified(email, subject, html_content, text_content)
+        
+        if email_sent:
+            print(f"✅ Account suspension email sent to {email}")
+        else:
+            print(f"❌ Failed to send account suspension email to {email}")
+        
+        return email_sent
+        
+    except Exception as e:
+        print(f"❌ Account suspension email error: {str(e)}")
+        return False
+
+async def send_account_deletion_email(email: str, user_name: str = "User", admin_reason: str = "Policy violations", admin_id: str = "admin"):
+    """Send account deletion notification email"""
+    try:
+        subject = "Account Deleted - OnlyMentors.ai"
+        
+        # Text content for fallback
+        text_content = f"""
+OnlyMentors.ai - Account Deletion Notice
+
+Dear {user_name},
+
+Your OnlyMentors.ai account has been permanently deleted due to: {admin_reason}
+
+What this means:
+- Your account cannot be recovered
+- All your data has been removed from our systems
+- You will no longer receive communications from OnlyMentors.ai
+- Any subscriptions have been cancelled
+
+Data Retention:
+- Personal data: Deleted immediately
+- Some transaction records may be retained for legal/tax purposes for 7 years
+- Messages and content: Permanently removed
+
+If you believe this action was taken in error:
+- Contact: support@onlymentors.ai
+- Subject: "Account Deletion Appeal - {email}"
+- Reference ID: {admin_id}-{datetime.utcnow().strftime('%Y%m%d')}
+
+We're sorry to see you go. If this was an error, please contact us as soon as possible.
+
+Best regards,
+The OnlyMentors.ai Team
+        """
+        
+        # HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Account Deleted - OnlyMentors.ai</title>
+            <style>
+                body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+                .content {{ background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
+                .deletion-notice {{ background: #fef2f2; border: 1px solid #dc2626; color: #b91c1c; padding: 20px; border-radius: 5px; margin: 20px 0; }}
+                .data-retention {{ background: #f7fafc; border: 1px solid #94a3b8; color: #475569; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .appeal-info {{ background: #f0f9ff; border: 1px solid #0ea5e9; color: #0c4a6e; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .warning {{ background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🧠 OnlyMentors.ai</h1>
+                </div>
+                <div class="content">
+                    <h2>❌ Account Deletion Notice</h2>
+                    <p>Dear {user_name},</p>
+                    
+                    <div class="deletion-notice">
+                        <strong>🗑️ Account Permanently Deleted:</strong><br>
+                        Your OnlyMentors.ai account has been <strong>permanently deleted</strong> for the following reason:<br>
+                        <strong>"{admin_reason}"</strong>
+                    </div>
+                    
+                    <div class="warning">
+                        <strong>⚠️ Important Notice:</strong><br>
+                        This action cannot be undone. Your account and all associated data have been permanently removed from our systems.
+                    </div>
+                    
+                    <h3>What This Means</h3>
+                    <ul>
+                        <li><strong>Account Recovery:</strong> Your account cannot be recovered</li>
+                        <li><strong>Data Removal:</strong> All your data has been removed from our systems</li>
+                        <li><strong>Communications:</strong> You will no longer receive emails from OnlyMentors.ai</li>
+                        <li><strong>Subscriptions:</strong> Any active subscriptions have been cancelled</li>
+                        <li><strong>Access:</strong> You cannot create a new account with this email address</li>
+                    </ul>
+                    
+                    <h3>Data Retention Policy</h3>
+                    <div class="data-retention">
+                        <strong>📋 What's Been Removed:</strong>
+                        <ul>
+                            <li><strong>Personal Data:</strong> Deleted immediately from all systems</li>
+                            <li><strong>Messages & Content:</strong> Permanently removed</li>
+                            <li><strong>Profile Information:</strong> Completely deleted</li>
+                            <li><strong>Activity History:</strong> Purged from our databases</li>
+                        </ul>
+                        <br>
+                        <strong>📋 Legal Retention (if applicable):</strong>
+                        <ul>
+                            <li>Some transaction records may be retained for legal/tax purposes for up to 7 years</li>
+                            <li>These records are anonymized and cannot be linked to your identity</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>If This Was an Error</h3>
+                    <div class="appeal-info">
+                        <strong>📞 Contact Information:</strong><br>
+                        If you believe this account deletion was made in error, please contact us immediately:
+                        <ul>
+                            <li><strong>Email:</strong> <a href="mailto:support@onlymentors.ai">support@onlymentors.ai</a></li>
+                            <li><strong>Subject:</strong> "Account Deletion Appeal - {email}"</li>
+                            <li><strong>Reference ID:</strong> {admin_id}-{datetime.utcnow().strftime('%Y%m%d')}</li>
+                            <li><strong>Response Time:</strong> Appeals reviewed within 5 business days</li>
+                        </ul>
+                    </div>
+                    
+                    <p>We're sorry to see you go. We strive to maintain a safe and positive community for all users. If you believe this action was taken in error, please contact our support team as soon as possible.</p>
+                    
+                    <p>Thank you for being part of the OnlyMentors.ai community.</p>
+                    
+                    <p>Best regards,<br>
+                    The OnlyMentors.ai Team</p>
+                </div>
+                <div class="footer">
+                    <p>© 2024 OnlyMentors.ai - Building a Safe Learning Community</p>
+                    <p>This is a final notification sent to {email}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Send using unified email system
+        email_sent = await send_email_unified(email, subject, html_content, text_content)
+        
+        if email_sent:
+            print(f"✅ Account deletion email sent to {email}")
+        else:
+            print(f"❌ Failed to send account deletion email to {email}")
+        
+        return email_sent
+        
+    except Exception as e:
+        print(f"❌ Account deletion email error: {str(e)}")
+        return False
+
 async def create_password_reset_token(db, email: str, user_type: str) -> Optional[str]:
     """Create a password reset token and store it in the database"""
     try:
