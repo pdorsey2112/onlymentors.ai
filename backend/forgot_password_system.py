@@ -57,11 +57,11 @@ class PasswordResetConfig:
         
     def validate_config(self):
         """Validate email configuration"""
-        if self.use_sendgrid:
-            print("✅ Using SendGrid for email delivery")
+        if self.use_smtp:
+            print("✅ Using SMTP2GO for email delivery")
             return True
-        elif self.use_smtp:
-            print("✅ Using SMTP for email delivery")
+        elif self.use_sendgrid:
+            print("✅ Using SendGrid for email delivery")
             return True
         else:
             print("⚠️ Using console logging for email delivery")
