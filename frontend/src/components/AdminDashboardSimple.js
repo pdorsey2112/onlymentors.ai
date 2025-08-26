@@ -206,8 +206,9 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
             if (response.ok) {
                 const data = await response.json();
                 const emailStatus = data.email_sent ? '📧 Notification email sent to user' : '⚠️ Notification email pending';
-                alert(`✅ ${data.message}\n${emailStatus}\n\nReason: ${suspendUserReason}\n\nThe user has been suspended and will receive an email explaining the action.`);
-                setSuspendUserModal({ show: false, userId: null });
+                const action = suspendUserModal.isSuspended ? 'reactivated' : 'suspended';
+                alert(`✅ User ${action} successfully!\n${emailStatus}\n\nReason: ${suspendUserReason}\n\nThe user has been ${action} and will receive an email explaining the action.`);
+                setSuspendUserModal({ show: false, userId: null, isSuspended: false });
                 setSuspendUserReason('');
                 fetchUsers();
             } else {
