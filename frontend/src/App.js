@@ -64,17 +64,9 @@ function AdminApp() {
   }, []);
 
   const handleAdminLoginSuccess = (adminData) => {
-    console.log('🔐 Admin login success called with:', adminData);
-    console.log('🔐 Setting admin state to:', adminData.admin);
-    
     setAdmin(adminData.admin);
     localStorage.setItem('admin_token', adminData.token);
     localStorage.setItem('admin_data', JSON.stringify(adminData.admin));
-    
-    // Force re-render by checking state
-    setTimeout(() => {
-      console.log('🔐 Admin state after login:', adminData.admin);
-    }, 100);
   };
 
   const handleAdminLoginError = (error) => {
