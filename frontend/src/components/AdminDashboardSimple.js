@@ -121,7 +121,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
 
     const [resetPasswordModal, setResetPasswordModal] = useState({ show: false, userId: null });
     const [resetPasswordReason, setResetPasswordReason] = useState('');
-    const [suspendUserModal, setSuspendUserModal] = useState({ show: false, userId: null });
+    const [suspendUserModal, setSuspendUserModal] = useState({ show: false, userId: null, isSuspended: false });
     const [suspendUserReason, setSuspendUserReason] = useState('');
     const [deleteUserModal, setDeleteUserModal] = useState({ show: false, userId: null });
     const [deleteUserReason, setDeleteUserReason] = useState('');
