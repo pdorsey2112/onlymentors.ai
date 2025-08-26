@@ -2825,15 +2825,29 @@ async def suspend_user(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Send suspension email if suspending (not unsuspending)
+        # Send appropriate email based on action
         email_sent = False
         if request.suspend:
+            # Suspending user
             from forgot_password_system import send_account_suspension_email
             
             user_name = user.get("full_name", "User")
             admin_reason = request.reason or "Policy violation"
             
             email_sent = await send_account_suspension_email(
+                user["email"], 
+                user_name, 
+                admin_reason,
+                current_admin["admin_id"]
+            )
+        else:
+            # Unsuspending user (reactivating)
+            from forgot_password_system import send_account_reactivation_email
+            
+            user_name = user.get("full_name", "User")
+            admin_reason = request.reason or "Account review completed"
+            
+            email_sent = await send_account_reactivation_email(
                 user["email"], 
                 user_name, 
                 admin_reason,
