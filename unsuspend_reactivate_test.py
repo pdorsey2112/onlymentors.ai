@@ -66,24 +66,6 @@ class UnsuspendReactivateTest:
         """Step 2: Create test user for suspend/unsuspend testing"""
         print("👤 Step 2: Create Test User")
         try:
-            # First check if user already exists
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            users_response = requests.get(f"{BACKEND_URL}/admin/users", headers=headers)
-            
-            if users_response.status_code == 200:
-                users_data = users_response.json()
-                existing_user = None
-                
-                for user in users_data.get("users", []):
-                    if user.get("email") == TEST_USER_EMAIL:
-                        existing_user = user
-                        break
-                
-                if existing_user:
-                    self.test_user_id = existing_user["user_id"]
-                    self.log_result("Test User Found", True, f"Using existing user: {TEST_USER_EMAIL}")
-                    return True
-            
             # Create new test user via regular signup
             signup_response = requests.post(f"{BACKEND_URL}/auth/signup", json={
                 "email": TEST_USER_EMAIL,
