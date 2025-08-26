@@ -675,6 +675,119 @@ The OnlyMentors.ai Team
         print(f"❌ Account deletion email error: {str(e)}")
         return False
 
+async def send_account_reactivation_email(email: str, user_name: str = "User", admin_reason: str = "Account review completed", admin_id: str = "admin"):
+    """Send account reactivation notification email"""
+    try:
+        subject = "Account Reactivated - OnlyMentors.ai"
+        
+        # Text content for fallback
+        text_content = f"""
+OnlyMentors.ai - Account Reactivated
+
+Dear {user_name},
+
+Great news! Your OnlyMentors.ai account has been reactivated.
+
+Reason for reactivation: {admin_reason}
+
+What this means:
+- You can now log in to your account normally
+- All platform features are restored
+- Your profile and content are visible again
+- You can resume accessing mentor sessions and asking questions
+
+We're glad to have you back in the OnlyMentors.ai community! Please review our Community Guidelines to ensure a positive experience for everyone.
+
+If you have any questions, feel free to contact our support team.
+
+Welcome back!
+The OnlyMentors.ai Team
+        """
+        
+        # HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Account Reactivated - OnlyMentors.ai</title>
+            <style>
+                body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+                .content {{ background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
+                .welcome-back {{ background: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 20px; border-radius: 5px; margin: 20px 0; }}
+                .restored-features {{ background: #f0f9ff; border: 1px solid #0ea5e9; color: #0c4a6e; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .guidelines-reminder {{ background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+                .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 14px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🧠 OnlyMentors.ai</h1>
+                </div>
+                <div class="content">
+                    <h2>🎉 Welcome Back!</h2>
+                    <p>Dear {user_name},</p>
+                    
+                    <div class="welcome-back">
+                        <strong>✅ Account Reactivated!</strong><br>
+                        Your OnlyMentors.ai account has been successfully reactivated.<br>
+                        <strong>Reason: "{admin_reason}"</strong>
+                    </div>
+                    
+                    <h3>What's Restored</h3>
+                    <div class="restored-features">
+                        <strong>🔓 Full Access Restored:</strong>
+                        <ul>
+                            <li>You can now log in to your account normally</li>
+                            <li>All platform features are available again</li>
+                            <li>Your profile and content are visible to the community</li>
+                            <li>You can access mentor sessions and ask questions</li>
+                            <li>All account privileges have been restored</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="guidelines-reminder">
+                        <strong>📋 Friendly Reminder:</strong><br>
+                        Please take a moment to review our <a href="https://onlymentors.ai/guidelines" style="color: #f59e0b;">Community Guidelines</a> to ensure a positive experience for everyone in our learning community.
+                    </div>
+                    
+                    <p>We're excited to have you back as part of the OnlyMentors.ai community! Our platform thrives when learners like you engage with our amazing mentors.</p>
+                    
+                    <p>If you have any questions or need assistance getting back into your account, our support team is here to help at <a href="mailto:support@onlymentors.ai">support@onlymentors.ai</a>.</p>
+                    
+                    <p>Welcome back and happy learning!</p>
+                    
+                    <p>Best regards,<br>
+                    The OnlyMentors.ai Team</p>
+                </div>
+                <div class="footer">
+                    <p>© 2024 OnlyMentors.ai - Welcome Back to Your Learning Journey</p>
+                    <p>This email was sent to {email}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Send using unified email system
+        email_sent = await send_email_unified(email, subject, html_content, text_content)
+        
+        if email_sent:
+            print(f"✅ Account reactivation email sent to {email}")
+        else:
+            print(f"❌ Failed to send account reactivation email to {email}")
+        
+        return email_sent
+        
+    except Exception as e:
+        print(f"❌ Account reactivation email error: {str(e)}")
+        return False
+
 async def create_password_reset_token(db, email: str, user_type: str) -> Optional[str]:
     """Create a password reset token and store it in the database"""
     try:
