@@ -1083,7 +1083,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                 onClick={confirmSuspendUser}
                                 style={{
                                     padding: '8px 16px',
-                                    backgroundColor: '#f59e0b',
+                                    backgroundColor: suspendUserModal.isSuspended ? '#10b981' : '#f59e0b',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '6px',
@@ -1092,7 +1092,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                     cursor: 'pointer'
                                 }}
                             >
-                                Suspend User
+                                {suspendUserModal.isSuspended ? 'Reactivate User' : 'Suspend User'}
                             </button>
                         </div>
                     </div>
