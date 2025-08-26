@@ -8,15 +8,16 @@ Focus: Backend unsuspend functionality and reactivation emails
 import requests
 import json
 import time
+import uuid
 from datetime import datetime
 
 # Configuration
 BACKEND_URL = "http://localhost:8001/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
-TEST_USER_EMAIL = "testuser2@test.com"
+TEST_USER_EMAIL = f"testuser_{str(uuid.uuid4())[:8]}@test.com"
 TEST_USER_PASSWORD = "TestPassword123!"
-TEST_USER_NAME = "Test User Two"
+TEST_USER_NAME = "Test User Unsuspend"
 
 class UnsuspendReactivateTest:
     def __init__(self):
