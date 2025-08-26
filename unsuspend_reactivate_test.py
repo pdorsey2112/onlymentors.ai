@@ -216,8 +216,8 @@ class UnsuspendReactivateTest:
         try:
             headers = {"Authorization": f"Bearer {self.admin_token}"}
             
-            # Get user details from admin endpoint
-            response = requests.get(f"{BACKEND_URL}/admin/users", headers=headers)
+            # Get user details from admin endpoint with higher limit
+            response = requests.get(f"{BACKEND_URL}/admin/users?limit=1000", headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
