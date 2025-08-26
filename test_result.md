@@ -503,6 +503,16 @@ backend:
     needs_retesting: false
     status_history:
       - working: "NA"
+        agent: "main"
+        comment: "Fixed the user suspension endpoint '[object Object]' error by correcting the UserSuspendRequest model to only expect reason and suspend fields (not user_id in body since it's in URL path). Updated frontend to not send user_id in request body. The endpoint now works correctly with proper JSON responses and email notifications."
+      - working: true
+        agent: "testing"
+        comment: "🎉 USER SUSPENSION ENDPOINT TESTING COMPLETE AND SUCCESSFUL! Comprehensive testing (7/7 tests passed, 100% success rate) confirms all review requirements met: 1) ADMIN AUTHENTICATION: ✅ Login successful with admin@onlymentors.ai / SuperAdmin2024! credentials 2) USER SUSPENSION ENDPOINT: ✅ PUT /api/admin/users/{user_id}/suspend working perfectly with fixed UserSuspendRequest model ✅ No '[object Object]' errors encountered ✅ Proper success message returned: 'User suspended successfully and notification email sent' ✅ Correct response structure with user_id, is_suspended, reason, email_sent fields 3) DATABASE VERIFICATION: ✅ User properly suspended in database (status: suspended, is_suspended: true) ✅ Suspension metadata correctly stored (suspended_at, suspended_by admin ID) 4) SECURITY VERIFICATION: ✅ Suspended user correctly blocked from login (401 status) ✅ Account security working as expected 5) AUDIT LOG CREATION: ✅ Complete audit trail created with action: suspend, admin_id, target_user_id, reason, email_sent status, timestamp 6) EMAIL NOTIFICATIONS: ✅ Suspension email sent successfully (email_sent: true in response) ✅ SMTP integration working correctly 7) ERROR HANDLING: ✅ Proper error messages for invalid user IDs (404: 'User not found') ✅ No '[object Object]' errors - clean, readable error messages ✅ Improved frontend error handling working correctly. COMPLETE SUSPENSION PROCESS VERIFIED: The fixed UserSuspendRequest model (reason + suspend fields only) works perfectly, frontend no longer sends user_id in request body, backend returns proper JSON responses, email notifications sent via SMTP, audit logs created, and suspended users blocked from login. All review requirements successfully achieved - the user suspension endpoint is production-ready!"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
         agent: "testing"
         comment: "Testing user suspension endpoint to identify the specific error causing '[object Object]' response. Need to: 1) Login as admin (admin@onlymentors.ai / SuperAdmin2024!) 2) Test PUT /api/admin/users/{user_id}/suspend endpoint 3) Find test user (testuser1@test.com) 4) Try to suspend with reason 'Policy violation' 5) Debug UserSuspendRequest model, email sending, database updates, audit logs 6) Check for missing imports, database connection issues, email errors, authentication problems, Pydantic validation errors"
       - working: true
