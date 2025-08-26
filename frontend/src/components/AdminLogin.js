@@ -24,9 +24,14 @@ const AdminLogin = ({ onLogin, onError }) => {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log('🔐 AdminLogin: Successful response:', data);
+                
                 localStorage.setItem('admin_token', data.token);
                 localStorage.setItem('admin_data', JSON.stringify(data.admin));
+                
+                console.log('🔐 AdminLogin: Calling onLogin callback');
                 onLogin(data);
+                console.log('🔐 AdminLogin: onLogin callback completed');
             } else {
                 const error = await response.json();
                 onError(error.detail || 'Login failed');
