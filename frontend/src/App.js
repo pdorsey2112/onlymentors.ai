@@ -100,10 +100,13 @@ function AdminApp() {
   }
 
   // Show admin dashboard if authenticated
+  console.log('🔐 AdminApp render - admin state:', admin);
   if (admin) {
+    console.log('🔐 AdminApp: Rendering AdminDashboardSimple with admin:', admin);
     return <AdminDashboardSimple admin={admin} onLogout={handleAdminLogout} />;
   }
 
+  console.log('🔐 AdminApp: Rendering AdminLogin');
   // Show admin login if not authenticated
   return (
     <AdminLogin 
