@@ -1017,7 +1017,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             fontWeight: '600',
                             color: '#1f2937'
                         }}>
-                            Suspend User
+                            {suspendUserModal.isSuspended ? 'Reactivate User' : 'Suspend User'}
                         </h3>
                         
                         <p style={{
@@ -1025,7 +1025,9 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             color: '#6b7280',
                             fontSize: '14px'
                         }}>
-                            Please select a reason for suspending this user:
+                            {suspendUserModal.isSuspended 
+                                ? 'Please select a reason for reactivating this user:' 
+                                : 'Please select a reason for suspending this user:'}
                         </p>
 
                         <select
@@ -1042,9 +1044,19 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             }}
                         >
                             <option value="">Select a reason...</option>
-                            <option value="Policy violation">Policy violation</option>
-                            <option value="Non-Payment">Non-Payment</option>
-                            <option value="Internal user">Internal user</option>
+                            {suspendUserModal.isSuspended ? (
+                                <>
+                                    <option value="Account review completed">Account review completed</option>
+                                    <option value="Appeal approved">Appeal approved</option>
+                                    <option value="Administrative decision">Administrative decision</option>
+                                </>
+                            ) : (
+                                <>
+                                    <option value="Policy violation">Policy violation</option>
+                                    <option value="Non-Payment">Non-Payment</option>
+                                    <option value="Internal user">Internal user</option>
+                                </>
+                            )}
                         </select>
 
                         <div style={{
