@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://admin-console-4.preview.emergentagent.com/api"
+BACKEND_URL = "http://localhost:8001/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
 TEST_USER_EMAIL = "testuser2@test.com"
