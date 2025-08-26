@@ -181,8 +181,8 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         setResetPasswordReason('');
     };
 
-    const handleSuspendUser = (userId) => {
-        setSuspendUserModal({ show: true, userId: userId });
+    const handleSuspendUser = (userId, isSuspended = false) => {
+        setSuspendUserModal({ show: true, userId: userId, isSuspended: isSuspended });
         setSuspendUserReason('');
     };
 
