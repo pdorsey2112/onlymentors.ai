@@ -475,6 +475,18 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                 }}>
                                     <td style={{ padding: '15px', color: '#374151' }}>{user.email}</td>
                                     <td style={{ padding: '15px', color: '#374151' }}>{user.full_name}</td>
+                                    <td style={{ padding: '15px' }}>
+                                        <span style={{
+                                            padding: '4px 12px',
+                                            borderRadius: '20px',
+                                            fontSize: '12px',
+                                            fontWeight: '600',
+                                            background: user.is_suspended ? '#fee2e2' : '#dcfce7',
+                                            color: user.is_suspended ? '#b91c1c' : '#166534'
+                                        }}>
+                                            {user.is_suspended ? '🚫 Suspended' : '✅ Active'}
+                                        </span>
+                                    </td>
                                     <td style={{ padding: '15px', color: '#374151' }}>{formatNumber(user.questions_asked)}</td>
                                     <td style={{ padding: '15px' }}>
                                         <span style={{
@@ -508,21 +520,39 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                             >
                                                 Reset Password
                                             </button>
-                                            <button
-                                                onClick={() => handleSuspendUser(user.user_id)}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    backgroundColor: '#f59e0b',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '6px',
-                                                    fontSize: '12px',
-                                                    fontWeight: '600',
-                                                    cursor: 'pointer'
-                                                }}
-                                            >
-                                                Suspend
-                                            </button>
+                                            {user.is_suspended ? (
+                                                <button
+                                                    onClick={() => handleSuspendUser(user.user_id, true)}
+                                                    style={{
+                                                        padding: '6px 12px',
+                                                        backgroundColor: '#10b981',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        fontSize: '12px',
+                                                        fontWeight: '600',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Unsuspend
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleSuspendUser(user.user_id, false)}
+                                                    style={{
+                                                        padding: '6px 12px',
+                                                        backgroundColor: '#f59e0b',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        fontSize: '12px',
+                                                        fontWeight: '600',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Suspend
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => handleDeleteUser(user.user_id)}
                                                 style={{
