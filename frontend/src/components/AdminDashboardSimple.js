@@ -198,7 +198,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                 method: 'PUT',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({ 
-                    suspend: true,
+                    suspend: !suspendUserModal.isSuspended, // Toggle suspend status
                     reason: suspendUserReason 
                 })
             });
