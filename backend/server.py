@@ -2888,7 +2888,7 @@ async def suspend_user(
             "target_user_id": user_id,
             "target_email": user["email"],
             "reason": request.reason,
-            "email_sent": email_sent if request.suspend else None,
+            "email_sent": email_sent,
             "timestamp": datetime.utcnow()
         }
         await db.admin_audit_log.insert_one(audit_entry)
@@ -2902,13 +2902,17 @@ async def suspend_user(
                 message += " (notification email pending)"
         else:
             message = "User unsuspended successfully"
+            if email_sent:
+                message += " and reactivation email sent"
+            else:
+                message += " (reactivation email pending)"
         
         return {
             "message": message,
             "user_id": user_id,
             "is_suspended": request.suspend,
             "reason": request.reason,
-            "email_sent": email_sent if request.suspend else None
+            "email_sent": email_sent
         }
         
     except HTTPException:
