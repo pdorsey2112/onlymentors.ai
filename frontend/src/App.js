@@ -13,6 +13,7 @@ import GoogleOAuthButton from './components/GoogleOAuthButton';
 import FacebookOAuthButton from './components/FacebookOAuthButton';
 import ForgotPasswordForm from './components/ForgotPasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
+import LandingRedirect from './components/LandingRedirect';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
