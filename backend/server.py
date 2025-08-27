@@ -389,6 +389,92 @@ async def search_mentors(q: str = "", category: Optional[str] = None):
     
     return {"results": results, "count": len(results), "query": q}
 
+# Enhanced User Registration endpoint with full profile collection
+@app.post("/api/auth/register")
+async def register_user_with_profile(
+    email: str = Form(...),
+    password: str = Form(...),
+    full_name: str = Form(...),
+    phone_number: str = Form(...),
+    communication_preferences: str = Form(...),  # JSON string
+    subscription_plan: str = Form(...),
+    payment_info: str = Form(None)  # JSON string, optional
+):
+    """Enhanced user registration with complete profile data collection"""
+    try:
+        # Check if user exists
+        existing_user = await db.users.find_one({"email": email})
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Parse communication preferences
+        import json
+        comm_prefs = json.loads(communication_preferences) if communication_preferences else {}
+        
+        # Parse payment info if provided
+        payment_data = json.loads(payment_info) if payment_info else None
+        
+        # Create user with complete profile
+        user_id = str(uuid.uuid4())
+        user_doc = {
+            "user_id": user_id,
+            "email": email,
+            "full_name": full_name,
+            "phone_number": phone_number,
+            "password_hash": hash_password(password),
+            "communication_preferences": {
+                "email": comm_prefs.get("email", True),
+                "text": comm_prefs.get("text", False),
+                "both": comm_prefs.get("both", False)
+            },
+            "subscription_plan": subscription_plan,
+            "is_subscribed": subscription_plan == "premium",
+            "subscription_expires": None,
+            "payment_info": payment_data,  # Store encrypted in production
+            "questions_asked": 0,
+            "mentor_interactions": [],  # Track all mentor interactions
+            "question_history": [],  # Track all questions asked
+            "profile_completed": True,
+            "created_at": datetime.utcnow(),
+            "last_login": None,
+            "is_active": True
+        }
+        
+        # If premium subscription, set expiration
+        if subscription_plan == "premium":
+            from dateutil.relativedelta import relativedelta
+            user_doc["subscription_expires"] = datetime.utcnow() + relativedelta(months=1)
+        
+        await db.users.insert_one(user_doc)
+        
+        # Create access token
+        token = create_access_token({"user_id": user_id})
+        
+        # Return user data (exclude sensitive info)
+        user_response = {
+            "user_id": user_id,
+            "email": email,
+            "full_name": full_name,
+            "phone_number": phone_number,
+            "communication_preferences": user_doc["communication_preferences"],
+            "subscription_plan": subscription_plan,
+            "is_subscribed": user_doc["is_subscribed"],
+            "questions_asked": 0,
+            "profile_completed": True,
+            "created_at": user_doc["created_at"].isoformat()
+        }
+        
+        return {
+            "token": token,
+            "user": user_response,
+            "message": "Account created successfully with complete profile"
+        }
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON data provided")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+
 @app.post("/api/auth/signup")
 async def signup(user_data: UserSignup):
     # Check if user exists
