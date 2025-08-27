@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 # Test Configuration
-BACKEND_URL = "https://admin-console-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://user-data-restore.preview.emergentagent.com/api"
 ADMIN_CREDENTIALS = {
     "email": "admin@onlymentors.ai",
     "password": "SuperAdmin2024!"

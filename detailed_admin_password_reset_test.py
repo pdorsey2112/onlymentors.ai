@@ -17,7 +17,7 @@ import random
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://admin-console-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://user-data-restore.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
 ORIGINAL_TEST_PASSWORD = "TestUser123!"

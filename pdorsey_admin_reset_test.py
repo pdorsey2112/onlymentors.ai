@@ -10,7 +10,7 @@ Requirements:
 4. Verify console logging output shows complete email content and secure reset link
 5. Test account locking - user cannot login with original password
 6. Capture password reset link from console logs
-7. Verify link format: https://admin-console-4.preview.emergentagent.com/reset-password?token=xxx&type=user
+7. Verify link format: https://user-data-restore.preview.emergentagent.com/reset-password?token=xxx&type=user
 """
 
 import requests
@@ -20,7 +20,7 @@ import sys
 from datetime import datetime
 
 class PaulDorseyPasswordResetTest:
-    def __init__(self, base_url="https://admin-console-4.preview.emergentagent.com"):
+    def __init__(self, base_url="https://user-data-restore.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None
@@ -233,7 +233,7 @@ class PaulDorseyPasswordResetTest:
         print(f"   Reason: {self.reset_reason}")
         print(f"   ")
         print(f"   Please click the link below to reset your password:")
-        print(f"   🔗 https://admin-console-4.preview.emergentagent.com/reset-password?token=<SECURE_TOKEN>&type=user")
+        print(f"   🔗 https://user-data-restore.preview.emergentagent.com/reset-password?token=<SECURE_TOKEN>&type=user")
         print(f"   ")
         print(f"   This link will expire in 1 hour.")
         print(f"   Your account has been temporarily locked until you reset your password.")
@@ -244,7 +244,7 @@ class PaulDorseyPasswordResetTest:
         print(f"   The OnlyMentors.ai Team")
         
         print(f"\n🔗 SECURE PASSWORD RESET LINK:")
-        print(f"   Base URL: https://admin-console-4.preview.emergentagent.com/reset-password")
+        print(f"   Base URL: https://user-data-restore.preview.emergentagent.com/reset-password")
         print(f"   Parameters: ?token=<SECURE_TOKEN>&type=user")
         print(f"   Token Format: JWT or UUID with 60-minute expiration")
         
@@ -293,7 +293,7 @@ class PaulDorseyPasswordResetTest:
         """Step 7: Verify reset link format"""
         print(f"\n🔗 Step 7: Verify reset link format")
         
-        expected_base = "https://admin-console-4.preview.emergentagent.com/reset-password"
+        expected_base = "https://user-data-restore.preview.emergentagent.com/reset-password"
         expected_params = ["token=", "type=user"]
         
         print(f"   ✅ Expected base URL: {expected_base}")
@@ -360,7 +360,7 @@ class PaulDorseyPasswordResetTest:
         print(f"   • Recipient: {self.test_email}")
         print(f"   • Full Name: {self.test_name}")
         print(f"   • Admin Reason: {self.reset_reason}")
-        print(f"   • Reset Link: https://admin-console-4.preview.emergentagent.com/reset-password?token=xxx&type=user")
+        print(f"   • Reset Link: https://user-data-restore.preview.emergentagent.com/reset-password?token=xxx&type=user")
         print(f"   • Expiration: 1 hour")
         print(f"   • Account Status: Locked until password reset")
         

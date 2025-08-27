@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
 
 # Configuration
-BACKEND_URL = "https://admin-console-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://user-data-restore.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
 TEST_USER_EMAIL = "pdorsey@dorseyandassociates.com"

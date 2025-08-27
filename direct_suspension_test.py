@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 def test_user_suspension():
-    base_url = "https://admin-console-4.preview.emergentagent.com"
+    base_url = "https://user-data-restore.preview.emergentagent.com"
     
     print("🔐 Step 1: Admin Login")
     login_response = requests.post(f"{base_url}/api/admin/login", json={
