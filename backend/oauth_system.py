@@ -57,7 +57,7 @@ class OAuthConfig:
     def __init__(self):
         self.google_client_id = os.getenv("GOOGLE_CLIENT_ID")
         self.google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
-        self.google_redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:3000/auth/google")
+        self.google_redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "https://user-data-restore.preview.emergentagent.com")
         
         # Facebook OAuth Configuration
         self.facebook_app_id = os.getenv("FACEBOOK_APP_ID")
