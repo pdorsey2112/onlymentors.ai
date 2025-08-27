@@ -475,6 +475,198 @@ async def register_user_with_profile(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
+@app.post("/api/mentor/{mentor_id}/ask")
+async def ask_mentor_question(
+    mentor_id: str, 
+    question_data: dict,
+    current_user = Depends(get_current_user)
+):
+    """Ask a question to a mentor and track the interaction"""
+    try:
+        user_id = current_user["user_id"]
+        question_text = question_data.get("question", "").strip()
+        
+        if not question_text:
+            raise HTTPException(status_code=400, detail="Question cannot be empty")
+        
+        # Find mentor
+        mentor = None
+        mentor_category = None
+        for category, mentors in ALL_MENTORS.items():
+            for m in mentors:
+                if m["id"] == mentor_id:
+                    mentor = m
+                    mentor_category = category
+                    break
+            if mentor:
+                break
+        
+        if not mentor:
+            raise HTTPException(status_code=404, detail="Mentor not found")
+        
+        # Generate AI response (simplified for now)
+        ai_response = f"Thank you for your question about {question_text[:50]}... As {mentor['name']}, I would advise you to consider the following perspectives..."
+        
+        # Create interaction record
+        interaction_id = str(uuid.uuid4())
+        interaction_record = {
+            "interaction_id": interaction_id,
+            "user_id": user_id,
+            "mentor_id": mentor_id,
+            "mentor_name": mentor["name"],
+            "mentor_category": mentor_category,
+            "question": question_text,
+            "response": ai_response,
+            "timestamp": datetime.utcnow(),
+            "rating": None,  # User can rate later
+            "follow_up_questions": []
+        }
+        
+        # Store in interactions collection
+        await db.mentor_interactions.insert_one(interaction_record)
+        
+        # Update user's question count and history
+        await db.users.update_one(
+            {"user_id": user_id},
+            {
+                "$inc": {"questions_asked": 1},
+                "$push": {
+                    "question_history": {
+                        "interaction_id": interaction_id,
+                        "mentor_id": mentor_id,
+                        "mentor_name": mentor["name"],
+                        "question": question_text,
+                        "timestamp": datetime.utcnow()
+                    },
+                    "mentor_interactions": interaction_id
+                }
+            }
+        )
+        
+        return {
+            "interaction_id": interaction_id,
+            "mentor": {
+                "id": mentor_id,
+                "name": mentor["name"],
+                "category": mentor_category
+            },
+            "question": question_text,
+            "response": ai_response,
+            "timestamp": interaction_record["timestamp"].isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process question: {str(e)}")
+
+@app.get("/api/user/question-history")
+async def get_user_question_history(current_user = Depends(get_current_user)):
+    """Get user's complete question and mentor interaction history"""
+    try:
+        user_id = current_user["user_id"]
+        
+        # Get all interactions for this user
+        interactions = await db.mentor_interactions.find(
+            {"user_id": user_id}
+        ).sort("timestamp", -1).to_list(length=None)
+        
+        # Format for response
+        history = []
+        for interaction in interactions:
+            history.append({
+                "interaction_id": interaction["interaction_id"],
+                "mentor": {
+                    "id": interaction["mentor_id"],
+                    "name": interaction["mentor_name"],
+                    "category": interaction["mentor_category"]
+                },
+                "question": interaction["question"],
+                "response": interaction["response"],
+                "timestamp": interaction["timestamp"].isoformat(),
+                "rating": interaction.get("rating"),
+                "follow_up_count": len(interaction.get("follow_up_questions", []))
+            })
+        
+        return {
+            "total_questions": len(history),
+            "history": history
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve history: {str(e)}")
+
+@app.get("/api/user/profile/complete")
+async def get_complete_user_profile(current_user = Depends(get_current_user)):
+    """Get user's complete profile including all data we collect"""
+    try:
+        user_id = current_user["user_id"]
+        
+        # Get user from database with all fields
+        user = await db.users.find_one({"user_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get interaction statistics
+        total_interactions = await db.mentor_interactions.count_documents({"user_id": user_id})
+        unique_mentors = len(set([
+            interaction["mentor_id"] async for interaction in 
+            db.mentor_interactions.find({"user_id": user_id}, {"mentor_id": 1})
+        ]))
+        
+        return {
+            "user_id": user["user_id"],
+            "email": user["email"],
+            "full_name": user["full_name"],
+            "phone_number": user.get("phone_number", ""),
+            "communication_preferences": user.get("communication_preferences", {}),
+            "subscription_plan": user.get("subscription_plan", "free"),
+            "is_subscribed": user.get("is_subscribed", False),
+            "subscription_expires": user.get("subscription_expires").isoformat() if user.get("subscription_expires") else None,
+            "questions_asked": user.get("questions_asked", 0),
+            "total_interactions": total_interactions,
+            "unique_mentors_consulted": unique_mentors,
+            "profile_completed": user.get("profile_completed", False),
+            "created_at": user["created_at"].isoformat(),
+            "last_login": user.get("last_login").isoformat() if user.get("last_login") else None,
+            "account_status": "active" if user.get("is_active", True) else "inactive"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve profile: {str(e)}")
+
+@app.put("/api/user/profile/communication-preferences")
+async def update_communication_preferences(
+    preferences: dict,
+    current_user = Depends(get_current_user)
+):
+    """Update user's communication preferences"""
+    try:
+        user_id = current_user["user_id"]
+        
+        # Validate preferences
+        valid_prefs = {
+            "email": preferences.get("email", True),
+            "text": preferences.get("text", False),
+            "both": preferences.get("both", False)
+        }
+        
+        # Update in database
+        await db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {"communication_preferences": valid_prefs}}
+        )
+        
+        return {
+            "message": "Communication preferences updated successfully",
+            "preferences": valid_prefs
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update preferences: {str(e)}")
+
 @app.post("/api/auth/signup")
 async def signup(user_data: UserSignup):
     # Check if user exists
