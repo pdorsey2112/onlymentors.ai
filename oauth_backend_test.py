@@ -254,22 +254,19 @@ class OAuthBackendTester:
         """Test POST /api/auth/google endpoint"""
         print(f"\n🔐 Testing Google OAuth Authentication Endpoint")
         
-        # Test 1: No data provided
+        # Test 1: No data provided (missing required fields)
         self.oauth_tests_run += 1
         success, response = self.run_test(
             "Google OAuth Auth - No Data",
             "POST",
             "api/auth/google",
-            400,
+            422,  # Pydantic validation error for missing fields
             data={}
         )
         
         if success:
             self.oauth_tests_passed += 1
-            if 'detail' in response and ('authorization code' in response['detail'].lower() or 'token' in response['detail'].lower()):
-                print("✅ Proper error handling for missing OAuth data")
-            else:
-                print("⚠️  Unexpected error message format")
+            print("✅ Proper validation error for missing OAuth data")
         
         # Test 2: Invalid authorization code
         self.oauth_tests_run += 1
