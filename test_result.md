@@ -468,10 +468,10 @@ backend:
 
 test_plan:
   current_focus:
-    - "Complete Admin User Management Frontend Integration"
-    - "Admin User Management Regression Testing"
-  stuck_tasks: []
-  test_all: true
+    - "Google and Facebook OAuth Frontend Integration Testing"
+  stuck_tasks: 
+    - "Google OAuth Domain Configuration Issue"
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
