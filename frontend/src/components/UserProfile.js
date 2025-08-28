@@ -15,7 +15,12 @@ const UserProfile = ({ user, onProfileUpdate, onLogout }) => {
   const [profileData, setProfileData] = useState({
     full_name: '',
     email: '',
-    phone_number: ''
+    phone_number: '',
+    communication_preferences: {
+      email: true,
+      sms: false,
+      notifications: true
+    }
   });
   
   // Password change state
