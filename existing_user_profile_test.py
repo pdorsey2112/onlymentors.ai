@@ -379,17 +379,30 @@ class ExistingUserProfileTester:
             })
         }
         
-        # Use form data for comprehensive registration
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        # Use requests directly for form data
+        url = f"{self.base_url}/api/auth/register"
         
-        success, new_user_response = self.run_test(
-            "Comprehensive Registration",
-            "POST",
-            "api/auth/register",
-            200,
-            data=comprehensive_data,
-            headers=headers
-        )
+        try:
+            response = requests.post(url, data=comprehensive_data, timeout=30)
+            success = response.status_code == 200
+            
+            if success:
+                new_user_response = response.json()
+                print(f"✅ Passed - Status: {response.status_code}")
+                print(f"   Response preview: {json.dumps(new_user_response, indent=2)[:500]}...")
+            else:
+                print(f"❌ Failed - Expected 200, got {response.status_code}")
+                try:
+                    error_data = response.json()
+                    print(f"   Error: {error_data}")
+                    new_user_response = error_data
+                except:
+                    print(f"   Error: {response.text}")
+                    new_user_response = {}
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            success = False
+            new_user_response = {}
         
         if success:
             print(f"✅ New comprehensive registration successful")
