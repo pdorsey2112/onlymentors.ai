@@ -1,0 +1,166 @@
+{
+  "timestamp": "20250828_131840",
+  "summary": {
+    "total_tests": 8,
+    "passed": 5,
+    "failed": 1,
+    "skipped": 0,
+    "warnings": 1,
+    "errors": 1,
+    "success_rate": 62.5,
+    "results": [
+      {
+        "test": "SMS Service Initialization",
+        "status": "PASS",
+        "details": "SMS service initialized and responding to requests",
+        "response": {
+          "valid": false,
+          "formatted_phone": null,
+          "original_phone": "1234567890"
+        }
+      },
+      {
+        "test": "Unknown Test",
+        "status": "ERROR",
+        "details": "Test execution error: 'NoneType' object has no attribute 'startswith'"
+      },
+      {
+        "test": "2FA Code Sending",
+        "status": "FAIL",
+        "details": "2FA code sending failed: 400",
+        "error": {
+          "detail": "Invalid phone number format"
+        }
+      },
+      {
+        "test": "2FA Code Verification",
+        "status": "PASS",
+        "details": "2FA verification endpoint properly validates requests",
+        "response": {
+          "detail": "Invalid phone number format"
+        }
+      },
+      {
+        "test": "SMS Notification Endpoint",
+        "status": "PASS",
+        "details": "SMS notification endpoint properly validates requests",
+        "response": {
+          "detail": "Invalid phone number format"
+        }
+      },
+      {
+        "test": "Authentication Protection",
+        "status": "PASS",
+        "details": "SMS notification endpoint properly requires authentication",
+        "status_code": 403
+      },
+      {
+        "test": "Error Handling",
+        "status": "PASS",
+        "details": "Error handling tested: 3/3 tests passed",
+        "results": [
+          {
+            "name": "Missing phone number",
+            "status": "PASS",
+            "status_code": 422
+          },
+          {
+            "name": "Invalid JSON",
+            "status": "PASS",
+            "status_code": 400
+          },
+          {
+            "name": "Missing verification code",
+            "status": "PASS",
+            "status_code": 422
+          }
+        ]
+      },
+      {
+        "test": "Twilio Credentials Verification",
+        "status": "WARN",
+        "details": "Cannot confirm Twilio integration from API response",
+        "response": {
+          "detail": "Invalid phone number format"
+        }
+      }
+    ]
+  },
+  "detailed_results": [
+    {
+      "test": "SMS Service Initialization",
+      "status": "PASS",
+      "details": "SMS service initialized and responding to requests",
+      "response": {
+        "valid": false,
+        "formatted_phone": null,
+        "original_phone": "1234567890"
+      }
+    },
+    {
+      "test": "Unknown Test",
+      "status": "ERROR",
+      "details": "Test execution error: 'NoneType' object has no attribute 'startswith'"
+    },
+    {
+      "test": "2FA Code Sending",
+      "status": "FAIL",
+      "details": "2FA code sending failed: 400",
+      "error": {
+        "detail": "Invalid phone number format"
+      }
+    },
+    {
+      "test": "2FA Code Verification",
+      "status": "PASS",
+      "details": "2FA verification endpoint properly validates requests",
+      "response": {
+        "detail": "Invalid phone number format"
+      }
+    },
+    {
+      "test": "SMS Notification Endpoint",
+      "status": "PASS",
+      "details": "SMS notification endpoint properly validates requests",
+      "response": {
+        "detail": "Invalid phone number format"
+      }
+    },
+    {
+      "test": "Authentication Protection",
+      "status": "PASS",
+      "details": "SMS notification endpoint properly requires authentication",
+      "status_code": 403
+    },
+    {
+      "test": "Error Handling",
+      "status": "PASS",
+      "details": "Error handling tested: 3/3 tests passed",
+      "results": [
+        {
+          "name": "Missing phone number",
+          "status": "PASS",
+          "status_code": 422
+        },
+        {
+          "name": "Invalid JSON",
+          "status": "PASS",
+          "status_code": 400
+        },
+        {
+          "name": "Missing verification code",
+          "status": "PASS",
+          "status_code": 422
+        }
+      ]
+    },
+    {
+      "test": "Twilio Credentials Verification",
+      "status": "WARN",
+      "details": "Cannot confirm Twilio integration from API response",
+      "response": {
+        "detail": "Invalid phone number format"
+      }
+    }
+  ]
+}
