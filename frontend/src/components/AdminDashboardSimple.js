@@ -1071,6 +1071,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
             case 'overview': return renderOverview();
             case 'users': return renderUsers();
             case 'mentors': return renderMentors();
+            case 'database': return <DatabaseManagement />;
             case 'content-moderation': return (
                 <div style={{ padding: '20px', textAlign: 'center' }}>
                     <h2 style={{ color: '#333', fontSize: '28px' }}>Content Moderation</h2>
