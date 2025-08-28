@@ -1217,6 +1217,7 @@ async def update_user_profile(profile_update: UserProfileUpdate, current_user = 
             "email": updated_user["email"],
             "full_name": updated_user.get("full_name", ""),
             "phone_number": updated_user.get("phone_number", ""),
+            "communication_preferences": updated_user.get("communication_preferences", {}),
             "questions_asked": updated_user.get("questions_asked", 0),
             "questions_remaining": updated_user.get("questions_remaining", 10),
             "is_subscribed": updated_user.get("is_subscribed", False),
