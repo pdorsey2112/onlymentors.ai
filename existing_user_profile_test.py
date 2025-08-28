@@ -344,14 +344,14 @@ class ExistingUserProfileTester:
                 "history_count": len(history)
             })
             
-            return True, response
+            return True
         else:
             self.test_results.append({
                 "test": "question_history",
                 "status": "failed",
                 "error": "Could not access question history endpoint"
             })
-            return False, {}
+            return False
 
     def test_profile_vs_new_registration(self):
         """Compare existing user profile with new comprehensive registration"""
