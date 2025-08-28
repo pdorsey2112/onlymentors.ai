@@ -24,6 +24,13 @@ In the **App Domains** section, add:
 user-data-restore.preview.emergentagent.com
 ```
 
+### Step 3a: Update JavaScript SDK Allowed Domains (CRITICAL)
+In the **Allowed Domains for the JavaScript SDK** section, add:
+```
+user-data-restore.preview.emergentagent.com
+```
+⚠️ **This is the most important setting** - it directly controls the "JSSDK Unknown Host domain" error!
+
 ### Step 4: Update Valid OAuth Redirect URIs
 In the **Facebook Login** > **Settings**, find **Valid OAuth Redirect URIs** and add:
 ```
