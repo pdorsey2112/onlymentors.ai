@@ -416,29 +416,7 @@ function MainApp() {
     setQuestionHistory([]);
   };
 
-  // Creator auth handlers
-  const handleCreatorLoginSuccess = (creatorData) => {
-    setIsCreator(true);
-    setCreator(creatorData);
-    setShowCreatorAuth(false);
-  };
-
-  const handleCreatorSignupSuccess = (creatorData) => {
-    setIsCreator(true);
-    setCreator(creatorData);
-    setShowCreatorAuth(false);
-  };
-
-  const handleCreatorLogout = () => {
-    setIsCreator(false);
-    setCreator(null);
-    localStorage.removeItem('creatorToken');
-    localStorage.removeItem('creator');
-  };
-
-  const switchCreatorAuthMode = (mode) => {
-    setCreatorAuthMode(mode);
-  };
+  // Creator auth is now handled in CreatorApp component
 
   // Admin auth handlers
   const handleAdminLoginSuccess = (adminData) => {
