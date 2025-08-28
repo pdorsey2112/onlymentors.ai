@@ -42,8 +42,8 @@ Layer 4 - External Services (Orange boxes, bottom right) - WORKING
   ├── SMTP2GO Email Service ✅ WORKING
   └── Stripe Payments ✅ $9.99/month
 
-BOARD 2: USER FLOW
-------------------
+BOARD 2: ENHANCED USER FLOW (Updated)
+-------------------------------------
 
 Start → Authentication Check → [Decision Diamond]
 ├── Not Authenticated → Login Page
