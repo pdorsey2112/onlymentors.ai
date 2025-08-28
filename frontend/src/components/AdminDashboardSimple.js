@@ -752,8 +752,9 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                             </button>
                                         </div>
                                     </td>
-                                </tr>
-                            ))}
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
