@@ -746,7 +746,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.slice(0, 50).map((user, index) => {
+                            {filteredUsers.slice(0, 50).map((user, index) => {
                                 const { firstName, lastName } = parseName(user.full_name);
                                 return (
                                     <tr key={user.user_id} style={{ 
