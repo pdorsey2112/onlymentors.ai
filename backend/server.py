@@ -123,6 +123,7 @@ class UserProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     phone_number: Optional[str] = None
     email: Optional[EmailStr] = None
+    communication_preferences: Optional[dict] = None
 
 class PasswordChangeRequest(BaseModel):
     current_password: str
