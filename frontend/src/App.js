@@ -1542,6 +1542,18 @@ function MainApp() {
               return renderSubscription();
             case 'history':
               return renderHistory();
+            case 'profile':
+              return (
+                <UserProfile 
+                  user={user}
+                  onProfileUpdate={(updatedProfile) => {
+                    const updatedUser = { ...user, ...updatedProfile };
+                    setUser(updatedUser);
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                  }}
+                  onLogout={handleLogout}
+                />
+              );
             default:
               return renderCategories();
           }
