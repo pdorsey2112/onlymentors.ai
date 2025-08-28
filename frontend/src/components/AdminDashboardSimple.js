@@ -776,15 +776,88 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                             borderRadius: '20px',
                                             fontSize: '12px',
                                             fontWeight: '600',
-                                            background: mentor.status === 'approved' ? '#dcfce7' : mentor.status === 'pending' ? '#fef3c7' : '#fecaca',
-                                            color: mentor.status === 'approved' ? '#166534' : mentor.status === 'pending' ? '#92400e' : '#991b1b'
+                                            background: mentor.status === 'approved' ? '#dcfce7' : 
+                                                       mentor.status === 'suspended' ? '#fee2e2' :
+                                                       mentor.status === 'pending' ? '#fef3c7' : '#fecaca',
+                                            color: mentor.status === 'approved' ? '#166534' : 
+                                                  mentor.status === 'suspended' ? '#b91c1c' :
+                                                  mentor.status === 'pending' ? '#92400e' : '#991b1b'
                                         }}>
-                                            {mentor.status}
+                                            {mentor.status === 'suspended' ? '🚫 Suspended' : 
+                                             mentor.status === 'approved' ? '✅ Active' :
+                                             mentor.status}
                                         </span>
                                     </td>
                                     <td style={{ padding: '15px', color: '#374151' }}>{formatNumber(mentor.subscriber_count)}</td>
                                     <td style={{ padding: '15px', color: '#333', fontWeight: '600' }}>
                                         {formatCurrency(mentor.total_earnings)}
+                                    </td>
+                                    <td style={{ padding: '15px' }}>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                onClick={() => handleResetMentorPassword(mentor.creator_id)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: '#3b82f6',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Reset Password
+                                            </button>
+                                            {mentor.status === 'suspended' || mentor.is_suspended ? (
+                                                <button
+                                                    onClick={() => handleSuspendMentor(mentor.creator_id, true)}
+                                                    style={{
+                                                        padding: '6px 12px',
+                                                        backgroundColor: '#10b981',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        fontSize: '12px',
+                                                        fontWeight: '600',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Unsuspend
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleSuspendMentor(mentor.creator_id, false)}
+                                                    style={{
+                                                        padding: '6px 12px',
+                                                        backgroundColor: '#f59e0b',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        fontSize: '12px',
+                                                        fontWeight: '600',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Suspend
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => handleDeleteMentor(mentor.creator_id)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: '#dc2626',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
