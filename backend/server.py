@@ -3679,7 +3679,6 @@ async def admin_reset_mentor_password(
         email_sent = await send_admin_password_reset_email(
             mentor["email"], 
             reset_token, 
-            "mentor",
             mentor.get("full_name", "Mentor"),
             reset_request.get("reason", "Admin-initiated reset")
         )
