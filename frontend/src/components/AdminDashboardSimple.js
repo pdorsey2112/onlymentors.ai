@@ -790,12 +790,16 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {mentors.map((mentor, index) => (
-                                <tr key={mentor.creator_id} style={{ 
-                                    borderTop: index > 0 ? '1px solid #e5e7eb' : 'none'
-                                }}>
-                                    <td style={{ padding: '15px', color: '#374151', fontWeight: '500' }}>{mentor.account_name}</td>
-                                    <td style={{ padding: '15px', color: '#374151' }}>{mentor.email}</td>
+                            {mentors.map((mentor, index) => {
+                                const { firstName, lastName } = parseName(mentor.full_name || mentor.account_name);
+                                return (
+                                    <tr key={mentor.creator_id} style={{ 
+                                        borderTop: index > 0 ? '1px solid #e5e7eb' : 'none'
+                                    }}>
+                                        <td style={{ padding: '15px', color: '#374151' }}>{mentor.email}</td>
+                                        <td style={{ padding: '15px', color: '#374151' }}>{firstName}</td>
+                                        <td style={{ padding: '15px', color: '#374151' }}>{lastName}</td>
+                                        <td style={{ padding: '15px', color: '#374151', fontWeight: '500' }}>{mentor.account_name}</td>
                                     <td style={{ padding: '15px', color: '#374151', textTransform: 'capitalize' }}>{mentor.category}</td>
                                     <td style={{ padding: '15px' }}>
                                         <span style={{
