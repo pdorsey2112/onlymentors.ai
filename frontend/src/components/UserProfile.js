@@ -63,7 +63,12 @@ const UserProfile = ({ user, onProfileUpdate, onLogout }) => {
         setProfileData({
           full_name: profile.full_name || '',
           email: profile.email || '',
-          phone_number: profile.phone_number || ''
+          phone_number: profile.phone_number || '',
+          communication_preferences: profile.communication_preferences || {
+            email: true,
+            sms: false,
+            notifications: true
+          }
         });
       } else {
         const errorData = await response.json();
