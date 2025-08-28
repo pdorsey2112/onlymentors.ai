@@ -415,39 +415,51 @@ flowchart TD
 
 ```mermaid
 mindmap
-  root((OnlyMentors.ai API))
-    Authentication
-      POST /api/auth/register
+  root((OnlyMentors.ai API - Complete))
+    Authentication & OAuth
+      POST /api/auth/register (Enhanced Profile Data)
       POST /api/auth/login
-      POST /api/auth/google
-      POST /api/auth/facebook
+      POST /api/auth/google (WORKING)
+      POST /api/auth/facebook (WORKING)
       GET /api/auth/me
       POST /api/forgot-password/request
       POST /api/forgot-password/reset
     
     User Management
       GET /api/user/profile
-      PUT /api/user/profile
+      PUT /api/user/profile (Enhanced with SMS preferences)
       GET /api/user/profile/complete
       PUT /api/user/profile/communication-preferences
       GET /api/user/question-history
       PUT /api/user/password
     
+    SMS & Communications
+      POST /api/sms/send (Notifications)
+      POST /api/sms/send-2fa (Two-Factor Auth)
+      POST /api/sms/verify-2fa (Code Verification)
+      POST /api/sms/validate-phone (Phone Validation)
+    
     Mentors & Questions
       GET /api/categories
-      POST /api/questions/ask
+      POST /api/questions/ask (Enhanced Tracking)
       GET /api/questions/history
       POST /api/mentor/{mentor_id}/ask
     
-    Admin Endpoints
+    Admin User Management
       POST /api/admin/login
-      GET /api/admin/users
+      GET /api/admin/users (With Search Support)
       PUT /api/admin/users/{user_id}/suspend
-      PUT /api/admin/users/{user_id}/reset-password
-      DELETE /api/admin/users/{user_id}
+      PUT /api/admin/users/{user_id}/reset-password (Email Notifications)
+      DELETE /api/admin/users/{user_id} (Email Notifications)
       GET /api/admin/audit-logs
     
+    Admin Mentor Management
+      GET /api/admin/mentors (With Search Support)
+      POST /api/admin/mentors/{mentor_id}/reset-password
+      PUT /api/admin/mentors/{mentor_id}/suspend
+      DELETE /api/admin/mentors/{mentor_id}
+    
     Payments
-      POST /api/payments/checkout
+      POST /api/payments/checkout ($9.99/month)
       GET /api/payments/status/{session_id}
 ```
