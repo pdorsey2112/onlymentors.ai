@@ -796,11 +796,11 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                     <tr key={mentor.creator_id} style={{ 
                                         borderTop: index > 0 ? '1px solid #e5e7eb' : 'none'
                                     }}>
-                                        <td style={{ padding: '15px', color: '#374151' }}>{mentor.email}</td>
-                                        <td style={{ padding: '15px', color: '#374151' }}>{firstName}</td>
-                                        <td style={{ padding: '15px', color: '#374151' }}>{lastName}</td>
-                                        <td style={{ padding: '15px', color: '#374151', fontWeight: '500' }}>{mentor.account_name}</td>
-                                    <td style={{ padding: '15px', color: '#374151', textTransform: 'capitalize' }}>{mentor.category}</td>
+                                        <td style={{ padding: '10px 8px', color: '#374151', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mentor.email}</td>
+                                        <td style={{ padding: '10px 8px', color: '#374151', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{firstName}</td>
+                                        <td style={{ padding: '10px 8px', color: '#374151', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lastName}</td>
+                                        <td style={{ padding: '10px 8px', color: '#374151', fontWeight: '500', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{mentor.account_name}</td>
+                                    <td style={{ padding: '10px 8px', color: '#374151', textTransform: 'capitalize', maxWidth: '90px' }}>{mentor.category}</td>
                                     <td style={{ padding: '15px' }}>
                                         <span style={{
                                             padding: '4px 12px',
