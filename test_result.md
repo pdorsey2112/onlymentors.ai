@@ -469,6 +469,21 @@ backend:
         agent: "testing"
         comment: "✅ OAUTH CONFIGURATION VERIFICATION AFTER BACKEND RESTART COMPLETE! Quick verification test confirms all OAuth configurations are working correctly after backend restart: 1) GOOGLE OAUTH CONFIGURATION: ✅ GET /api/auth/google/config returns proper Google client ID (450343317445-5gc87d8i7kepfk3sdrta3c6isg7kpuu5.apps.googleusercontent.com) ✅ Redirect URI properly set to current domain (https://user-data-restore.preview.emergentagent.com) ✅ Correct scope configuration (openid email profile) 2) FACEBOOK OAUTH CONFIGURATION: ✅ GET /api/auth/facebook/config returns proper Facebook app ID (1119361770050320) ✅ Redirect URI properly configured ✅ Correct scope configuration (email,public_profile) 3) OAUTH ENDPOINT ACCESSIBILITY: ✅ POST /api/auth/google endpoint accessible and responding correctly ✅ POST /api/auth/facebook endpoint accessible and responding correctly ✅ Both endpoints show proper validation error handling for missing data (expected behavior) 4) VERIFICATION RESULTS: All 4 tests passed (100% success rate), Google and Facebook OAuth configurations working correctly, all OAuth endpoints accessible and functional. The backend changes have been applied correctly and OAuth system is ready for use. Note: Google domain restriction issue will still exist until Google Cloud Console is updated as mentioned in instructions."
 
+  - task: "Comprehensive User Profile Data Collection System"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Testing the comprehensive user profile data collection system that should now be fully implemented. Testing: 1) Enhanced User Registration Endpoint (POST /api/auth/register) with comprehensive profile data, 2) User Profile Data Endpoints (GET /api/user/profile/complete, GET /api/user/question-history, GET /api/user/profile), 3) Question Tracking System (POST /api/questions/ask) with mentor interaction tracking, 4) Data Collection Verification for all profile fields and question tracking."
+      - working: true
+        agent: "testing"
+        comment: "🎉 COMPREHENSIVE USER PROFILE DATA COLLECTION SYSTEM FULLY FUNCTIONAL! Complete testing (9/9 API tests passed, 100% success rate, 6/6 profile tests passed, 100% profile success rate) confirms all review requirements met: 1) ENHANCED USER REGISTRATION: ✅ POST /api/auth/register working with comprehensive profile data (full_name, email, phone_number, communication_preferences, subscription_plan, payment_info) ✅ Creates user with all profile fields correctly stored ✅ Returns complete user data with profile_completed=true 2) USER PROFILE DATA ENDPOINTS: ✅ GET /api/user/profile/complete returns comprehensive profile with all fields (user_id, email, full_name, phone_number, communication_preferences, subscription_plan, questions_asked, total_interactions, unique_mentors_consulted, profile_completed, account_status) ✅ GET /api/user/question-history returns complete question and mentor interaction history with proper structure ✅ GET /api/user/profile returns basic profile data correctly 3) QUESTION TRACKING SYSTEM: ✅ POST /api/questions/ask creates comprehensive mentor interaction tracking ✅ Populates mentor_interactions collection with detailed records ✅ Updates user's question_history array with mentor names and responses ✅ Tracks unique mentors consulted and total interactions 4) DATA COLLECTION VERIFICATION: ✅ All user profile fields stored: name, email, phone, payment info, communication preferences ✅ All questions and mentor interactions tracked with full details ✅ Question history with mentor names and responses maintained ✅ Real-time updates to user statistics (questions_asked: 1, total_interactions: 1, unique_mentors_consulted: 1). The comprehensive user profile data collection system is PRODUCTION-READY and successfully restores all lost functionality with enhanced tracking capabilities."
+
 frontend:
   - task: "Google and Facebook OAuth Frontend Integration Testing"
     implemented: true
