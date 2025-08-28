@@ -1375,6 +1375,16 @@ function MainApp() {
     );
   }
 
+  // Render comprehensive user signup
+  if (authMode === 'signup' && !user) {
+    return (
+      <UserSignup 
+        onSuccess={handleAuthSuccess}
+        onSwitchToLogin={() => setAuthMode('login')}
+      />
+    );
+  }
+
   // Render creator authentication
   if (showCreatorAuth) {
     return (
