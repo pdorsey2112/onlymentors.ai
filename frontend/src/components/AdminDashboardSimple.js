@@ -1428,6 +1428,314 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                     </div>
                 </div>
             )}
+
+            {/* Mentor Reset Password Modal */}
+            {resetMentorPasswordModal.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '30px',
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        width: '400px',
+                        maxWidth: '90vw'
+                    }}>
+                        <h3 style={{
+                            margin: '0 0 20px 0',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            color: '#1f2937'
+                        }}>
+                            Reset Mentor Password
+                        </h3>
+                        
+                        <p style={{
+                            margin: '0 0 20px 0',
+                            color: '#6b7280',
+                            fontSize: '14px'
+                        }}>
+                            Please select a reason for resetting this mentor's password:
+                        </p>
+
+                        <select
+                            value={resetMentorPasswordReason}
+                            onChange={(e) => setResetMentorPasswordReason(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                marginBottom: '20px',
+                                backgroundColor: 'white'
+                            }}
+                        >
+                            <option value="">Select a reason...</option>
+                            <option value="Customer Service">Customer Service</option>
+                            <option value="Security Issue">Security Issue</option>
+                            <option value="Admin Request">Admin Request</option>
+                        </select>
+
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <button
+                                onClick={cancelResetMentorPassword}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmResetMentorPassword}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Reset Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Mentor Suspend Modal */}
+            {suspendMentorModal.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '30px',
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        width: '400px',
+                        maxWidth: '90vw'
+                    }}>
+                        <h3 style={{
+                            margin: '0 0 20px 0',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            color: '#1f2937'
+                        }}>
+                            {suspendMentorModal.isSuspended ? 'Reactivate Mentor' : 'Suspend Mentor'}
+                        </h3>
+                        
+                        <p style={{
+                            margin: '0 0 20px 0',
+                            color: '#6b7280',
+                            fontSize: '14px'
+                        }}>
+                            {suspendMentorModal.isSuspended 
+                                ? 'Please select a reason for reactivating this mentor:' 
+                                : 'Please select a reason for suspending this mentor:'}
+                        </p>
+
+                        <select
+                            value={suspendMentorReason}
+                            onChange={(e) => setSuspendMentorReason(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                marginBottom: '20px',
+                                backgroundColor: 'white'
+                            }}
+                        >
+                            <option value="">Select a reason...</option>
+                            {suspendMentorModal.isSuspended ? (
+                                <>
+                                    <option value="Account review completed">Account review completed</option>
+                                    <option value="Appeal approved">Appeal approved</option>
+                                    <option value="Administrative decision">Administrative decision</option>
+                                </>
+                            ) : (
+                                <>
+                                    <option value="Policy violation">Policy violation</option>
+                                    <option value="Content issues">Content issues</option>
+                                    <option value="User complaints">User complaints</option>
+                                    <option value="Administrative review">Administrative review</option>
+                                </>
+                            )}
+                        </select>
+
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <button
+                                onClick={cancelSuspendMentor}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmSuspendMentor}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: suspendMentorModal.isSuspended ? '#10b981' : '#f59e0b',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {suspendMentorModal.isSuspended ? 'Reactivate Mentor' : 'Suspend Mentor'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Mentor Delete Modal */}
+            {deleteMentorModal.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '30px',
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        width: '400px',
+                        maxWidth: '90vw'
+                    }}>
+                        <h3 style={{
+                            margin: '0 0 20px 0',
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            color: '#1f2937'
+                        }}>
+                            Delete Mentor
+                        </h3>
+                        
+                        <p style={{
+                            margin: '0 0 20px 0',
+                            color: '#6b7280',
+                            fontSize: '14px'
+                        }}>
+                            Please select a reason for deleting this mentor. <strong>This action cannot be undone.</strong>
+                        </p>
+
+                        <select
+                            value={deleteMentorReason}
+                            onChange={(e) => setDeleteMentorReason(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                marginBottom: '20px',
+                                backgroundColor: 'white'
+                            }}
+                        >
+                            <option value="">Select a reason...</option>
+                            <option value="Severe policy violations">Severe policy violations</option>
+                            <option value="Fraudulent activity">Fraudulent activity</option>
+                            <option value="Mentor termination">Mentor termination</option>
+                            <option value="Legal compliance">Legal compliance</option>
+                        </select>
+
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            justifyContent: 'flex-end'
+                        }}>
+                            <button
+                                onClick={cancelDeleteMentor}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDeleteMentor}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#dc2626',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Delete Mentor
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
