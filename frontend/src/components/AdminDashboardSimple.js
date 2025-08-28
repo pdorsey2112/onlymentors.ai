@@ -647,13 +647,16 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.slice(0, 50).map((user, index) => (
-                                <tr key={user.user_id} style={{ 
-                                    borderTop: index > 0 ? '1px solid #e5e7eb' : 'none',
-                                    ':hover': { background: '#f9fafb' }
-                                }}>
-                                    <td style={{ padding: '15px', color: '#374151' }}>{user.email}</td>
-                                    <td style={{ padding: '15px', color: '#374151' }}>{user.full_name}</td>
+                            {users.slice(0, 50).map((user, index) => {
+                                const { firstName, lastName } = parseName(user.full_name);
+                                return (
+                                    <tr key={user.user_id} style={{ 
+                                        borderTop: index > 0 ? '1px solid #e5e7eb' : 'none',
+                                        ':hover': { background: '#f9fafb' }
+                                    }}>
+                                        <td style={{ padding: '15px', color: '#374151' }}>{user.email}</td>
+                                        <td style={{ padding: '15px', color: '#374151' }}>{firstName}</td>
+                                        <td style={{ padding: '15px', color: '#374151' }}>{lastName}</td>
                                     <td style={{ padding: '15px' }}>
                                         <span style={{
                                             padding: '4px 12px',
