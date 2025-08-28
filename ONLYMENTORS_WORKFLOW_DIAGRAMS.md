@@ -378,7 +378,40 @@ graph TB
     CreatorApp --> CreatorDashboard
 ```
 
-## 7. API Endpoint Map
+## 7. SMS & Communication Workflow
+
+```mermaid
+flowchart TD
+    Start([SMS/2FA Request]) --> SMSType{Request Type}
+    
+    SMSType -->|Notification| NotificationSMS[Send Notification SMS]
+    SMSType -->|2FA| TwoFactorSMS[Send 2FA Code]
+    
+    NotificationSMS --> ValidatePhone[Validate Phone Number]
+    TwoFactorSMS --> ValidatePhone
+    
+    ValidatePhone --> PhoneValid{Valid Phone?}
+    PhoneValid -->|No| PhoneError[Return Phone Error]
+    PhoneValid -->|Yes| TwilioSend[Send via Twilio API]
+    
+    TwilioSend --> SMSSuccess{SMS Sent?}
+    SMSSuccess -->|Yes| LogSMS[Log SMS Success]
+    SMSSuccess -->|No| SMSError[Return SMS Error]
+    
+    TwoFactorSMS --> VerifyCode[User Enters Code]
+    VerifyCode --> CodeValid{Code Valid?}
+    CodeValid -->|Yes| AuthSuccess[Authentication Success]
+    CodeValid -->|No| AuthFail[Authentication Failed]
+    
+    LogSMS --> SMSComplete[SMS Complete]
+    AuthSuccess --> SMSComplete
+    
+    %% Email Fallback System
+    SMSError --> EmailFallback[SMTP2GO Email Backup]
+    EmailFallback --> EmailSent[Email Notification Sent]
+```
+
+## 8. API Endpoint Map
 
 ```mermaid
 mindmap
