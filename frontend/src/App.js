@@ -201,9 +201,6 @@ function MainApp() {
   
   // Auth states
   const [showCreatorAuth, setShowCreatorAuth] = useState(false);
-  const [creatorAuthMode, setCreatorAuthMode] = useState('login');
-  const [isCreator, setIsCreator] = useState(false);
-  const [creator, setCreator] = useState(null);
   const [showAdminAuth, setShowAdminAuth] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [admin, setAdmin] = useState(null);
