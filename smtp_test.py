@@ -12,7 +12,7 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+load_dotenv('/app/backend/.env')
 
 def test_smtp2go_connection():
     """Test direct SMTP2GO connection"""
