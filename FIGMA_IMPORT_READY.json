@@ -1,0 +1,78 @@
+{
+  "onlymentors_workflow": {
+    "title": "OnlyMentors.ai System Workflow",
+    "components": [
+      {
+        "name": "User Authentication Flow",
+        "type": "process_flow",
+        "elements": [
+          {"id": "start", "label": "User Visits Site", "x": 100, "y": 50, "type": "start"},
+          {"id": "auth_check", "label": "Authenticated?", "x": 100, "y": 150, "type": "decision"},
+          {"id": "login_page", "label": "Login/Signup Page", "x": 300, "y": 150, "type": "process"},
+          {"id": "categories", "label": "Categories Page", "x": 100, "y": 250, "type": "process"},
+          {"id": "oauth", "label": "OAuth Buttons", "x": 300, "y": 250, "type": "process"},
+          {"id": "signup", "label": "3-Step Signup", "x": 500, "y": 250, "type": "process"}
+        ],
+        "connections": [
+          {"from": "start", "to": "auth_check"},
+          {"from": "auth_check", "to": "login_page", "label": "No"},
+          {"from": "auth_check", "to": "categories", "label": "Yes"},
+          {"from": "login_page", "to": "oauth"},
+          {"from": "login_page", "to": "signup"}
+        ]
+      },
+      {
+        "name": "System Architecture",
+        "type": "architecture",
+        "layers": [
+          {
+            "name": "Frontend (React)",
+            "components": ["User Interface", "Authentication", "Profile", "Mentor Selection", "Admin Dashboard"],
+            "y": 50
+          },
+          {
+            "name": "Backend (FastAPI)",
+            "components": ["REST API", "Auth Endpoints", "User Endpoints", "Mentor Endpoints", "Admin Endpoints"],
+            "y": 200
+          },
+          {
+            "name": "Database (MongoDB)",
+            "components": ["Users Collection", "Mentors Collection", "Questions Collection", "Interactions Collection"],
+            "y": 350
+          },
+          {
+            "name": "External Services",
+            "components": ["Google OAuth", "Facebook OAuth", "OpenAI API", "SMTP Email", "Stripe Payments"],
+            "y": 500
+          }
+        ]
+      },
+      {
+        "name": "User Journey Map",
+        "type": "user_journey",
+        "phases": [
+          {
+            "phase": "Discovery",
+            "steps": ["Visit Site", "View Categories", "See Mentors"]
+          },
+          {
+            "phase": "Authentication",
+            "steps": ["Choose Auth Method", "Complete Profile", "Verify Account"]
+          },
+          {
+            "phase": "Engagement",
+            "steps": ["Select Category", "Choose Mentors", "Ask Question"]
+          },
+          {
+            "phase": "Value",
+            "steps": ["Receive Responses", "Review Answers", "Ask Follow-ups"]
+          },
+          {
+            "phase": "Retention",
+            "steps": ["View History", "Manage Profile", "Subscribe"]
+          }
+        ]
+      }
+    ]
+  }
+}
