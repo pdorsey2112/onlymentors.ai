@@ -1,0 +1,155 @@
+ONLYMENTORS.AI WORKFLOW TEMPLATE FOR MIRO/FIGMA
+==============================================
+
+BOARD 1: SYSTEM ARCHITECTURE
+-----------------------------
+
+Layer 1 - Frontend (Purple boxes, top row)
+- React App (Main Container)
+  ├── Authentication Components
+  ├── User Interface Components  
+  ├── Profile Management
+  ├── Mentor Selection Grid
+  └── Admin Dashboard
+
+Layer 2 - Backend (Blue boxes, middle row)  
+- FastAPI Server (Main Container)
+  ├── Auth Endpoints (/api/auth/*)
+  ├── User Endpoints (/api/user/*)
+  ├── Mentor Endpoints (/api/questions/*)
+  ├── Admin Endpoints (/api/admin/*)
+  └── Payment Endpoints (/api/payments/*)
+
+Layer 3 - Database (Green boxes, bottom left)
+- MongoDB (Main Container)
+  ├── Users Collection
+  ├── Mentors Collection
+  ├── Questions Collection
+  ├── Interactions Collection
+  └── Admin Collection
+
+Layer 4 - External Services (Orange boxes, bottom right)
+- Third-party Services (Main Container)
+  ├── Google OAuth
+  ├── Facebook OAuth
+  ├── OpenAI API
+  ├── SMTP Email Service
+  └── Stripe Payments
+
+BOARD 2: USER FLOW
+------------------
+
+Start → Authentication Check → [Decision Diamond]
+├── Not Authenticated → Login Page
+│   ├── Email/Password Login
+│   ├── Google OAuth
+│   ├── Facebook OAuth  
+│   └── 3-Step Comprehensive Signup
+│       ├── Step 1: Personal Info
+│       ├── Step 2: Subscription Plan
+│       └── Step 3: Payment/Review
+└── Authenticated → Categories Page
+    └── Select Category → Mentor Grid → Select Mentors (Max 5)
+        └── Question Form → Submit Question → AI Processing
+            └── Show Responses → Next Action [Decision Diamond]
+                ├── Ask Another Question
+                ├── Select Different Mentors
+                ├── View History
+                └── Manage Profile
+
+BOARD 3: ADMIN WORKFLOW  
+-----------------------
+
+Admin Login → Validation → Admin Dashboard
+├── User Management
+│   ├── View All Users (Table)
+│   ├── Reset Password (Modal + Email)
+│   ├── Suspend User (Modal + Reason + Email)
+│   ├── Delete User (Modal + Confirmation + Email)
+│   └── Unsuspend User (Modal + Reason)
+├── Mentor Management
+├── Content Moderation  
+├── Reports & Analytics
+├── Payout Management
+└── AI Agent Framework
+
+BOARD 4: DATA RELATIONSHIPS
+---------------------------
+
+[Users Table]
+- user_id (Primary Key)
+- email, password_hash, full_name
+- phone_number, communication_preferences
+- subscription_plan, is_subscribed
+- questions_asked, question_history
+- mentor_interactions[], profile_completed
+
+[Mentors Table]  
+- id (Primary Key)
+- name, title, category, bio
+- expertise, image_url, is_active
+
+[Questions Table]
+- question_id (Primary Key) 
+- user_id (Foreign Key)
+- category, question, mentor_ids[]
+- responses[], created_at, status
+
+[MentorInteractions Table]
+- interaction_id (Primary Key)
+- user_id, mentor_id, question_id (Foreign Keys)
+- question, response, timestamp
+
+Relationships:
+- Users → Questions (One to Many)
+- Users → MentorInteractions (One to Many)
+- Mentors → MentorInteractions (One to Many)
+- Questions → MentorInteractions (One to Many)
+
+BOARD 5: COMPONENT HIERARCHY
+----------------------------
+
+App.js (Root Router)
+├── MainApp (User Application)
+│   ├── UserSignup (3-Step Process)
+│   ├── UserProfile (Tabs: Personal Info + Password)
+│   ├── Categories (Grid Display)
+│   ├── MentorGrid (Selection Interface)
+│   ├── QuestionForm (Input + Submit)
+│   ├── ResponseView (AI Responses Display)
+│   ├── History (Past Questions)
+│   └── Subscription (Payment Plans)
+├── AdminApp (Admin Portal)
+│   ├── AdminLogin
+│   ├── AdminDashboard
+│   └── UserManagement
+└── CreatorApp (Mentor Portal)
+    ├── CreatorLogin
+    ├── CreatorSignup  
+    ├── CreatorDashboard
+    └── ContentUpload
+
+CURRENT STATUS INDICATORS:
+✅ Working - Green
+🔧 Fixed Recently - Yellow  
+❌ Issues - Red
+⏳ Pending - Gray
+
+KEY FEATURES STATUS:
+✅ Google OAuth Integration
+✅ Facebook OAuth Integration  
+✅ Comprehensive User Signup
+✅ User Profile Management
+✅ SMS Notifications (Fixed)
+✅ Admin User Management
+✅ Password Reset System
+✅ Question & Mentor Tracking
+✅ Email Notification System
+
+COLOR CODING FOR DIAGRAMS:
+- Authentication: Purple (#8B5CF6)
+- User Features: Blue (#3B82F6)  
+- Admin Features: Red (#EF4444)
+- External Services: Orange (#F97316)
+- Database: Green (#10B981)
+- Fixed Issues: Yellow (#EAB308)
