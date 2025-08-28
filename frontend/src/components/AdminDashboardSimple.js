@@ -125,6 +125,14 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
     const [suspendUserReason, setSuspendUserReason] = useState('');
     const [deleteUserModal, setDeleteUserModal] = useState({ show: false, userId: null });
     const [deleteUserReason, setDeleteUserReason] = useState('');
+    
+    // Mentor management modals
+    const [resetMentorPasswordModal, setResetMentorPasswordModal] = useState({ show: false, mentorId: null });
+    const [resetMentorPasswordReason, setResetMentorPasswordReason] = useState('');
+    const [suspendMentorModal, setSuspendMentorModal] = useState({ show: false, mentorId: null, isSuspended: false });
+    const [suspendMentorReason, setSuspendMentorReason] = useState('');
+    const [deleteMentorModal, setDeleteMentorModal] = useState({ show: false, mentorId: null });
+    const [deleteMentorReason, setDeleteMentorReason] = useState('');
 
     const tabs = [
         { id: 'overview', name: 'Overview' },
