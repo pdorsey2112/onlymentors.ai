@@ -948,7 +948,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {mentors.map((mentor, index) => {
+                            {filteredMentors.map((mentor, index) => {
                                 const { firstName, lastName } = parseName(mentor.full_name || mentor.account_name);
                                 return (
                                     <tr key={mentor.creator_id} style={{ 
