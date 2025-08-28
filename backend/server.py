@@ -1193,6 +1193,16 @@ async def update_user_profile(profile_update: UserProfileUpdate, current_user = 
             update_data["email"] = profile_update.email
             
         if profile_update.communication_preferences is not None:
+            # Validate SMS preference requires phone number
+            comm_prefs = profile_update.communication_preferences
+            if comm_prefs.get("sms", False):
+                # Check if phone number is provided in this update or exists in current user
+                current_phone = update_data.get("phone_number") or current_user.get("phone_number", "")
+                if not current_phone or current_phone.strip() == "":
+                    raise HTTPException(
+                        status_code=400, 
+                        detail="Phone number is required to enable SMS notifications"
+                    )
             update_data["communication_preferences"] = profile_update.communication_preferences
             
         # Check if this update completes the profile
