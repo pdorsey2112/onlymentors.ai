@@ -1445,10 +1445,7 @@ function MainApp() {
     return <AdminDashboardSimple admin={admin} onLogout={handleAdminLogout} />;
   }
 
-  // Render creator dashboard
-  if (isCreator && creator) {
-    return <CreatorDashboard />;
-  }
+  // Creator dashboard is handled in CreatorApp component, not MainApp
 
   // FORCE RELOAD TRIGGER - RANDOM COMMENT CHANGE 12345
   const renderHeader = () => (
