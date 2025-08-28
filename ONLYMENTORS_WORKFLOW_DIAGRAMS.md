@@ -176,20 +176,30 @@ flowchart TD
     ValidateAdmin -->|No| AdminError[Access Denied]
     ValidateAdmin -->|Yes| AdminDash[Admin Dashboard]
     
-    AdminDash --> UserMgmt[User Management]
-    AdminDash --> MentorMgmt[Mentor Management]
+    AdminDash --> UserMgmt[User Management with Search]
+    AdminDash --> MentorMgmt[Mentor Management with Search]
     AdminDash --> ContentMod[Content Moderation]
     AdminDash --> Reports[Reports & Analytics]
     AdminDash --> Payouts[Payout Management]
     AdminDash --> AIAgents[AI Agent Framework]
     
-    UserMgmt --> UserList[View All Users]
+    UserMgmt --> UserSearch[Search Users by Name/Email]
+    UserMgmt --> UserList[View Users: Email, First Name, Last Name, Status]
     UserList --> UserActions{Select Action}
     
-    UserActions --> ResetPwd[Reset Password]
-    UserActions --> SuspendUser[Suspend User]
-    UserActions --> DeleteUser[Delete User]
-    UserActions --> UnsuspendUser[Unsuspend User]
+    UserActions --> ResetPwd[Reset Password + Email]
+    UserActions --> SuspendUser[Suspend User + Email]
+    UserActions --> DeleteUser[Delete User + Email]
+    UserActions --> UnsuspendUser[Unsuspend User + Email]
+    
+    MentorMgmt --> MentorSearch[Search Mentors by Name/Email]
+    MentorMgmt --> MentorList[View Mentors: Email, First Name, Last Name, Account Name]
+    MentorList --> MentorActions{Select Mentor Action}
+    
+    MentorActions --> ResetMentorPwd[Reset Mentor Password + Email]
+    MentorActions --> SuspendMentor[Suspend Mentor + Email]
+    MentorActions --> DeleteMentor[Delete Mentor + Email]
+    MentorActions --> UnsuspendMentor[Unsuspend Mentor + Email]
     
     ResetPwd --> ResetModal[Reset Password Modal]
     ResetModal --> SendEmail[Send Reset Email]
