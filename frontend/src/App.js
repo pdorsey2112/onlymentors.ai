@@ -1449,26 +1449,10 @@ function MainApp() {
     );
   }
 
-  // Render creator authentication
+  // Render creator authentication (redirects to /creator)
   if (showCreatorAuth) {
-    return (
-      <>
-        {creatorAuthMode === 'login' ? (
-          <CreatorLogin 
-            onSuccess={handleCreatorLoginSuccess}
-            onSwitchToSignup={() => switchCreatorAuthMode('signup')}
-            onForgotPassword={() => {
-              setForgotPasswordUserType('mentor');
-              setShowForgotPassword(true);
-            }}
-          />
-        ) : (
-          <CreatorSignup 
-            onSuccess={handleCreatorSignupSuccess}
-          />
-        )}
-      </>
-    );
+    window.location.href = '/creator';
+    return null;
   }
 
   // Render admin authentication
