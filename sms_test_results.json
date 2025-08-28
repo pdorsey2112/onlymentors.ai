@@ -1,0 +1,190 @@
+{
+  "test_results": {
+    "sms_with_phone": false,
+    "sms_without_phone": false,
+    "data_persistence": true,
+    "phone_formats": true,
+    "validation_logic": true,
+    "pydantic_model": true
+  },
+  "detailed_results": [
+    {
+      "test": "setup_user",
+      "success": true,
+      "details": {
+        "email": "sms_test_114956@example.com"
+      },
+      "timestamp": "2025-08-28T11:49:56.619943"
+    },
+    {
+      "test": "sms_with_phone",
+      "success": false,
+      "details": {
+        "sms_saved": false,
+        "phone_saved": true,
+        "profile": {
+          "user_id": "813bb6b8-5d3f-4275-9538-fa99d625fd9e",
+          "email": "sms_test_114956@example.com",
+          "full_name": "SMS Test User Updated",
+          "phone_number": "+1234567890",
+          "questions_asked": 0,
+          "questions_remaining": 10,
+          "is_subscribed": false,
+          "profile_image_url": null,
+          "updated_at": "2025-08-28T11:49:56.634000"
+        }
+      },
+      "timestamp": "2025-08-28T11:49:56.638940"
+    },
+    {
+      "test": "sms_without_phone",
+      "success": false,
+      "details": {
+        "unexpected_behavior": true,
+        "sms_preference": null,
+        "phone_number": ""
+      },
+      "timestamp": "2025-08-28T11:49:56.659597"
+    },
+    {
+      "test": "data_persistence",
+      "success": true,
+      "details": {
+        "phone_persisted": true,
+        "sms_persisted": true,
+        "email_persisted": true
+      },
+      "timestamp": "2025-08-28T11:49:57.754092"
+    },
+    {
+      "test": "phone_formats",
+      "success": true,
+      "details": [
+        {
+          "format": "+1234567890",
+          "saved_as": "+1234567890",
+          "sms_enabled": null,
+          "success": true
+        },
+        {
+          "format": "1234567890",
+          "saved_as": "1234567890",
+          "sms_enabled": null,
+          "success": true
+        },
+        {
+          "format": "(123) 456-7890",
+          "success": false,
+          "error": "Invalid phone number format"
+        },
+        {
+          "format": "123-456-7890",
+          "success": false,
+          "error": "Invalid phone number format"
+        },
+        {
+          "format": "+44 20 7946 0958",
+          "success": false,
+          "error": "Invalid phone number format"
+        }
+      ],
+      "timestamp": "2025-08-28T11:49:57.991823"
+    },
+    {
+      "test": "validation_logic",
+      "success": true,
+      "details": [
+        {
+          "test": "sms_true_valid_phone",
+          "expected": "accept",
+          "actual": "accept",
+          "success": true,
+          "response": {
+            "message": "Profile updated successfully",
+            "profile": {
+              "user_id": "813bb6b8-5d3f-4275-9538-fa99d625fd9e",
+              "email": "sms_test_114956@example.com",
+              "full_name": "Phone Format Test 2",
+              "phone_number": "+1555123456",
+              "questions_asked": 0,
+              "questions_remaining": 10,
+              "is_subscribed": false,
+              "profile_image_url": null,
+              "updated_at": "2025-08-28T11:49:58.006000"
+            }
+          }
+        },
+        {
+          "test": "sms_true_empty_phone",
+          "expected": "reject_or_auto_correct",
+          "actual": "reject",
+          "success": false,
+          "response": {
+            "message": "Profile updated successfully",
+            "profile": {
+              "user_id": "813bb6b8-5d3f-4275-9538-fa99d625fd9e",
+              "email": "sms_test_114956@example.com",
+              "full_name": "Phone Format Test 2",
+              "phone_number": "",
+              "questions_asked": 0,
+              "questions_remaining": 10,
+              "is_subscribed": false,
+              "profile_image_url": null,
+              "updated_at": "2025-08-28T11:49:58.066000"
+            }
+          }
+        },
+        {
+          "test": "sms_false_empty_phone",
+          "expected": "accept",
+          "actual": "accept",
+          "success": true,
+          "response": {
+            "message": "Profile updated successfully",
+            "profile": {
+              "user_id": "813bb6b8-5d3f-4275-9538-fa99d625fd9e",
+              "email": "sms_test_114956@example.com",
+              "full_name": "Phone Format Test 2",
+              "phone_number": "",
+              "questions_asked": 0,
+              "questions_remaining": 10,
+              "is_subscribed": false,
+              "profile_image_url": null,
+              "updated_at": "2025-08-28T11:49:58.156000"
+            }
+          }
+        }
+      ],
+      "timestamp": "2025-08-28T11:49:58.217652"
+    },
+    {
+      "test": "pydantic_model",
+      "success": true,
+      "details": [
+        {
+          "test": "valid_structure",
+          "success": true
+        },
+        {
+          "test": "invalid_comm_prefs_type",
+          "success": true
+        },
+        {
+          "test": "minimal_data",
+          "success": true
+        },
+        {
+          "test": "extra_fields",
+          "success": true
+        }
+      ],
+      "timestamp": "2025-08-28T11:49:58.343683"
+    }
+  ],
+  "api_stats": {
+    "total_calls": 18,
+    "successful_calls": 14,
+    "success_rate": 77.77777777777779
+  },
+  "timestamp": "2025-08-28T11:49:58.343888"
+}
