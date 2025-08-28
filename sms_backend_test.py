@@ -19,8 +19,8 @@ TEST_USER_PASSWORD = "SMSTest2024!"
 TEST_USER_NAME = "SMS Test User"
 
 # Test phone numbers (using valid formats but test numbers)
-TEST_PHONE_US = "1234567890"
-TEST_PHONE_INTL = "+1234567890"
+TEST_PHONE_US = "5551234567"  # Valid US format
+TEST_PHONE_INTL = "+15551234567"  # Valid international format
 TEST_PHONE_INVALID = "123"
 
 class SMSSystemTester:
