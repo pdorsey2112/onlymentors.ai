@@ -63,8 +63,8 @@ Start → Authentication Check → [Decision Diamond]
                 ├── View History
                 └── Manage Profile
 
-BOARD 3: ADMIN WORKFLOW  
------------------------
+BOARD 3: COMPLETE ADMIN WORKFLOW (Users & Mentors)
+--------------------------------------------------
 
 Admin Login → Validation → Admin Dashboard
 ├── User Management
