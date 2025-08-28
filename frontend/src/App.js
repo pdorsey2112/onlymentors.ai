@@ -1462,6 +1462,14 @@ function MainApp() {
                   {user.is_subscribed ? 'Unlimited' : `${Math.max(0, 10 - user.questions_asked)} questions left`}
                 </span>
                 <Button 
+                  onClick={() => setCurrentView('profile')} 
+                  variant="outline"
+                  className="text-purple-600 hover:text-purple-700"
+                >
+                  <User className="h-4 w-4 mr-1" />
+                  Profile
+                </Button>
+                <Button 
                   onClick={handleLogout} 
                   variant="outline"
                   className="text-gray-600 hover:text-gray-800"
