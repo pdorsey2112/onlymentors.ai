@@ -64,6 +64,7 @@ from ai_agent_framework import (
 )
 from oauth_system import *
 from forgot_password_system import *
+from sms_system import sms_service, send_sms, send_2fa, verify_2fa, format_phone, validate_phone
 
 app = FastAPI(title="OnlyMentors.ai API", version="2.0.0")
 
