@@ -863,8 +863,66 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
 
     const renderMentors = () => (
         <div style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 style={{ color: '#333', fontSize: '28px', margin: 0 }}>Mentor Management ({mentors.length} mentors)</h2>
+            </div>
+
+            {/* Mentor Search */}
+            <div style={{ marginBottom: '20px' }}>
+                <div style={{ position: 'relative', maxWidth: '400px' }}>
+                    <input
+                        type="text"
+                        placeholder="Search mentors by name or email..."
+                        value={mentorSearchTerm}
+                        onChange={(e) => setMentorSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '12px 40px 12px 16px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            backgroundColor: 'white',
+                            outline: 'none',
+                            transition: 'border-color 0.2s',
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    />
+                    <div style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#9ca3af',
+                        pointerEvents: 'none'
+                    }}>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    {mentorSearchTerm && (
+                        <div style={{
+                            position: 'absolute',
+                            right: '40px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            color: '#6b7280',
+                            cursor: 'pointer',
+                            padding: '2px'
+                        }}
+                        onClick={() => setMentorSearchTerm('')}
+                        >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                    )}
+                </div>
+                {mentorSearchTerm && (
+                    <div style={{ marginTop: '8px', color: '#6b7280', fontSize: '14px' }}>
+                        Showing {filteredMentors.length} of {mentors.length} mentors
+                    </div>
+                )}
             </div>
 
             <div style={{
