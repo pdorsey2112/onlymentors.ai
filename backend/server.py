@@ -3867,6 +3867,163 @@ async def admin_delete_mentor(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete mentor: {str(e)}")
 
+# ================================
+# DATABASE MANAGEMENT ENDPOINTS
+# ================================
+
+@app.get("/api/admin/database/overview")
+async def get_database_overview(current_admin = Depends(get_current_admin)):
+    """Get comprehensive database overview"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        overview = await db_manager.get_database_overview()
+        return overview
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get database overview: {str(e)}")
+
+@app.get("/api/admin/database/collections/{collection_name}")
+async def browse_collection(
+    collection_name: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    search: str = Query(None),
+    current_admin = Depends(get_current_admin)
+):
+    """Browse collection with pagination and search"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        result = await db_manager.browse_collection(collection_name, page, limit, search)
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to browse collection: {str(e)}")
+
+@app.post("/api/admin/database/export")
+async def export_collection(
+    export_request: DatabaseExportRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Export collection data in JSON or CSV format"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        if export_request.format.lower() == "csv":
+            data = await db_manager.export_collection_csv(
+                export_request.collection_name, 
+                export_request.search
+            )
+            media_type = "text/csv"
+            filename = f"{export_request.collection_name}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"
+        else:
+            data = await db_manager.export_collection_json(
+                export_request.collection_name, 
+                export_request.search
+            )
+            media_type = "application/json"
+            filename = f"{export_request.collection_name}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+        
+        from fastapi.responses import Response
+        return Response(
+            content=data,
+            media_type=media_type,
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to export collection: {str(e)}")
+
+@app.get("/api/admin/database/backup")
+async def create_database_backup(current_admin = Depends(get_current_admin)):
+    """Create full database backup as ZIP file"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        backup_data = await db_manager.create_full_backup()
+        filename = f"onlymentors_backup_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.zip"
+        
+        from fastapi.responses import Response
+        return Response(
+            content=backup_data,
+            media_type="application/zip",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create backup: {str(e)}")
+
+@app.post("/api/admin/database/restore")
+async def restore_collection(
+    restore_request: DatabaseRestoreRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Restore collection from JSON data"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        result = await db_manager.restore_collection_from_json(
+            restore_request.collection_name,
+            restore_request.json_data
+        )
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to restore collection: {str(e)}")
+
+@app.get("/api/admin/analytics/users")
+async def get_user_analytics(current_admin = Depends(get_current_admin)):
+    """Get comprehensive user analytics"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        analytics = await db_manager.get_user_analytics()
+        return analytics
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user analytics: {str(e)}")
+
+@app.get("/api/admin/analytics/mentors")
+async def get_mentor_analytics(current_admin = Depends(get_current_admin)):
+    """Get comprehensive mentor analytics"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        analytics = await db_manager.get_mentor_analytics()
+        return analytics
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get mentor analytics: {str(e)}")
+
+@app.get("/api/admin/analytics/platform-health")
+async def get_platform_health(current_admin = Depends(get_current_admin)):
+    """Get overall platform health metrics"""
+    try:
+        if not await db_manager.connect():
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        health = await db_manager.get_platform_health()
+        return health
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get platform health: {str(e)}")
+
 @app.post("/api/admin/mentors/manage")
 async def manage_mentors(
     request: MentorManagementRequest,
