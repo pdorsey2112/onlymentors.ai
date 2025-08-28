@@ -311,6 +311,71 @@ const UserProfile = ({ user, onProfileUpdate, onLogout }) => {
                     </div>
                   </div>
 
+                  {/* Communication Preferences Section */}
+                  <div className="space-y-4 pt-6 border-t border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-900">Communication Preferences</h3>
+                    <p className="text-sm text-gray-600">Choose how you'd like to receive notifications and updates</p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          id="email_notifications"
+                          checked={profileData.communication_preferences.email}
+                          onChange={(e) => setProfileData(prev => ({
+                            ...prev,
+                            communication_preferences: {
+                              ...prev.communication_preferences,
+                              email: e.target.checked
+                            }
+                          }))}
+                          className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        />
+                        <label htmlFor="email_notifications" className="text-gray-700 text-sm">
+                          Email notifications for mentor responses and account updates
+                        </label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          id="sms_notifications"
+                          checked={profileData.communication_preferences.sms}
+                          onChange={(e) => setProfileData(prev => ({
+                            ...prev,
+                            communication_preferences: {
+                              ...prev.communication_preferences,
+                              sms: e.target.checked
+                            }
+                          }))}
+                          className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        />
+                        <label htmlFor="sms_notifications" className="text-gray-700 text-sm">
+                          SMS notifications for important updates (requires phone number)
+                        </label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          id="push_notifications"
+                          checked={profileData.communication_preferences.notifications}
+                          onChange={(e) => setProfileData(prev => ({
+                            ...prev,
+                            communication_preferences: {
+                              ...prev.communication_preferences,
+                              notifications: e.target.checked
+                            }
+                          }))}
+                          className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        />
+                        <label htmlFor="push_notifications" className="text-gray-700 text-sm">
+                          General platform notifications and feature updates
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
                   <Button type="submit" disabled={loading} className="flex items-center gap-2">
                     <Save className="h-4 w-4" />
                     {loading ? 'Saving...' : 'Save Changes'}
