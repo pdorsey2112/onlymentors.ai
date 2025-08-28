@@ -779,14 +779,23 @@ function MainApp() {
                     {10 - user.questions_asked} free questions left
                   </Badge>
                 )}
-                {/* ONLY LOGOUT BUTTON - PROFILE COMPLETELY REMOVED */}
+                {/* Profile and Logout buttons */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setCurrentView('profile')} 
+                  className="border-purple-300 text-purple-600 hover:bg-purple-50"
+                >
+                  <User className="h-4 w-4 mr-1" />
+                  Profile
+                </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={handleLogout} 
                   className="border-gray-300 text-gray-600 hover:bg-gray-50"
                 >
-                  Logout NUCLEAR
+                  Logout
                 </Button>
               </div>
             </div>
