@@ -297,6 +297,156 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         setDeleteUserReason('');
     };
 
+    // Mentor management action functions
+    const handleResetMentorPassword = (mentorId) => {
+        setResetMentorPasswordModal({ show: true, mentorId: mentorId });
+        setResetMentorPasswordReason('');
+    };
+
+    const confirmResetMentorPassword = async () => {
+        if (!resetMentorPasswordReason) {
+            alert('Please select a reason for resetting the mentor password.');
+            return;
+        }
+
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/mentors/${resetMentorPasswordModal.mentorId}/reset-password`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ reason: resetMentorPasswordReason })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const emailStatus = data.email_status === 'sent' ? '✅' : '⚠️';
+                const statusText = data.email_status === 'sent' ? 'sent successfully' : 'initiated (delivery pending)';
+                
+                alert(`${emailStatus} Mentor password reset ${statusText}!\n\n📧 Email: ${data.email}\n⏰ Link expires in: ${data.expires_in}\n🔒 ${data.note}\n\nThe mentor will receive an email with a secure link to set their new password.`);
+                setResetMentorPasswordModal({ show: false, mentorId: null });
+                setResetMentorPasswordReason('');
+                fetchMentors(); // Refresh mentors to show locked status
+            } else {
+                const errorData = await response.json();
+                alert(`Error sending mentor password reset email: ${errorData.detail || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error sending mentor password reset email:', error);
+            alert('Network error. Please try again.');
+        }
+    };
+
+    const cancelResetMentorPassword = () => {
+        setResetMentorPasswordModal({ show: false, mentorId: null });
+        setResetMentorPasswordReason('');
+    };
+
+    const handleSuspendMentor = (mentorId, isSuspended = false) => {
+        setSuspendMentorModal({ show: true, mentorId: mentorId, isSuspended: isSuspended });
+        setSuspendMentorReason('');
+    };
+
+    const confirmSuspendMentor = async () => {
+        if (!suspendMentorReason) {
+            alert('Please select a reason for the mentor action.');
+            return;
+        }
+
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/mentors/${suspendMentorModal.mentorId}/suspend`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ 
+                    suspend: !suspendMentorModal.isSuspended, // Toggle suspend status
+                    reason: suspendMentorReason 
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const emailStatus = data.email_sent ? '📧 Notification email sent to mentor' : '⚠️ Notification email pending';
+                const action = suspendMentorModal.isSuspended ? 'reactivated' : 'suspended';
+                alert(`✅ Mentor ${action} successfully!\n${emailStatus}\n\nReason: ${suspendMentorReason}\n\nThe mentor has been ${action} and will receive an email explaining the action.`);
+                setSuspendMentorModal({ show: false, mentorId: null, isSuspended: false });
+                setSuspendMentorReason('');
+                fetchMentors();
+            } else {
+                let errorMessage = 'Unknown error';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.detail || errorData.message || JSON.stringify(errorData);
+                } catch (parseError) {
+                    try {
+                        errorMessage = await response.text() || `HTTP ${response.status}`;
+                    } catch (textError) {
+                        errorMessage = `HTTP ${response.status} - ${response.statusText}`;
+                    }
+                }
+                alert(`Error updating mentor status: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('Error updating mentor status:', error);
+            alert(`Network error updating mentor status: ${error.message || error.toString()}`);
+        }
+    };
+
+    const cancelSuspendMentor = () => {
+        setSuspendMentorModal({ show: false, mentorId: null });
+        setSuspendMentorReason('');
+    };
+
+    const handleDeleteMentor = (mentorId) => {
+        setDeleteMentorModal({ show: true, mentorId: mentorId });
+        setDeleteMentorReason('');
+    };
+
+    const confirmDeleteMentor = async () => {
+        if (!deleteMentorReason) {
+            alert('Please select a reason for deleting the mentor.');
+            return;
+        }
+
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/mentors/${deleteMentorModal.mentorId}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ reason: deleteMentorReason })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const emailStatus = data.email_sent ? '📧 Notification email sent to mentor' : '⚠️ Notification email pending';
+                alert(`✅ ${data.message}\n${emailStatus}\n\nReason: ${deleteMentorReason}\n\n⚠️ This action cannot be undone. The mentor has been notified via email about the account deletion.`);
+                setDeleteMentorModal({ show: false, mentorId: null });
+                setDeleteMentorReason('');
+                fetchMentors();
+            } else {
+                let errorMessage = 'Unknown error';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.detail || errorData.message || JSON.stringify(errorData);
+                } catch (parseError) {
+                    try {
+                        errorMessage = await response.text() || `HTTP ${response.status}`;
+                    } catch (textError) {
+                        errorMessage = `HTTP ${response.status} - ${response.statusText}`;
+                    }
+                }
+                alert(`Error deleting mentor: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('Error deleting mentor:', error);
+            alert(`Network error deleting mentor: ${error.message || error.toString()}`);
+        }
+    };
+
+    const cancelDeleteMentor = () => {
+        setDeleteMentorModal({ show: false, mentorId: null });
+        setDeleteMentorReason('');
+    };
+
     if (loading) {
         return (
             <div style={{
