@@ -1491,10 +1491,43 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
         
         await db.questions.insert_one(question_doc)
         
-        # Update user question count (count as one question regardless of number of mentors)
+        # Update user question count and add comprehensive tracking
+        question_summary = {
+            "question_id": question_doc["question_id"],
+            "question": question_data.question,
+            "category": question_data.category,
+            "mentor_count": len(selected_mentors),
+            "mentor_names": [m["name"] for m in selected_mentors],
+            "timestamp": datetime.utcnow()
+        }
+        
+        # Create individual mentor interaction records for detailed tracking
+        mentor_interaction_ids = []
+        for mentor, response_data in zip(selected_mentors, responses):
+            interaction_id = str(uuid.uuid4())
+            interaction_record = {
+                "interaction_id": interaction_id,
+                "user_id": current_user["user_id"],
+                "question_id": question_doc["question_id"],
+                "mentor_id": mentor["id"],
+                "mentor_name": mentor["name"],
+                "mentor_category": question_data.category,
+                "question": question_data.question,
+                "response": response_data["response"],
+                "timestamp": datetime.utcnow()
+            }
+            await db.mentor_interactions.insert_one(interaction_record)
+            mentor_interaction_ids.append(interaction_id)
+
         await db.users.update_one(
             {"user_id": current_user["user_id"]},
-            {"$inc": {"questions_asked": 1}}
+            {
+                "$inc": {"questions_asked": 1},
+                "$push": {
+                    "question_history": question_summary,
+                    "mentor_interactions": {"$each": mentor_interaction_ids}
+                }
+            }
         )
         
         return {
