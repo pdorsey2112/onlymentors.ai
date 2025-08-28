@@ -303,14 +303,14 @@ class ExistingUserProfileTester:
                 "profile_data": response
             })
             
-            return True, response
+            return True
         else:
             self.test_results.append({
                 "test": "complete_profile",
                 "status": "failed",
                 "error": "Could not access complete profile endpoint"
             })
-            return False, {}
+            return False
 
     def test_question_history_endpoint(self):
         """Test GET /api/user/question-history for existing user"""
