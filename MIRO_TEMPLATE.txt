@@ -8,13 +8,14 @@ ONLYMENTORS.AI COMPLETE WORKFLOW TEMPLATE FOR MIRO/FIGMA (UPDATED)
 BOARD 1: SYSTEM ARCHITECTURE
 -----------------------------
 
-Layer 1 - Frontend (Purple boxes, top row)
-- React App (Main Container)
-  ├── Authentication Components
-  ├── User Interface Components  
-  ├── Profile Management
+Layer 1 - Frontend (Purple boxes, top row) - ENHANCED
+- React App (Main Container) - UPDATED
+  ├── OAuth Authentication (Google ✅ Facebook ✅)
+  ├── Enhanced User Interface with Search
+  ├── Comprehensive Profile Management (3-Step Signup)
   ├── Mentor Selection Grid
-  └── Admin Dashboard
+  ├── Advanced Admin Dashboard (Users + Mentors)
+  └── SMS & 2FA Integration
 
 Layer 2 - Backend (Blue boxes, middle row)  
 - FastAPI Server (Main Container)
