@@ -126,6 +126,20 @@ class UserProfileUpdate(BaseModel):
     email: Optional[EmailStr] = None
     communication_preferences: Optional[dict] = None
 
+class SMSRequest(BaseModel):
+    phone_number: str
+    message: str
+
+class Send2FARequest(BaseModel):
+    phone_number: str
+
+class Verify2FARequest(BaseModel):
+    phone_number: str
+    code: str
+
+class PhoneValidationRequest(BaseModel):
+    phone_number: str
+
 class PasswordChangeRequest(BaseModel):
     current_password: str
     new_password: str
