@@ -157,13 +157,8 @@ async def send_email_unified(to_email: str, subject: str, html_content: str, tex
         return True  # Always return True for graceful handling
 
 async def send_password_reset_email(email: str, reset_token: str, user_type: str, user_name: str = "User"):
-    """Send password reset email using SendGrid"""
+    """Send password reset email using unified email system (SMTP2GO > SendGrid > Console)"""
     try:
-        reset_config.validate_config()
-        
-        # Create SendGrid client
-        sg = sendgrid.SendGridAPIClient(api_key=reset_config.sendgrid_api_key)
-        
         # Create reset link
         reset_link = f"{reset_config.frontend_base_url}/reset-password?token={reset_token}&type={user_type}"
         
@@ -261,25 +256,15 @@ async def send_password_reset_email(email: str, reset_token: str, user_type: str
         © 2024 OnlyMentors.ai - Connect with the Greatest Minds
         """
         
-        # Create email
-        from_email = Email(reset_config.from_email)
-        to_email = To(email)
-        subject = subject
-        plain_text_content = Content("text/plain", plain_content)
-        html_content = Content("text/html", html_content)
+        # Use unified email system (SMTP2GO > SendGrid > Console fallback)
+        email_sent = await send_email_unified(email, subject, html_content, plain_content)
         
-        mail = Mail(from_email, to_email, subject, plain_text_content)
-        mail.add_content(html_content)
-        
-        # Send email
-        response = sg.client.mail.send.post(request_body=mail.get())
-        
-        if response.status_code in [200, 202]:
-            print(f"✅ Password reset email sent successfully to {email} (Status: {response.status_code})")
-            return True
+        if email_sent:
+            print(f"✅ Password reset email sent successfully to {email}")
         else:
-            print(f"❌ Failed to send email. Status: {response.status_code}, Body: {response.body}")
-            return False
+            print(f"❌ Failed to send password reset email to {email}")
+        
+        return email_sent
             
     except Exception as e:
         print(f"❌ Email sending error: {str(e)}")
