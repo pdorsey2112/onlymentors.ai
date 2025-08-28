@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 # Configuration
-BACKEND_URL = os.getenv("REACT_APP_BACKEND_URL", "https://user-data-restore.preview.emergentagent.com")
+BACKEND_URL = "http://localhost:8001"
 API_BASE = f"{BACKEND_URL}/api"
 
 # Test credentials
