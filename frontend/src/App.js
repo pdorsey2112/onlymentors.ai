@@ -1375,11 +1375,18 @@ function MainApp() {
     );
   }
 
+  // Handle success from comprehensive UserSignup component
+  const handleUserSignupSuccess = (userData) => {
+    setUser(userData);
+    setSuccess('Account created successfully with complete profile!');
+    setCurrentView('categories');
+  };
+
   // Render comprehensive user signup
   if (authMode === 'signup' && !user) {
     return (
       <UserSignup 
-        onSuccess={handleAuthSuccess}
+        onSuccess={handleUserSignupSuccess}
         onSwitchToLogin={() => setAuthMode('login')}
       />
     );
