@@ -826,21 +826,22 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                         {formatCurrency(mentor.total_earnings)}
                                     </td>
                                     <td style={{ padding: '10px 8px', minWidth: '220px', maxWidth: '220px' }}>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                                             <button
                                                 onClick={() => handleResetMentorPassword(mentor.creator_id)}
                                                 style={{
-                                                    padding: '6px 12px',
+                                                    padding: '4px 8px',
                                                     backgroundColor: '#3b82f6',
                                                     color: 'white',
                                                     border: 'none',
-                                                    borderRadius: '6px',
-                                                    fontSize: '12px',
+                                                    borderRadius: '4px',
+                                                    fontSize: '10px',
                                                     fontWeight: '600',
-                                                    cursor: 'pointer'
+                                                    cursor: 'pointer',
+                                                    minWidth: '65px'
                                                 }}
                                             >
-                                                Reset Password
+                                                Reset Pwd
                                             </button>
                                             {mentor.status === 'suspended' || mentor.is_suspended ? (
                                                 <button
