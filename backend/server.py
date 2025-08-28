@@ -3574,6 +3574,252 @@ async def get_user_audit_history(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get audit history: {str(e)}")
 
+@app.get("/api/admin/audit-logs")
+async def get_audit_logs(
+    current_admin = Depends(get_current_admin),
+    limit: int = Query(50, ge=1, le=100)
+):
+    """Get audit logs for admin dashboard"""
+    try:
+        logs = await db.audit_logs.find({}).sort("timestamp", -1).limit(limit).to_list(limit)
+        
+        # Format logs for frontend
+        formatted_logs = []
+        for log in logs:
+            log_entry = {
+                "log_id": log.get("log_id"),
+                "admin_email": log.get("admin_email"),
+                "action": log.get("action"),
+                "target_user_id": log.get("target_user_id"),
+                "details": log.get("details", {}),
+                "timestamp": log.get("timestamp")
+            }
+            formatted_logs.append(log_entry)
+        
+        return {"logs": formatted_logs}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch audit logs: {str(e)}")
+
+# ================================
+# MENTOR ADMIN MANAGEMENT ENDPOINTS
+# ================================
+
+@app.post("/api/admin/mentors/{mentor_id}/reset-password")
+async def admin_reset_mentor_password(
+    mentor_id: str,
+    reset_request: dict,
+    current_admin = Depends(get_current_admin)
+):
+    """Admin-initiated mentor password reset"""
+    try:
+        # Find mentor in creators collection
+        mentor = await db.creators.find_one({"creator_id": mentor_id})
+        if not mentor:
+            raise HTTPException(status_code=404, detail="Mentor not found")
+        
+        # Create password reset token for mentor
+        reset_token = await create_password_reset_token(db, mentor["email"], "mentor")
+        if not reset_token:
+            raise HTTPException(status_code=500, detail="Failed to create reset token")
+        
+        # Lock mentor account temporarily (24 hours)
+        lock_until = datetime.utcnow() + timedelta(hours=24)
+        await db.creators.update_one(
+            {"creator_id": mentor_id},
+            {
+                "$set": {
+                    "account_locked": True,
+                    "locked_until": lock_until,
+                    "locked_by_admin": current_admin["admin_id"],
+                    "lock_reason": "Admin-initiated password reset"
+                }
+            }
+        )
+        
+        # Send password reset email for mentor
+        email_sent = await send_admin_password_reset_email(
+            mentor["email"], 
+            reset_token, 
+            "mentor",
+            mentor.get("full_name", "Mentor"),
+            reset_request.get("reason", "Admin-initiated reset")
+        )
+        
+        # Log admin action
+        await log_admin_action(
+            db, 
+            current_admin["admin_id"], 
+            current_admin["email"], 
+            "MENTOR_PASSWORD_RESET",
+            mentor_id, 
+            {"reason": reset_request.get("reason"), "mentor_email": mentor["email"]}
+        )
+        
+        return {
+            "message": "Mentor password reset initiated successfully",
+            "email": mentor["email"],
+            "expires_in": "60 minutes",
+            "email_status": "sent" if email_sent else "pending",
+            "note": "Mentor account is temporarily locked until password is reset"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reset mentor password: {str(e)}")
+
+@app.put("/api/admin/mentors/{mentor_id}/suspend")
+async def admin_suspend_mentor(
+    mentor_id: str,
+    suspend_request: UserSuspendRequest,
+    current_admin = Depends(get_current_admin)
+):
+    """Admin suspend/unsuspend mentor"""
+    try:
+        # Find mentor
+        mentor = await db.creators.find_one({"creator_id": mentor_id})
+        if not mentor:
+            raise HTTPException(status_code=404, detail="Mentor not found")
+        
+        # Update mentor status
+        new_status = "suspended" if suspend_request.suspend else "approved"
+        current_time = datetime.utcnow()
+        
+        update_data = {
+            "status": new_status,
+            "updated_at": current_time
+        }
+        
+        if suspend_request.suspend:
+            update_data.update({
+                "suspended_at": current_time,
+                "suspended_by": current_admin["admin_id"],
+                "suspension_reason": suspend_request.reason,
+                "is_suspended": True
+            })
+        else:
+            update_data.update({
+                "unsuspended_at": current_time,
+                "unsuspended_by": current_admin["admin_id"],
+                "unsuspension_reason": suspend_request.reason,
+                "is_suspended": False
+            })
+        
+        await db.creators.update_one({"creator_id": mentor_id}, {"$set": update_data})
+        
+        # Send notification email to mentor
+        action = "suspended" if suspend_request.suspend else "reactivated"
+        subject = f"OnlyMentors.ai - Your mentor account has been {action}"
+        
+        if suspend_request.suspend:
+            email_content = f"""
+            <h2>Account Suspension Notice</h2>
+            <p>Dear {mentor.get('full_name', 'Mentor')},</p>
+            <p>Your OnlyMentors.ai mentor account has been temporarily suspended.</p>
+            <p><strong>Reason:</strong> {suspend_request.reason}</p>
+            <p>If you believe this is an error or would like to appeal this decision, please contact our support team.</p>
+            <p>Best regards,<br>OnlyMentors.ai Team</p>
+            """
+        else:
+            email_content = f"""
+            <h2>Account Reactivation Notice</h2>
+            <p>Dear {mentor.get('full_name', 'Mentor')},</p>
+            <p>Great news! Your OnlyMentors.ai mentor account has been reactivated.</p>
+            <p><strong>Reactivation Reason:</strong> {suspend_request.reason}</p>
+            <p>You can now access your mentor dashboard and continue helping users.</p>
+            <p>Thank you for being part of OnlyMentors.ai!</p>
+            <p>Best regards,<br>OnlyMentors.ai Team</p>
+            """
+        
+        email_sent = await send_unified_email(mentor["email"], subject, email_content, email_content)
+        
+        # Log admin action
+        await log_admin_action(
+            db, 
+            current_admin["admin_id"], 
+            current_admin["email"], 
+            f"MENTOR_{'SUSPENDED' if suspend_request.suspend else 'UNSUSPENDED'}",
+            mentor_id, 
+            {"reason": suspend_request.reason, "mentor_email": mentor["email"]}
+        )
+        
+        return {
+            "message": f"Mentor {action} successfully",
+            "mentor_email": mentor["email"],
+            "email_sent": email_sent,
+            "new_status": new_status
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update mentor status: {str(e)}")
+
+@app.delete("/api/admin/mentors/{mentor_id}")
+async def admin_delete_mentor(
+    mentor_id: str,
+    delete_request: dict,
+    current_admin = Depends(get_current_admin)
+):
+    """Admin delete mentor account"""
+    try:
+        # Find mentor
+        mentor = await db.creators.find_one({"creator_id": mentor_id})
+        if not mentor:
+            raise HTTPException(status_code=404, detail="Mentor not found")
+        
+        # Store mentor data for audit before deletion
+        mentor_data = {
+            "creator_id": mentor_id,
+            "email": mentor["email"],
+            "full_name": mentor.get("full_name"),
+            "deleted_at": datetime.utcnow(),
+            "deleted_by": current_admin["admin_id"],
+            "deletion_reason": delete_request.get("reason"),
+            "original_data": mentor
+        }
+        
+        # Store in deleted_mentors collection for audit
+        await db.deleted_mentors.insert_one(mentor_data)
+        
+        # Delete mentor from creators collection
+        await db.creators.delete_one({"creator_id": mentor_id})
+        
+        # Send notification email
+        subject = "OnlyMentors.ai - Mentor Account Deletion Notice"
+        email_content = f"""
+        <h2>Account Deletion Notice</h2>
+        <p>Dear {mentor.get('full_name', 'Mentor')},</p>
+        <p>Your OnlyMentors.ai mentor account has been permanently deleted.</p>
+        <p><strong>Reason:</strong> {delete_request.get("reason")}</p>
+        <p>All your mentor data has been removed from our platform. If you believe this was done in error, please contact our support team immediately.</p>
+        <p>Best regards,<br>OnlyMentors.ai Team</p>
+        """
+        
+        email_sent = await send_unified_email(mentor["email"], subject, email_content, email_content)
+        
+        # Log admin action
+        await log_admin_action(
+            db, 
+            current_admin["admin_id"], 
+            current_admin["email"], 
+            "MENTOR_DELETED",
+            mentor_id, 
+            {"reason": delete_request.get("reason"), "mentor_email": mentor["email"]}
+        )
+        
+        return {
+            "message": "Mentor account deleted successfully",
+            "mentor_email": mentor["email"],
+            "email_sent": email_sent
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete mentor: {str(e)}")
+
 @app.post("/api/admin/mentors/manage")
 async def manage_mentors(
     request: MentorManagementRequest,
