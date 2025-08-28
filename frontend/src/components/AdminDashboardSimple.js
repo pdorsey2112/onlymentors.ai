@@ -48,6 +48,42 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         }
     };
 
+    // Search filter functions
+    const filterUsers = (users, searchTerm) => {
+        if (!searchTerm.trim()) return users;
+        
+        const term = searchTerm.toLowerCase();
+        return users.filter(user => {
+            const { firstName, lastName } = parseName(user.full_name);
+            return (
+                user.email.toLowerCase().includes(term) ||
+                user.full_name?.toLowerCase().includes(term) ||
+                firstName.toLowerCase().includes(term) ||
+                lastName.toLowerCase().includes(term)
+            );
+        });
+    };
+
+    const filterMentors = (mentors, searchTerm) => {
+        if (!searchTerm.trim()) return mentors;
+        
+        const term = searchTerm.toLowerCase();
+        return mentors.filter(mentor => {
+            const { firstName, lastName } = parseName(mentor.full_name || mentor.account_name);
+            return (
+                mentor.email?.toLowerCase().includes(term) ||
+                mentor.full_name?.toLowerCase().includes(term) ||
+                mentor.account_name?.toLowerCase().includes(term) ||
+                firstName.toLowerCase().includes(term) ||
+                lastName.toLowerCase().includes(term)
+            );
+        });
+    };
+
+    // Get filtered data
+    const filteredUsers = filterUsers(users, userSearchTerm);
+    const filteredMentors = filterMentors(mentors, mentorSearchTerm);
+
     const getAuthHeaders = () => ({
         'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
         'Content-Type': 'application/json'
