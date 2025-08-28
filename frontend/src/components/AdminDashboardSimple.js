@@ -199,6 +199,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         { id: 'overview', name: 'Overview' },
         { id: 'users', name: 'Users' },
         { id: 'mentors', name: 'Mentors' },
+        { id: 'database', name: 'Database' },
         { id: 'content-moderation', name: 'Content Moderation' },
         { id: 'payouts', name: 'Payouts' },
         { id: 'user-reports', name: 'User Reports' },
