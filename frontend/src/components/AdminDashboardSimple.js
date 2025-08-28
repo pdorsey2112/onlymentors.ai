@@ -847,14 +847,15 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                                 <button
                                                     onClick={() => handleSuspendMentor(mentor.creator_id, true)}
                                                     style={{
-                                                        padding: '6px 12px',
+                                                        padding: '4px 8px',
                                                         backgroundColor: '#10b981',
                                                         color: 'white',
                                                         border: 'none',
-                                                        borderRadius: '6px',
-                                                        fontSize: '12px',
+                                                        borderRadius: '4px',
+                                                        fontSize: '10px',
                                                         fontWeight: '600',
-                                                        cursor: 'pointer'
+                                                        cursor: 'pointer',
+                                                        minWidth: '65px'
                                                     }}
                                                 >
                                                     Unsuspend
@@ -863,14 +864,15 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                                 <button
                                                     onClick={() => handleSuspendMentor(mentor.creator_id, false)}
                                                     style={{
-                                                        padding: '6px 12px',
+                                                        padding: '4px 8px',
                                                         backgroundColor: '#f59e0b',
                                                         color: 'white',
                                                         border: 'none',
-                                                        borderRadius: '6px',
-                                                        fontSize: '12px',
+                                                        borderRadius: '4px',
+                                                        fontSize: '10px',
                                                         fontWeight: '600',
-                                                        cursor: 'pointer'
+                                                        cursor: 'pointer',
+                                                        minWidth: '65px'
                                                     }}
                                                 >
                                                     Suspend
@@ -879,14 +881,15 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                             <button
                                                 onClick={() => handleDeleteMentor(mentor.creator_id)}
                                                 style={{
-                                                    padding: '6px 12px',
+                                                    padding: '4px 8px',
                                                     backgroundColor: '#dc2626',
                                                     color: 'white',
                                                     border: 'none',
-                                                    borderRadius: '6px',
-                                                    fontSize: '12px',
+                                                    borderRadius: '4px',
+                                                    fontSize: '10px',
                                                     fontWeight: '600',
-                                                    cursor: 'pointer'
+                                                    cursor: 'pointer',
+                                                    minWidth: '50px'
                                                 }}
                                             >
                                                 Delete
