@@ -141,6 +141,15 @@ class Verify2FARequest(BaseModel):
 class PhoneValidationRequest(BaseModel):
     phone_number: str
 
+class DatabaseExportRequest(BaseModel):
+    collection_name: str
+    format: str = "json"  # json or csv
+    search: Optional[str] = None
+
+class DatabaseRestoreRequest(BaseModel):
+    collection_name: str
+    json_data: str
+
 class PasswordChangeRequest(BaseModel):
     current_password: str
     new_password: str
