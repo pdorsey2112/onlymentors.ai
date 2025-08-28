@@ -187,7 +187,8 @@ class SMSSystemTester:
         
         # Check if E.164 formatting is working
         e164_working = any(
-            result.get("response", {}).get("formatted_phone", "").startswith("+") 
+            result.get("response", {}).get("formatted_phone") and 
+            str(result.get("response", {}).get("formatted_phone", "")).startswith("+") 
             for result in results if result["status"] == "PASS"
         )
         
