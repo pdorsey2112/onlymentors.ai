@@ -34,11 +34,12 @@ graph TB
 
     %% External Services
     subgraph "External Services"
-        GoogleOAuth[Google OAuth]
-        FacebookOAuth[Facebook OAuth]
+        GoogleOAuth[Google OAuth - WORKING]
+        FacebookOAuth[Facebook OAuth - WORKING]
         OpenAI[OpenAI API]
-        SMTP[SMTP Email]
-        Stripe[Stripe Payments]
+        TwilioSMS[Twilio SMS & 2FA]
+        SMTP2GO[SMTP2GO Email Service]
+        Stripe[Stripe Payments - $9.99/month]
     end
 
     %% Connections
