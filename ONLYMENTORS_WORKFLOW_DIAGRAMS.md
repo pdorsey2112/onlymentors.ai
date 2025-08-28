@@ -167,7 +167,7 @@ flowchart TD
     Payment --> Categories
 ```
 
-## 4. Admin Workflow
+## 4. Enhanced Admin Workflow (Users & Mentors)
 
 ```mermaid
 flowchart TD
