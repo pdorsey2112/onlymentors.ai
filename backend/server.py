@@ -1190,6 +1190,13 @@ async def update_user_profile(profile_update: UserProfileUpdate, current_user = 
             if existing_user:
                 raise HTTPException(status_code=400, detail="Email address is already in use")
             update_data["email"] = profile_update.email
+            
+        if profile_update.communication_preferences is not None:
+            update_data["communication_preferences"] = profile_update.communication_preferences
+            
+        # Check if this update completes the profile
+        if profile_update.phone_number is not None and profile_update.communication_preferences is not None:
+            update_data["profile_completed"] = True
         
         # Update user document
         result = await db.users.update_one(
