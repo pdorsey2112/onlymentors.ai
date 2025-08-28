@@ -801,29 +801,31 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                                         <td style={{ padding: '10px 8px', color: '#374151', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lastName}</td>
                                         <td style={{ padding: '10px 8px', color: '#374151', fontWeight: '500', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{mentor.account_name}</td>
                                     <td style={{ padding: '10px 8px', color: '#374151', textTransform: 'capitalize', maxWidth: '90px' }}>{mentor.category}</td>
-                                    <td style={{ padding: '15px' }}>
+                                    <td style={{ padding: '10px 8px', maxWidth: '80px' }}>
                                         <span style={{
-                                            padding: '4px 12px',
-                                            borderRadius: '20px',
-                                            fontSize: '12px',
+                                            padding: '2px 8px',
+                                            borderRadius: '12px',
+                                            fontSize: '11px',
                                             fontWeight: '600',
                                             background: mentor.status === 'approved' ? '#dcfce7' : 
                                                        mentor.status === 'suspended' ? '#fee2e2' :
                                                        mentor.status === 'pending' ? '#fef3c7' : '#fecaca',
                                             color: mentor.status === 'approved' ? '#166534' : 
                                                   mentor.status === 'suspended' ? '#b91c1c' :
-                                                  mentor.status === 'pending' ? '#92400e' : '#991b1b'
+                                                  mentor.status === 'pending' ? '#92400e' : '#991b1b',
+                                            display: 'inline-block',
+                                            whiteSpace: 'nowrap'
                                         }}>
                                             {mentor.status === 'suspended' ? '🚫 Suspended' : 
                                              mentor.status === 'approved' ? '✅ Active' :
                                              mentor.status}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '15px', color: '#374151' }}>{formatNumber(mentor.subscriber_count)}</td>
-                                    <td style={{ padding: '15px', color: '#333', fontWeight: '600' }}>
+                                    <td style={{ padding: '10px 8px', color: '#374151', maxWidth: '80px', fontSize: '13px' }}>{formatNumber(mentor.subscriber_count)}</td>
+                                    <td style={{ padding: '10px 8px', color: '#333', fontWeight: '600', maxWidth: '90px', fontSize: '13px' }}>
                                         {formatCurrency(mentor.total_earnings)}
                                     </td>
-                                    <td style={{ padding: '15px' }}>
+                                    <td style={{ padding: '10px 8px', minWidth: '220px', maxWidth: '220px' }}>
                                         <div style={{ display: 'flex', gap: '8px' }}>
                                             <button
                                                 onClick={() => handleResetMentorPassword(mentor.creator_id)}
