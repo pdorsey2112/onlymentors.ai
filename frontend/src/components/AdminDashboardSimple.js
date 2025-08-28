@@ -24,6 +24,26 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         return `$${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     };
 
+    // Helper function to parse full name into first and last name
+    const parseName = (fullName) => {
+        if (!fullName || fullName.trim() === '') {
+            return { firstName: 'N/A', lastName: 'N/A' };
+        }
+        
+        const nameParts = fullName.trim().split(' ');
+        if (nameParts.length === 1) {
+            return { firstName: nameParts[0], lastName: '' };
+        } else if (nameParts.length === 2) {
+            return { firstName: nameParts[0], lastName: nameParts[1] };
+        } else {
+            // More than 2 parts - first name is first part, last name is everything else
+            return { 
+                firstName: nameParts[0], 
+                lastName: nameParts.slice(1).join(' ') 
+            };
+        }
+    };
+
     const getAuthHeaders = () => ({
         'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
         'Content-Type': 'application/json'
