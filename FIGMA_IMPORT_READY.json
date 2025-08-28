@@ -1,6 +1,8 @@
 {
   "onlymentors_workflow": {
-    "title": "OnlyMentors.ai System Workflow",
+    "title": "OnlyMentors.ai Complete System Workflow (Updated)",
+    "version": "2.0",
+    "last_updated": "2025-01-01",
     "components": [
       {
         "name": "User Authentication Flow",
