@@ -637,7 +637,8 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                         <thead>
                             <tr style={{ background: '#f8fafc' }}>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Email</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Full Name</th>
+                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>First Name</th>
+                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Last Name</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Status</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Questions</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Subscription</th>
