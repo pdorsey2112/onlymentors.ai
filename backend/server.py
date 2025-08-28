@@ -660,28 +660,123 @@ async def update_communication_preferences(
 ):
     """Update user's communication preferences"""
     try:
-        user_id = current_user["user_id"]
-        
-        # Validate preferences
-        valid_prefs = {
-            "email": preferences.get("email", True),
-            "text": preferences.get("text", False),
-            "both": preferences.get("both", False)
-        }
-        
-        # Update in database
-        await db.users.update_one(
-            {"user_id": user_id},
-            {"$set": {"communication_preferences": valid_prefs}}
+        result = await db.users.update_one(
+            {"user_id": current_user["user_id"]},
+            {"$set": {"communication_preferences": preferences}}
         )
         
-        return {
-            "message": "Communication preferences updated successfully",
-            "preferences": valid_prefs
-        }
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
         
+        return {"message": "Communication preferences updated successfully"}
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update preferences: {str(e)}")
+
+# ================================
+# SMS & 2FA ENDPOINTS  
+# ================================
+
+@app.post("/api/sms/send")
+async def send_sms_notification(
+    sms_request: SMSRequest,
+    current_user = Depends(get_current_user)
+):
+    """Send SMS notification to user"""
+    try:
+        # Validate phone number format
+        if not validate_phone(sms_request.phone_number):
+            raise HTTPException(status_code=400, detail="Invalid phone number format")
+        
+        # Send SMS
+        result = await send_sms(sms_request.phone_number, sms_request.message)
+        
+        if result["success"]:
+            return {
+                "success": True,
+                "message": "SMS sent successfully",
+                "message_sid": result.get("message_sid"),
+                "phone": result.get("phone")
+            }
+        else:
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to send SMS"))
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"SMS service error: {str(e)}")
+
+@app.post("/api/sms/send-2fa")
+async def send_2fa_code(sms_request: Send2FARequest):
+    """Send 2FA verification code via SMS"""
+    try:
+        # Validate phone number format
+        if not validate_phone(sms_request.phone_number):
+            raise HTTPException(status_code=400, detail="Invalid phone number format")
+        
+        # Send 2FA code
+        result = await send_2fa(sms_request.phone_number)
+        
+        if result["success"]:
+            return {
+                "success": True,
+                "message": "Verification code sent successfully",
+                "phone": result.get("phone"),
+                "valid_until": result.get("valid_until")
+            }
+        else:
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to send verification code"))
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"2FA service error: {str(e)}")
+
+@app.post("/api/sms/verify-2fa")
+async def verify_2fa_code(verify_request: Verify2FARequest):
+    """Verify 2FA code"""
+    try:
+        # Validate phone number format
+        if not validate_phone(verify_request.phone_number):
+            raise HTTPException(status_code=400, detail="Invalid phone number format")
+        
+        # Verify code
+        result = await verify_2fa(verify_request.phone_number, verify_request.code)
+        
+        if result["success"]:
+            return {
+                "success": True,
+                "valid": result.get("valid", False),
+                "message": "Code verified successfully" if result.get("valid") else "Invalid verification code",
+                "phone": result.get("phone")
+            }
+        else:
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to verify code"))
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"2FA verification error: {str(e)}")
+
+@app.post("/api/sms/validate-phone")
+async def validate_phone_number(phone_request: PhoneValidationRequest):
+    """Validate phone number format and deliverability"""
+    try:
+        is_valid = validate_phone(phone_request.phone_number)
+        formatted_phone = format_phone(phone_request.phone_number) if is_valid else None
+        
+        return {
+            "valid": is_valid,
+            "formatted_phone": formatted_phone,
+            "original_phone": phone_request.phone_number
+        }
+    
+    except Exception as e:
+        return {
+            "valid": False,
+            "error": str(e),
+            "original_phone": phone_request.phone_number
+        }
 
 @app.post("/api/auth/signup")
 async def signup(user_data: UserSignup):
