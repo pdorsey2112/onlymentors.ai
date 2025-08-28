@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getBackendURL } from '../config';
+import DatabaseManagement from './DatabaseManagement';
 import EnhancedContextDemo from './EnhancedContextDemo';
 
 const AdminDashboardSimple = ({ admin, onLogout }) => {
