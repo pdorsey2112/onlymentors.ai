@@ -112,6 +112,8 @@ function AdminApp() {
 function CreatorApp() {
   const [creator, setCreator] = useState(null);
   const [isCreator, setIsCreator] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [creatorAuthMode, setCreatorAuthMode] = useState('login');
 
   useEffect(() => {
     // Check if creator is already logged in
@@ -131,12 +133,57 @@ function CreatorApp() {
     }
   }, []);
 
+  const handleCreatorLoginSuccess = (creatorData) => {
+    setCreator(creatorData);
+    setIsCreator(true);
+  };
+
+  const handleCreatorSignupSuccess = (creatorData) => {
+    setCreator(creatorData);
+    setIsCreator(true);
+  };
+
   if (isCreator && creator) {
     return <CreatorDashboard />;
   }
 
+  // Show forgot password form
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <ForgotPasswordForm
+          userType="mentor"
+          onBack={() => {
+            setShowForgotPassword(false);
+          }}
+          onSuccess={(data) => {
+            console.log('Password reset email sent:', data);
+            // Show success message or redirect
+            setShowForgotPassword(false);
+          }}
+        />
+      </div>
+    );
+  }
+
   // Show creator login/signup options
-  return <CreatorLogin />;
+  if (creatorAuthMode === 'login') {
+    return (
+      <CreatorLogin 
+        onSuccess={handleCreatorLoginSuccess}
+        onSwitchToSignup={() => setCreatorAuthMode('signup')}
+        onForgotPassword={() => {
+          setShowForgotPassword(true);
+        }}
+      />
+    );
+  } else {
+    return (
+      <CreatorSignup 
+        onSuccess={handleCreatorSignupSuccess}
+      />
+    );
+  }
 }
 
 function ForgotPasswordApp() {
