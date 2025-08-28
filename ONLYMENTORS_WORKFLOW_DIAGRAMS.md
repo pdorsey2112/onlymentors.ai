@@ -61,8 +61,10 @@ graph TB
     AuthAPI --> GoogleOAuth
     AuthAPI --> FacebookOAuth
     MentorAPI --> OpenAI
-    AdminAPI --> SMTP
+    AdminAPI --> SMTP2GO
+    AdminAPI --> TwilioSMS
     UserAPI --> Stripe
+    UserAPI --> TwilioSMS
 ```
 
 ## 2. User Authentication Flow
