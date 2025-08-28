@@ -778,8 +778,10 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ background: '#f8fafc' }}>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Account Name</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Email</th>
+                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>First Name</th>
+                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Last Name</th>
+                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Account Name</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Category</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Status</th>
                                 <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Subscribers</th>
