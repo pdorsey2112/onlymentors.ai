@@ -226,14 +226,14 @@ class ExistingUserProfileTester:
                 "profile_data": response
             })
             
-            return True, response
+            return True
         else:
             self.test_results.append({
                 "test": "basic_profile",
                 "status": "failed",
                 "error": "Could not access basic profile endpoint"
             })
-            return False, {}
+            return False
 
     def test_complete_profile_endpoint(self):
         """Test GET /api/user/profile/complete for existing user"""
