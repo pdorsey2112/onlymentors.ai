@@ -740,7 +740,7 @@ def main():
                     "success_rate": (tester.tests_passed/tester.tests_run)*100 if tester.tests_run > 0 else 0
                 },
                 "timestamp": datetime.now().isoformat()
-            }, indent=2)
+            }, f, indent=2)
         
         print(f"\n💾 Detailed test results saved to: /app/sms_test_results.json")
         
