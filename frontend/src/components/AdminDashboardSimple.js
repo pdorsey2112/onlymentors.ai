@@ -778,15 +778,15 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ background: '#f8fafc' }}>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Email</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>First Name</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Last Name</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Account Name</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Category</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Status</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Subscribers</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Earnings</th>
-                                <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Actions</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '180px' }}>Email</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '100px' }}>First Name</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '100px' }}>Last Name</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '120px' }}>Account Name</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '90px' }}>Category</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '80px' }}>Status</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '80px' }}>Subscribers</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '90px' }}>Earnings</th>
+                                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '220px', minWidth: '220px' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
