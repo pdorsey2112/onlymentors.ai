@@ -1148,6 +1148,7 @@ async def get_user_profile(current_user = Depends(get_current_user)):
             "email": user_doc["email"],
             "full_name": user_doc.get("full_name", ""),
             "phone_number": user_doc.get("phone_number", ""),
+            "communication_preferences": user_doc.get("communication_preferences", {}),
             "questions_asked": user_doc.get("questions_asked", 0),
             "questions_remaining": user_doc.get("questions_remaining", 10),
             "is_subscribed": user_doc.get("is_subscribed", False),
