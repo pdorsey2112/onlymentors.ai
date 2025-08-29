@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://user-data-restore.preview.emergentagent.com"
+BACKEND_URL = "https://mentor-marketplace.preview.emergentagent.com"
 
 def test_google_oauth_config():
     """Test Google OAuth Configuration endpoint"""

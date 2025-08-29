@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Test configuration
-BACKEND_URL = "https://user-data-restore.preview.emergentagent.com/api"
+BACKEND_URL = "https://mentor-marketplace.preview.emergentagent.com/api"
 
 async def test_sms_integration():
     """Test SMS system integration directly"""

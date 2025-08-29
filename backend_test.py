@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 class OnlyMentorsAPITester:
-    def __init__(self, base_url="https://user-data-restore.preview.emergentagent.com"):
+    def __init__(self, base_url="https://mentor-marketplace.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None
@@ -684,7 +684,7 @@ class OnlyMentorsAPITester:
             200,
             data={
                 "package_id": "monthly",
-                "origin_url": "https://user-data-restore.preview.emergentagent.com"
+                "origin_url": "https://mentor-marketplace.preview.emergentagent.com"
             }
         )
         
@@ -722,7 +722,7 @@ class OnlyMentorsAPITester:
             200,
             data={
                 "package_id": "yearly",
-                "origin_url": "https://user-data-restore.preview.emergentagent.com"
+                "origin_url": "https://mentor-marketplace.preview.emergentagent.com"
             }
         )
         
@@ -760,7 +760,7 @@ class OnlyMentorsAPITester:
             400,
             data={
                 "package_id": "invalid_package",
-                "origin_url": "https://user-data-restore.preview.emergentagent.com"
+                "origin_url": "https://mentor-marketplace.preview.emergentagent.com"
             }
         )
         
@@ -781,7 +781,7 @@ class OnlyMentorsAPITester:
             401,
             data={
                 "package_id": "monthly",
-                "origin_url": "https://user-data-restore.preview.emergentagent.com"
+                "origin_url": "https://mentor-marketplace.preview.emergentagent.com"
             }
         )
         

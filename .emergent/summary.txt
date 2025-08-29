@@ -1,92 +1,96 @@
 <analysis>
-The AI engineer's work primarily revolved around enhancing and stabilizing the Admin Console of the OnlyMentors.ai application, followed by creating a commercial landing page and restoring lost user profile data. Key challenges included persistent frontend configuration issues, backend-frontend communication errors, and email service authentication problems. The engineer demonstrated an iterative problem-solving approach, addressing user feedback on the fly. Significant progress was made in implementing robust user management features (password reset, suspend, delete with reasons, unsuspend) and an email notification system (transitioning from SendGrid to SMTP2GO due to credit/auth issues). The final tasks included resolving a recurring admin login bug and restoring a comprehensive user signup and profile data collection system.
+The previous AI engineer successfully stabilized and enhanced the OnlyMentors.ai application through several critical development cycles. Initial focus was on resolving persistent Google and Facebook OAuth integration issues, which involved collaborating with the user to update external developer console configurations. Following this, significant effort was dedicated to restoring and improving comprehensive user profile data collection during signup, re-integrating a lost UserProfile component, and fixing a bug where SMS communication preferences weren't saving correctly. The engineer also implemented full admin management features (password reset, suspend, delete) for mentors, mirroring user management, and refined the admin dashboard UI by adding first/last name columns and fixing table layout issues. Most recently, a complete MongoDB database management system (visual dashboard, export, backup/restore, analytics) was built for admin access, and the engineer is currently in the process of implementing a pay-per-view content system for creators.
 </analysis>
 
 <product_requirements>
-The OnlyMentors.ai platform is an AI-powered subscription service connecting users with AI-driven and real-life human mentors, offering personalized wisdom through interactive questioning. It integrates Stripe for subscriptions and supports multiple authentication methods like email, Google, and Facebook. Core features include a mentor grid, OpenAI API integration, a Creator/Mentor marketplace with signup, profile creation, and content upload, along with dedicated dashboards.
+The OnlyMentors.ai platform provides an AI-powered subscription service connecting users with AI and human mentors for personalized guidance. It features Stripe integration, multiple authentication methods (email, Google, Facebook), a mentor marketplace, and an Administrator Console for comprehensive user and mentor management.
 
-A central component is the Administrator Console for user/mentor management, reporting, and AI Framework integration for content moderation. Recent efforts focused on Facebook Login, performance, mentor selection, fixing admin login, and a Forgot Password process. The core work in this trajectory centered on enhancing the Admin Console with advanced user management: implementing admin-initiated password resets via email links, adding specific reasons for suspending and deleting users, and later, an unsuspend feature. Additionally, a commercial landing page was built, and a crucial task of restoring comprehensive user profile data collection (name, email, phone, credit card, communication preferences, question/mentor tracking) during signup was undertaken, as this functionality was previously lost.
+The product's evolution in this trajectory focused on:
+1.  **Robust User Authentication:** Fixing existing Google and Facebook OAuth logins, ensuring seamless sign-up and login.
+2.  **Comprehensive User Profile Data:** Restoring and enhancing the collection of detailed user information during registration, including full name, email, phone number, credit card details (for premium accounts), communication preferences (email/text/both), and tracking of all questions asked to specific mentors.
+3.  **Enhanced Admin Console:** Implementing admin-initiated password resets, user/mentor suspension, and deletion with specific reasons, along with a user-friendly interface. This also included adding first/last name columns to admin tables and improving table layout.
+4.  **SMS Messaging & 2FA:** Introducing a system for user communication and two-factor authentication.
+5.  **Database Management:** Providing an administrative interface for viewing, exporting, backing up, restoring, and analyzing MongoDB data.
+6.  **Pay-Per-View Content System:** Enabling creators to offer content (documents, videos, lessons) for one-time purchase, with flexible pricing and a revenue-sharing model.
 </product_requirements>
 
 <key_technical_concepts>
-- **Full-stack Architecture:** React.js frontend, FastAPI backend, MongoDB database.
-- **AI/LLM Integration:** OpenAI API.
-- **Authentication:** JWT, OAuth 2.0 (Google, Facebook), SendGrid, SMTP2GO for email.
-- **Frontend State Management:** React Hooks, React Router DOM.
-- **UI/UX:** Tailwind CSS, inline CSS, professional modals.
-- **Admin System:** Role-based access control, comprehensive user lifecycle management.
-- **Containerization:** Kubernetes, supervisor.
-- **Networking:** Proxy configuration, environment variables for URLs.
+- **Full-stack Development:** React.js (frontend), FastAPI (backend), MongoDB (database).
+- **Authentication:** OAuth 2.0 (Google, Facebook), JWT.
+- **Email Services:** SMTP2GO for notifications (transitioned from SendGrid).
+- **SMS & 2FA:** Twilio integration.
+- **UI/UX:** Tailwind CSS, React Hooks, Admin Dashboard management.
+- **Data Management:** MongoDB CRUD operations, data export/import, analytics.
+- **Containerization:** Kubernetes, Supervisor for process management.
 </key_technical_concepts>
 
 <code_architecture>
 
 
 -   :
-    -   **Importance:** Main backend API, handles all requests.
-    -   **Changes:** Fixed  to  in admin reset; updated admin password reset to send email link; implemented account locking/unlocking logic; updated suspend/delete endpoints to send email notifications; introduced a unified email sending function.
--   :
-    -   **Importance:** Contains admin-specific logic and models.
-    -   **Changes:**  model modified to remove  from body (as it's in URL path); updated to support unsuspend reasons.
--   :
-    -   **Importance:** Generates test users.
-    -   **Changes:** Referenced to confirm  field name.
--   :
-    -   **Importance:** Manages password reset tokens and emails.
-    -   **Changes:** Added a new email function for admin-initiated resets; implemented SMTP-based email sending as an alternative to SendGrid API; introduced unified email sending with priority logic.
+    -   **Importance:** Main backend API. Handles all core logic, authentication, user/mentor management, email, SMS, and now database management and premium content.
+    -   **Changes:** Fixed mentor password reset to use . Added endpoints for mentor admin management (reset password, suspend, delete). Integrated SMS system endpoints (), database management endpoints (), and premium content endpoints ().
 -   :
     -   **Importance:** Stores environment variables.
-    -   **Changes:** , , , , ,  were frequently updated during email service troubleshooting (SendGrid to SMTP2GO).
+    -   **Changes:** ,  added. ,  were verified during email troubleshooting.
+-    (NEW):
+    -   **Importance:** Encapsulates Twilio SMS sending and 2FA logic.
+    -   **Changes:** Created to handle phone number validation, OTP generation, and SMS sending.
+-    (NEW):
+    -   **Importance:** Provides backend logic for MongoDB data management.
+    -   **Changes:** Created to offer database overview, collection browsing, data export (JSON/CSV), full database backup/restore, and analytics.
+-    (NEW):
+    -   **Importance:** Manages logic for pay-per-view content, including pricing, access, and Stripe integration.
+    -   **Changes:** Created as a foundational component for the new pay-per-view feature.
 -   :
-    -   **Importance:** Central React component, routing, main app state.
-    -   **Changes:** Removed debugging logs; integrated new  and  components.
--    (NEW):
-    -   **Importance:** Dynamically determines backend URL.
-    -   **Changes:** Fixed  to correctly return  instead of an empty string, resolving admin login issues.
--    (NEW):
+    -   **Importance:** Central React component for routing and main app state.
+    -   **Changes:** Integrated  and  components. Added  state and  to  to enable mentor password reset. Removed redundant creator auth handling. Added a profile button to the header.
+-   :
     -   **Importance:** The commercial landing page.
-    -   **Changes:** Created from scratch; updated with headline, tagline, description, multiple hero images (blonde business woman, collage of headshots, user-provided image), and removed overlay graphics.
+    -   **Changes:** Removed active user graphics, mentor category count graphics, and footer section. Updated premium membership price to .99/month and added no hassle - cancel at any time text. Removed Contact link from top navigation and converted Contact us in pricing to plain text.
 -   :
-    -   **Importance:** Admin login form.
-    -   **Changes:** Removed debugging logs; addressed potential race condition by clarifying state updates.
+    -   **Importance:** The functional admin dashboard.
+    -   **Changes:** Implemented mentor admin management (password reset, suspend, delete) with corresponding modals. Added helper function  and new First/Last Name columns to both user and mentor tables. Fixed mentor table layout issues (column widths, padding, button sizes) to prevent cut-off. Added real-time search functionality for users and mentors. Integrated the new  component and added a Database navigation tab.
 -   :
-    -   **Importance:** The functional admin dashboard, uses inline CSS.
-    -   **Changes:** Implemented suspend/delete modals with specific dropdown reasons; updated frontend messaging for password reset emails; enhanced error handling to show proper messages instead of ; fixed suspend request body to match backend model; added status column (Active/Suspended) and dynamic action buttons (Suspend/Unsuspend); updated suspend modal to handle both actions.
--    (NEW):
-    -   **Importance:** React component to redirect to .
-    -   **Changes:** Created to link to the new landing page.
--    (NEW):
     -   **Importance:** Frontend component for comprehensive user registration.
-    -   **Changes:** Created to implement a 3-step registration (personal info, subscription, payment) and collect detailed user profile data.
+    -   **Changes:** Integrated to collect detailed user profile data via a 3-step process.
 -   :
-    -   **Importance:** User profile display.
-    -   **Changes:** Was found to exist but not integrated into  routing; later implicitly handled by the user signup and data collection.
+    -   **Importance:** User profile display and update.
+    -   **Changes:** Re-integrated into the main app with routing and header button. Enhanced to include communication preferences form fields and handle profile completion flow.
+-   :
+    -   **Importance:** Mentor login form.
+    -   **Changes:** Integrated with  to handle mentor password reset.
+-    (NEW):
+    -   **Importance:** Frontend interface for the MongoDB management system.
+    -   **Changes:** Created to display database overview, browse collections, export data, and show analytics.
+
 </code_architecture>
 
 <pending_tasks>
--   **External Facebook App Configuration:** Configure Facebook Developer Console for correct domain settings, privacy policy URL, and data deletion URL.
--   **External Google OAuth Configuration:** Configure Google Cloud Console with authorized JavaScript origins and redirect URIs.
--   **Additional User Authentication Methods:** Implement Apple Sign-In and Twitter OAuth.
--   **Mentor Revenue Sharing Full Implementation:** Actual financial transaction processing for payouts.
--   **User Profile Page - Phase 2 (Address Management):** Implement address form, multiple address support, validation, etc.
--   **User Profile Page - Phase 4 (Account Settings):** Implement email preferences, notification settings, and account deletion (beyond initial preferences).
--   **Address Frontend Caching/Deployment Issue:** Resolve the underlying frontend caching/hot-reload problem if it's distinct from the admin login issues.
--   **Admin Console Tab Navigation Session Persistence:** Fix the issue where clicking navigation tabs within the admin dashboard reverts to the login page.
+-   Implement Apple Sign-In.
+-   Full implementation of Mentor Revenue Sharing (beyond basic tracking and current pay-per-view commission).
+-   User Profile Page - Phase 2 (Address Management).
+-   User Profile Page - Phase 4 (Account Settings beyond communication preferences, e.g., account deletion).
+-   Admin Console Tab Navigation Session Persistence.
+-   Frontend components for Twilio SMS/2FA verification and integrating notifications into user actions (signup, mentor responses).
+-   Complete frontend implementation for the pay-per-view content system.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was tasked with addressing the user's concern about lost functionality related to **user profile data collection** during account creation. The user explicitly stated that Name, Email, Phone Number, Credit Card/Debit Card (for paying service), communication preferences (text/email/both), and tracking of all questions asked to specific mentors should be collected, and this functionality was believed to be lost.
+Immediately before this summary, the AI engineer was tasked with implementing a **pay-per-view (PPV) content system** for creators on the OnlyMentors.ai platform. The user provided explicit requirements:
+-   **Creator Pricing:** Creators can set content prices from /bin/bash.01 to 0.00.
+-   **Platform Commission:** Emergent takes a 20% commission, with a minimum fee of .99 if 20% of the total fee is less than .99.
+-   **Content Discovery:** Premium content should be discoverable within existing mentor files.
+-   **Content Types:** All existing content types (documents, videos, lessons, interactive content) must be supported.
+-   **Payment:** The system should use the existing Stripe integration but process PPV as separate transactions from subscriptions.
 
-The AI engineer acknowledged the oversight and committed to restoring this functionality at no cost. This involved:
-1.  **Creating a new frontend component, **: This component implements a 3-step registration process to collect personal information, subscription plan selection, and payment details.
-2.  **Enhancing backend endpoints in **: The  endpoint was updated to handle the comprehensive profile data.
-3.  **Updating the backend  model**: To include fields for , , , , .
-4.  **Implementing question and mentor interaction tracking**: This includes new functionality to store every question asked, which mentor was involved, and the full conversation history, with new endpoints like  and .
-5.  **Enhancing the database schema**: To include the new profile fields and interaction history within the user document.
+The AI engineer has **initiated the implementation of this PPV system**:
+1.  **Created **: This new file will encapsulate the core backend logic for managing premium content, including pricing rules, content access, and payment integration.
+2.  **Added API endpoints to **: Integration points have been created in the main server file to handle premium content interactions, such as purchase initiation, content access after payment, and status checks.
 
-This work culminated in the restoration of a comprehensive user profile data collection and tracking system, encompassing registration data, communication preferences, subscription/payment details, and a detailed history of user-mentor interactions.
+The next immediate step in this task is to develop the **frontend components** that will allow creators to upload premium content, set prices, and for users to discover and purchase this content.
 </current_work>
 
 <optional_next_step>
-No explicit next step has been requested by the user, as the last task was fully implemented.
+Create the frontend components for the pay-per-view system to enable creators to upload and sell content, and users to purchase it.
 </optional_next_step>

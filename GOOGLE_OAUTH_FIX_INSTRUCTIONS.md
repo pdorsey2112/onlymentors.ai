@@ -21,7 +21,7 @@
 ### Step 3: Update Authorized Domains
 In the OAuth client configuration, add these domains to **Authorized JavaScript origins**:
 ```
-https://user-data-restore.preview.emergentagent.com
+https://mentor-marketplace.preview.emergentagent.com
 https://onlymentors.ai
 https://www.onlymentors.ai
 http://localhost:3000
@@ -30,8 +30,8 @@ http://localhost:3000
 ### Step 4: Update Redirect URIs
 In the **Authorized redirect URIs** section, add:
 ```
-https://user-data-restore.preview.emergentagent.com
-https://user-data-restore.preview.emergentagent.com/auth/google
+https://mentor-marketplace.preview.emergentagent.com
+https://mentor-marketplace.preview.emergentagent.com/auth/google
 https://onlymentors.ai
 https://onlymentors.ai/auth/google
 http://localhost:3000

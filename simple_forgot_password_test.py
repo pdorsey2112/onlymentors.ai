@@ -16,7 +16,7 @@ load_dotenv()
 class SimpleForgotPasswordTester:
     def __init__(self):
         # Get backend URL from environment
-        self.backend_url = os.getenv("REACT_APP_BACKEND_URL", "https://user-data-restore.preview.emergentagent.com")
+        self.backend_url = os.getenv("REACT_APP_BACKEND_URL", "https://mentor-marketplace.preview.emergentagent.com")
         self.api_base = f"{self.backend_url}/api"
         
         # Test results
