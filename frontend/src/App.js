@@ -1596,31 +1596,34 @@ function MainApp() {
       {/* Premium Content Discovery Modal */}
       {showPremiumContentDiscovery && selectedPremiumMentor && (
         <PremiumContentDiscovery
-          mentor={selectedPremiumMentor}
+          mentorId={selectedPremiumMentor.id}
+          mentorName={selectedPremiumMentor.name}
+          onPurchase={(contentItem) => {
+            setSelectedPremiumContent(contentItem);
+            setShowPremiumContentDiscovery(false);
+            setShowPremiumContentPurchase(true);
+          }}
           onClose={() => {
             setShowPremiumContentDiscovery(false);
             setSelectedPremiumMentor(null);
-          }}
-          onPurchase={(contentItem) => {
-            setShowPremiumContentDiscovery(false);
-            setShowPremiumContentPurchase(true);
-            // Pass the content item to purchase component if needed
           }}
         />
       )}
 
       {/* Premium Content Purchase Modal */}
-      {showPremiumContentPurchase && selectedPremiumMentor && (
+      {showPremiumContentPurchase && selectedPremiumContent && (
         <PremiumContentPurchase
-          mentor={selectedPremiumMentor}
-          onClose={() => {
+          content={selectedPremiumContent}
+          user={user}
+          onSuccess={(result) => {
             setShowPremiumContentPurchase(false);
+            setSelectedPremiumContent(null);
             setSelectedPremiumMentor(null);
+            setSuccess(`Successfully purchased "${result.content_title}"! You now have access to this premium content.`);
           }}
-          onSuccess={() => {
+          onCancel={() => {
             setShowPremiumContentPurchase(false);
-            setSelectedPremiumMentor(null);
-            setSuccess('Premium content purchased successfully!');
+            setSelectedPremiumContent(null);
           }}
         />
       )}
