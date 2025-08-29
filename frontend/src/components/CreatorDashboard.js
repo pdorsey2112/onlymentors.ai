@@ -70,6 +70,14 @@ const CreatorDashboard = () => {
     setShowContentManagement(true);
   };
 
+  const handleUploadPremiumContent = () => {
+    setShowPremiumContentUpload(true);
+  };
+
+  const handleManagePremiumContent = () => {
+    setShowPremiumContentManagement(true);
+  };
+
   const handleSaveSettings = async () => {
     // TODO: Implement settings save functionality
     alert('Settings saved successfully!');
