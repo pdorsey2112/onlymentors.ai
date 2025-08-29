@@ -224,12 +224,6 @@ function MainApp() {
   const [questionHistory, setQuestionHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   // Removed selectAll state - now limiting to 5 mentors max
-  
-  // Premium content states
-  const [selectedPremiumMentor, setSelectedPremiumMentor] = useState(null);
-  const [showPremiumContentDiscovery, setShowPremiumContentDiscovery] = useState(false);
-  const [showPremiumContentPurchase, setShowPremiumContentPurchase] = useState(false);
-  const [selectedPremiumContent, setSelectedPremiumContent] = useState(null);
 
   // Category icons mapping
   const categoryIcons = {
