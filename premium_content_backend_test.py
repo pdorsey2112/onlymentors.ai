@@ -59,7 +59,7 @@ class PremiumContentTester:
                 "email": f"testcreator_{uuid.uuid4().hex[:8]}@example.com",
                 "password": "TestPassword123!",
                 "full_name": "Test Creator",
-                "account_name": "TestCreator",
+                "account_name": f"TestCreator_{uuid.uuid4().hex[:8]}",
                 "description": "Test creator for premium content testing",
                 "monthly_price": 150.0,
                 "category": "business",
