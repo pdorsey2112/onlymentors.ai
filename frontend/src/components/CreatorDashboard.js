@@ -282,6 +282,12 @@ const CreatorDashboard = () => {
                 onClick={setActiveTab}
               />
               <TabButton
+                id="premium-content"
+                label="Premium Content"
+                active={activeTab === 'premium-content'}
+                onClick={setActiveTab}
+              />
+              <TabButton
                 id="messages"
                 label="Messages"
                 active={activeTab === 'messages'}
