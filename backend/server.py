@@ -4029,6 +4029,305 @@ async def get_platform_health(current_admin = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get platform health: {str(e)}")
 
+# ================================
+# PREMIUM CONTENT ENDPOINTS (PAY-PER-VIEW)
+# ================================
+
+@app.post("/api/creator/content/upload")
+async def upload_premium_content(
+    content_data: PremiumContentCreate,
+    current_creator = Depends(get_current_creator)
+):
+    """Upload premium content for pay-per-view"""
+    try:
+        # Validate pricing
+        if not validate_content_price(content_data.price):
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Price must be between $0.01 and $50.00. Provided: ${content_data.price}"
+            )
+        
+        # Calculate pricing breakdown
+        pricing = calculate_content_pricing(content_data.price)
+        
+        # Create content record
+        content_record = {
+            "title": content_data.title,
+            "description": content_data.description,
+            "content_type": content_data.content_type,
+            "category": content_data.category,
+            "price": content_data.price,
+            "tags": content_data.tags,
+            "preview_available": content_data.preview_available
+        }
+        
+        content = await premium_content_manager.create_content_record(
+            current_creator["creator_id"], 
+            content_record
+        )
+        
+        # Store in database
+        await db.premium_content.insert_one(content)
+        
+        # Update creator's content count
+        await db.creators.update_one(
+            {"creator_id": current_creator["creator_id"]},
+            {"$inc": {"premium_content_count": 1}}
+        )
+        
+        return {
+            "success": True,
+            "content_id": content["content_id"],
+            "pricing_breakdown": pricing,
+            "message": f"Premium content created successfully. You'll earn ${pricing['creator_earnings']:.2f} per purchase."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create premium content: {str(e)}")
+
+@app.get("/api/mentor/{mentor_id}/premium-content")
+async def get_mentor_premium_content(
+    mentor_id: str,
+    content_type: str = Query(None),
+    category: str = Query(None)
+):
+    """Get premium content for a specific mentor"""
+    try:
+        # Build query
+        query = {"creator_id": mentor_id, "is_active": True}
+        
+        if content_type:
+            query["content_type"] = content_type
+        if category:
+            query["category"] = category
+        
+        # Get content
+        cursor = db.premium_content.find(query, {
+            "file_path": 0,  # Don't expose file paths
+            "payment_history": 0
+        }).sort("created_at", -1)
+        
+        content_list = await cursor.to_list(length=None)
+        
+        # Serialize for JSON response
+        for content in content_list:
+            content["_id"] = str(content["_id"]) if "_id" in content else None
+            content["created_at"] = content["created_at"].isoformat() if content.get("created_at") else None
+            content["updated_at"] = content["updated_at"].isoformat() if content.get("updated_at") else None
+        
+        return {
+            "success": True,
+            "mentor_id": mentor_id,
+            "content_count": len(content_list),
+            "content": content_list
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get premium content: {str(e)}")
+
+@app.post("/api/content/purchase")
+async def purchase_premium_content(
+    purchase_request: ContentPurchaseRequest,
+    current_user = Depends(get_current_user)
+):
+    """Purchase premium content with Stripe payment"""
+    try:
+        # Get content details
+        content = await db.premium_content.find_one({"content_id": purchase_request.content_id})
+        if not content:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        if not content.get("is_active", True):
+            raise HTTPException(status_code=400, detail="Content is no longer available")
+        
+        # Check if user already purchased this content
+        existing_purchase = await db.content_purchases.find_one({
+            "content_id": purchase_request.content_id,
+            "user_id": current_user["user_id"],
+            "access_granted": True
+        })
+        
+        if existing_purchase:
+            return {
+                "success": True,
+                "message": "You already own this content",
+                "access_granted": True,
+                "purchase_id": existing_purchase["purchase_id"]
+            }
+        
+        # Create Stripe payment intent
+        import stripe
+        stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+        
+        # Convert to cents for Stripe
+        amount_cents = int(content["price"] * 100)
+        
+        payment_intent = stripe.PaymentIntent.create(
+            amount=amount_cents,
+            currency='usd',
+            payment_method=purchase_request.payment_method_id,
+            confirmation_method='manual',
+            confirm=True,
+            metadata={
+                'content_id': purchase_request.content_id,
+                'user_id': current_user["user_id"],
+                'content_title': content["title"],
+                'creator_id': content["creator_id"]
+            }
+        )
+        
+        if payment_intent.status == 'succeeded':
+            # Process successful purchase
+            purchase = await premium_content_manager.process_content_purchase(
+                purchase_request.content_id,
+                current_user["user_id"],
+                payment_intent.id
+            )
+            
+            # Store purchase record
+            await db.content_purchases.insert_one(purchase)
+            
+            # Update content statistics
+            await db.premium_content.update_one(
+                {"content_id": purchase_request.content_id},
+                {
+                    "$inc": {
+                        "total_purchases": 1,
+                        "total_revenue": content["price"]
+                    }
+                }
+            )
+            
+            # Update creator earnings
+            await db.creators.update_one(
+                {"creator_id": content["creator_id"]},
+                {
+                    "$inc": {
+                        "premium_earnings": content["creator_earnings"],
+                        "total_content_sales": 1
+                    }
+                }
+            )
+            
+            # Log revenue for platform
+            platform_revenue = {
+                "revenue_id": str(uuid.uuid4()),
+                "source": "premium_content",
+                "content_id": purchase_request.content_id,
+                "user_id": current_user["user_id"],
+                "creator_id": content["creator_id"],
+                "gross_amount": content["price"],
+                "platform_fee": content["platform_fee"],
+                "creator_earnings": content["creator_earnings"],
+                "created_at": datetime.utcnow()
+            }
+            await db.platform_revenue.insert_one(platform_revenue)
+            
+            return {
+                "success": True,
+                "message": "Content purchased successfully!",
+                "purchase_id": purchase["purchase_id"],
+                "access_granted": True,
+                "content_title": content["title"]
+            }
+            
+        else:
+            raise HTTPException(status_code=400, detail="Payment failed")
+        
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=f"Payment error: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Purchase failed: {str(e)}")
+
+@app.get("/api/content/{content_id}/access")
+async def check_content_access(
+    content_id: str,
+    current_user = Depends(get_current_user)
+):
+    """Check if user has access to premium content"""
+    try:
+        # Check purchase record
+        purchase = await db.content_purchases.find_one({
+            "content_id": content_id,
+            "user_id": current_user["user_id"],
+            "access_granted": True
+        })
+        
+        if purchase:
+            # Update last accessed time
+            await db.content_purchases.update_one(
+                {"purchase_id": purchase["purchase_id"]},
+                {"$set": {"last_accessed": datetime.utcnow()}}
+            )
+            
+            return {
+                "access_granted": True,
+                "purchase_date": purchase["purchase_date"].isoformat(),
+                "download_count": purchase.get("download_count", 0),
+                "max_downloads": purchase.get("max_downloads", 10)
+            }
+        else:
+            return {"access_granted": False}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check access: {str(e)}")
+
+@app.get("/api/creator/content/analytics")
+async def get_creator_content_analytics(current_creator = Depends(get_current_creator)):
+    """Get analytics for creator's premium content"""
+    try:
+        # Get content summary
+        content_cursor = db.premium_content.find({"creator_id": current_creator["creator_id"]})
+        content_list = await content_cursor.to_list(length=None)
+        
+        total_content = len(content_list)
+        total_sales = sum(content.get("total_purchases", 0) for content in content_list)
+        total_revenue = sum(content.get("total_revenue", 0) for content in content_list)
+        creator_earnings = sum(content.get("creator_earnings", 0) * content.get("total_purchases", 0) for content in content_list)
+        
+        # Content by type
+        content_by_type = {}
+        for content in content_list:
+            content_type = content.get("content_type", "unknown")
+            if content_type not in content_by_type:
+                content_by_type[content_type] = {"count": 0, "sales": 0, "revenue": 0}
+            content_by_type[content_type]["count"] += 1
+            content_by_type[content_type]["sales"] += content.get("total_purchases", 0)
+            content_by_type[content_type]["revenue"] += content.get("total_revenue", 0)
+        
+        # Top performing content
+        top_content = sorted(content_list, key=lambda x: x.get("total_revenue", 0), reverse=True)[:5]
+        
+        analytics = {
+            "summary": {
+                "total_content": total_content,
+                "total_sales": total_sales,
+                "total_revenue": total_revenue,
+                "creator_earnings": creator_earnings,
+                "platform_fees_paid": total_revenue - creator_earnings
+            },
+            "content_by_type": content_by_type,
+            "top_performing_content": [
+                {
+                    "content_id": content["content_id"],
+                    "title": content["title"],
+                    "sales": content.get("total_purchases", 0),
+                    "revenue": content.get("total_revenue", 0),
+                    "price": content["price"]
+                }
+                for content in top_content
+            ]
+        }
+        
+        return analytics
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get analytics: {str(e)}")
+
 @app.post("/api/admin/mentors/manage")
 async def manage_mentors(
     request: MentorManagementRequest,
