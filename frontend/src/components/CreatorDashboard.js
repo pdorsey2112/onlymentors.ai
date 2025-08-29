@@ -13,6 +13,8 @@ const CreatorDashboard = () => {
   const [showPublicProfile, setShowPublicProfile] = useState(false);
   const [showContentUpload, setShowContentUpload] = useState(false);
   const [showContentManagement, setShowContentManagement] = useState(false);
+  const [showPremiumContentUpload, setShowPremiumContentUpload] = useState(false);
+  const [showPremiumContentManagement, setShowPremiumContentManagement] = useState(false);
   const [stats, setStats] = useState({
     total_earnings: 0,
     monthly_earnings: 0,
