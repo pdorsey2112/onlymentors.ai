@@ -230,6 +230,12 @@ function MainApp() {
   const [selectedPremiumMentor, setSelectedPremiumMentor] = useState(null);
   const [showPremiumContentDiscovery, setShowPremiumContentDiscovery] = useState(false);
   const [showPremiumContentPurchase, setShowPremiumContentPurchase] = useState(false);
+  const [selectedPremiumContent, setSelectedPremiumContent] = useState(null);
+  
+  // Premium content states
+  const [selectedPremiumMentor, setSelectedPremiumMentor] = useState(null);
+  const [showPremiumContentDiscovery, setShowPremiumContentDiscovery] = useState(false);
+  const [showPremiumContentPurchase, setShowPremiumContentPurchase] = useState(false);
 
   // Category icons mapping
   const categoryIcons = {
