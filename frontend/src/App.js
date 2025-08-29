@@ -1572,41 +1572,6 @@ function MainApp() {
         })()}
       </main>
 
-      {/* Premium Content Discovery Modal */}
-      {showPremiumContentDiscovery && selectedPremiumMentor && (
-        <PremiumContentDiscovery
-          mentorId={selectedPremiumMentor.id}
-          mentorName={selectedPremiumMentor.name}
-          onPurchase={(contentItem) => {
-            setSelectedPremiumContent(contentItem);
-            setShowPremiumContentDiscovery(false);
-            setShowPremiumContentPurchase(true);
-          }}
-          onClose={() => {
-            setShowPremiumContentDiscovery(false);
-            setSelectedPremiumMentor(null);
-          }}
-        />
-      )}
-
-      {/* Premium Content Purchase Modal */}
-      {showPremiumContentPurchase && selectedPremiumContent && (
-        <PremiumContentPurchase
-          content={selectedPremiumContent}
-          user={user}
-          onSuccess={(result) => {
-            setShowPremiumContentPurchase(false);
-            setSelectedPremiumContent(null);
-            setSelectedPremiumMentor(null);
-            setSuccess(`Successfully purchased "${result.content_title}"! You now have access to this premium content.`);
-          }}
-          onCancel={() => {
-            setShowPremiumContentPurchase(false);
-            setSelectedPremiumContent(null);
-          }}
-        />
-      )}
-
     </div>
   );
 }
