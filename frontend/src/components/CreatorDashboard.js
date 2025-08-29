@@ -3,6 +3,8 @@ import CreatorVerification from './CreatorVerification';
 import ContentUpload from './ContentUpload';
 import MessagingInterface from './MessagingInterface';
 import EnhancedContentManagement from './EnhancedContentManagement';
+import PremiumContentUpload from './PremiumContentUpload';
+import PremiumContentManagement from './PremiumContentManagement';
 
 const CreatorDashboard = () => {
   const [creator, setCreator] = useState(null);
