@@ -60,9 +60,10 @@ class PremiumContentTester:
                 "password": "TestPassword123!",
                 "full_name": "Test Creator",
                 "account_name": "TestCreator",
-                "bio": "Test creator for premium content testing",
+                "description": "Test creator for premium content testing",
+                "monthly_price": 150.0,
                 "category": "business",
-                "hourly_rate": 150.0
+                "expertise_areas": ["business strategy", "entrepreneurship"]
             }
             
             async with self.session.post(f"{BACKEND_URL}/creators/signup", json=creator_data) as response:
