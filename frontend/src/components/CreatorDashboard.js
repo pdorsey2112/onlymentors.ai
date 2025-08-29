@@ -494,6 +494,115 @@ const CreatorDashboard = () => {
               </div>
             )}
 
+            {activeTab === 'premium-content' && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">Premium Content (Pay-Per-View)</h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Create exclusive content for one-time purchase. You keep 80% of revenue (minimum $2.99 platform fee).
+                    </p>
+                  </div>
+                  <div className="flex space-x-3">
+                    <button 
+                      onClick={handleManagePremiumContent}
+                      className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700"
+                    >
+                      Manage Premium Content
+                    </button>
+                    <button 
+                      onClick={handleUploadPremiumContent}
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700"
+                    >
+                      Create Premium Content
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Premium Content Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                    <div className="flex items-center">
+                      <div className="p-3 rounded-lg bg-purple-100">
+                        <span className="text-purple-600 text-xl">💎</span>
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600">Premium Content</p>
+                        <p className="text-2xl font-bold text-gray-900">{stats.premium_content_count || 0}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                    <div className="flex items-center">
+                      <div className="p-3 rounded-lg bg-green-100">
+                        <span className="text-green-600 text-xl">💰</span>
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600">Premium Earnings</p>
+                        <p className="text-2xl font-bold text-gray-900">${(stats.premium_earnings || 0).toFixed(2)}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <div className="flex items-center">
+                      <div className="p-3 rounded-lg bg-blue-100">
+                        <span className="text-blue-600 text-xl">📊</span>
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600">Total Sales</p>
+                        <p className="text-2xl font-bold text-gray-900">{stats.total_content_sales || 0}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* How Premium Content Works */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">How Premium Content Works</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-purple-600 text-xl">1️⃣</span>
+                      </div>
+                      <h4 className="font-medium text-gray-900 mb-2">Create & Price</h4>
+                      <p className="text-sm text-gray-600">Upload exclusive content and set a price between $0.01-$50.00</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-purple-600 text-xl">2️⃣</span>
+                      </div>
+                      <h4 className="font-medium text-gray-900 mb-2">Users Discover</h4>
+                      <p className="text-sm text-gray-600">Your premium content appears in your mentor profile for users to discover</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-purple-600 text-xl">3️⃣</span>
+                      </div>
+                      <h4 className="font-medium text-gray-900 mb-2">Earn Revenue</h4>
+                      <p className="text-sm text-gray-600">Keep 80% of each sale (min $2.99 platform fee) with instant payouts</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Start */}
+                <div className="text-center py-8">
+                  <div className="text-gray-400 text-6xl mb-4">🚀</div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to Start Earning?</h3>
+                  <p className="text-gray-600 mb-4">Create your first premium content and start earning from your expertise</p>
+                  <button 
+                    onClick={handleUploadPremiumContent}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium"
+                  >
+                    Create Your First Premium Content
+                  </button>
+                </div>
+              </div>
+            )}
+
             {activeTab === 'messages' && (
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Direct Messages</h2>
