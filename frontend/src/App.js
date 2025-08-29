@@ -1592,6 +1592,38 @@ function MainApp() {
         })()}
       </main>
 
+      {/* Premium Content Discovery Modal */}
+      {showPremiumContentDiscovery && selectedPremiumMentor && (
+        <PremiumContentDiscovery
+          mentor={selectedPremiumMentor}
+          onClose={() => {
+            setShowPremiumContentDiscovery(false);
+            setSelectedPremiumMentor(null);
+          }}
+          onPurchase={(contentItem) => {
+            setShowPremiumContentDiscovery(false);
+            setShowPremiumContentPurchase(true);
+            // Pass the content item to purchase component if needed
+          }}
+        />
+      )}
+
+      {/* Premium Content Purchase Modal */}
+      {showPremiumContentPurchase && selectedPremiumMentor && (
+        <PremiumContentPurchase
+          mentor={selectedPremiumMentor}
+          onClose={() => {
+            setShowPremiumContentPurchase(false);
+            setSelectedPremiumMentor(null);
+          }}
+          onSuccess={() => {
+            setShowPremiumContentPurchase(false);
+            setSelectedPremiumMentor(null);
+            setSuccess('Premium content purchased successfully!');
+          }}
+        />
+      )}
+
     </div>
   );
 }
