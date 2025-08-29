@@ -27,6 +27,8 @@ import { Alert, AlertDescription } from './components/ui/alert';
 import { Checkbox } from './components/ui/checkbox';
 import { Brain, Users, Heart, Atom, Crown, MessageSquare, Sparkles, Star, Lock, Zap, Search, Filter, CheckCircle, User } from 'lucide-react';
 import { getBackendURL } from './config';
+import PremiumContentDiscovery from './components/PremiumContentDiscovery';
+import PremiumContentPurchase from './components/PremiumContentPurchase';
 import './App.css';
 
 function App() {
