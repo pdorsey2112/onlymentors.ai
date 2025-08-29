@@ -693,6 +693,23 @@ const CreatorDashboard = () => {
           onUploadSuccess={handleContentUploadSuccess}
         />
       )}
+
+      {/* Premium Content Upload Modal */}
+      {showPremiumContentUpload && (
+        <PremiumContentUpload
+          creatorId={creator.creator_id}
+          onClose={() => setShowPremiumContentUpload(false)}
+          onUploadSuccess={handleContentUploadSuccess}
+        />
+      )}
+
+      {/* Premium Content Management Modal */}
+      {showPremiumContentManagement && (
+        <PremiumContentManagement
+          creatorId={creator.creator_id}
+          onClose={() => setShowPremiumContentManagement(false)}
+        />
+      )}
     </div>
   );
 };
