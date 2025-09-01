@@ -317,7 +317,7 @@ class CreatorTokenAuthTester:
         form_data = {
             "title": "Test Content Upload",
             "description": "Testing content upload with fixed creatorToken authentication",
-            "content_type": "article",
+            "content_type": "document",  # Use valid content type
             "category": "education",
             "tags": '["test", "authentication", "fix"]'  # JSON string as required
         }
