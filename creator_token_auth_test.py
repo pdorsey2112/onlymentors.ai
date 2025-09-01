@@ -221,7 +221,7 @@ class CreatorTokenAuthTester:
         success, response = self.run_test(
             "Creator Profile Access",
             "GET",
-            f"api/creators/{self.creator_data.get('creator_id')}/profile",
+            f"api/creators/{self.creator_data.get('creator_id')}",
             200
         )
         
