@@ -2688,9 +2688,21 @@ async def get_creator_content(
         if current_creator["creator_id"] != creator_id:
             raise HTTPException(status_code=403, detail="Access denied: can only access your own content")
         
-        content_list = await db.creator_content.find(
+        # Get both standard content and premium content
+        standard_content = await db.creator_content.find(
             {"creator_id": creator_id}
-        ).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+        ).sort("created_at", -1).to_list(None)
+        
+        premium_content = await db.premium_content.find(
+            {"creator_id": creator_id}
+        ).sort("created_at", -1).to_list(None)
+        
+        # Combine and sort all content by creation date
+        all_content = standard_content + premium_content
+        all_content.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        
+        # Apply pagination to combined results
+        content_list = all_content[offset:offset + limit]
         
         # Convert ObjectId to string for JSON serialization
         for content in content_list:
