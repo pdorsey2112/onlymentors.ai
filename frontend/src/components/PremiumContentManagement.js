@@ -162,6 +162,11 @@ const PremiumContentManagement = ({ creatorId, onClose, onContentUpdate }) => {
         
         // Remove content from local state
         setContent(prev => prev.filter(item => item.content_id !== contentId));
+        
+        // Refresh dashboard stats
+        if (onContentUpdate) {
+          onContentUpdate();
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.detail || 'Failed to delete premium content');
