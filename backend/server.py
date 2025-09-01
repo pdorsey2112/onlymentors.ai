@@ -4052,25 +4052,50 @@ async def upload_premium_content(
 ):
     """Upload premium content for pay-per-view"""
     try:
+        # Parse tags
+        import json
+        try:
+            tag_list = json.loads(tags) if tags != "[]" else []
+        except:
+            tag_list = []
+        
         # Validate pricing
-        if not validate_content_price(content_data.price):
+        if not validate_content_price(price):
             raise HTTPException(
                 status_code=400, 
-                detail=f"Price must be between $0.01 and $50.00. Provided: ${content_data.price}"
+                detail=f"Price must be between $0.01 and $50.00. Provided: ${price}"
             )
         
         # Calculate pricing breakdown
-        pricing = calculate_content_pricing(content_data.price)
+        pricing = calculate_content_pricing(price)
+        
+        # Handle file upload if provided
+        file_path = None
+        if content_file and content_file.size > 0:
+            # Create upload directory if it doesn't exist
+            upload_dir = "/app/uploads/premium_content"
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            # Generate unique filename
+            file_extension = content_file.filename.split('.')[-1] if '.' in content_file.filename else 'bin'
+            unique_filename = f"{current_creator['creator_id']}_{int(time.time())}_{uuid.uuid4().hex[:8]}.{file_extension}"
+            file_path = f"{upload_dir}/{unique_filename}"
+            
+            # Save file
+            content = await content_file.read()
+            with open(file_path, "wb") as f:
+                f.write(content)
         
         # Create content record
         content_record = {
-            "title": content_data.title,
-            "description": content_data.description,
-            "content_type": content_data.content_type,
-            "category": content_data.category,
-            "price": content_data.price,
-            "tags": content_data.tags,
-            "preview_available": content_data.preview_available
+            "title": title,
+            "description": description,
+            "content_type": content_type,
+            "category": category,
+            "price": price,
+            "tags": tag_list,
+            "preview_available": preview_available,
+            "file_path": file_path
         }
         
         content = await premium_content_manager.create_content_record(
