@@ -361,6 +361,37 @@ const PremiumContentManagement = ({ creatorId, onClose }) => {
                         <Calendar className="h-3 w-3 mr-1" />
                         Created {formatDate(item.created_at)}
                       </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEditContent(item)}
+                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 text-sm"
+                            title="Edit Content"
+                          >
+                            <Edit className="h-4 w-4" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            onClick={() => handleDuplicateContent(item.content_id)}
+                            disabled={loading}
+                            className="flex items-center space-x-1 text-green-600 hover:text-green-800 text-sm disabled:opacity-50"
+                            title="Duplicate Content"
+                          >
+                            <Copy className="h-4 w-4" />
+                            <span>Copy</span>
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => setDeleteConfirm(item.content_id)}
+                          className="flex items-center space-x-1 text-red-600 hover:text-red-800 text-sm"
+                          title="Delete Content"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
