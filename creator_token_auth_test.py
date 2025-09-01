@@ -167,6 +167,12 @@ class CreatorTokenAuthTester:
             print("❌ No creator data available for login test")
             return False
         
+        # Get email from creator data
+        creator_email = self.creator_data.get('email')
+        if not creator_email:
+            print("❌ No email found in creator data")
+            return False
+        
         # Test creator login with same credentials
         success, response = self.run_test(
             "Creator Login",
@@ -174,7 +180,7 @@ class CreatorTokenAuthTester:
             "api/creators/login",
             200,
             data={
-                "email": self.creator_data.get('email'),
+                "email": creator_email,
                 "password": "CreatorTest123!"
             }
         )
