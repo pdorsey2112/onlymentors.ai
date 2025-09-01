@@ -73,9 +73,11 @@ class ComprehensiveCounterTester:
             "email": TEST_CREATOR_EMAIL,
             "password": TEST_CREATOR_PASSWORD,
             "full_name": TEST_CREATOR_NAME,
-            "expertise": "Comprehensive Counter Testing",
-            "bio": "Testing comprehensive premium content counter functionality",
-            "hourly_rate": 75.0
+            "account_name": "comprehensive-counter-test",
+            "description": "Testing comprehensive premium content counter functionality",
+            "monthly_price": 75.0,
+            "category": "business",
+            "expertise_areas": ["testing", "premium content", "counter verification"]
         }
         
         try:
