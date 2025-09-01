@@ -28,6 +28,8 @@ class ContentUploadTester:
         self.creator_token = None
         self.creator_data = None
         self.creator_id = None
+        self.creator_email = None
+        self.creator_password = None
         self.tests_run = 0
         self.tests_passed = 0
         self.uploaded_content_ids = []
