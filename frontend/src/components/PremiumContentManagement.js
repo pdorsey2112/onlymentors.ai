@@ -120,6 +120,11 @@ const PremiumContentManagement = ({ creatorId, onClose, onContentUpdate }) => {
         setContent(prev => prev.map(item => 
           item.content_id === editingContent.content_id ? result.content : item
         ));
+        
+        // Refresh dashboard stats
+        if (onContentUpdate) {
+          onContentUpdate();
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.detail || 'Failed to update premium content');
