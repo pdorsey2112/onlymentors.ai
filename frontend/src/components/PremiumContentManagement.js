@@ -413,6 +413,155 @@ const PremiumContentManagement = ({ creatorId, onClose }) => {
           </button>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && editingContent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="bg-blue-600 text-white p-6">
+              <h3 className="text-xl font-bold">Edit Premium Content</h3>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                <Input
+                  value={editForm.title}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Content title"
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                <Textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe your premium content..."
+                  rows={4}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price * ($0.01 - $50.00)</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-3 text-gray-500">$</span>
+                    <Input
+                      type="number"
+                      value={editForm.price}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, price: e.target.value }))}
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0.01"
+                      max="50.00"
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <select
+                    value={editForm.category}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select category</option>
+                    <option value="business">Business</option>
+                    <option value="sports">Sports</option>
+                    <option value="health">Health</option>
+                    <option value="science">Science</option>
+                    <option value="relationships">Relationships</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+                <Input
+                  value={editForm.tags}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, tags: e.target.value }))}
+                  placeholder="tutorial, beginner, advanced, tips"
+                  className="w-full"
+                />
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="edit_preview_available"
+                  checked={editForm.preview_available}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, preview_available: e.target.checked }))}
+                  className="rounded text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="edit_preview_available" className="ml-2 text-sm text-gray-700">
+                  Offer free preview (recommended to increase sales)
+                </label>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-200 p-6 flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingContent(null);
+                }}
+                disabled={loading}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateContent}
+                disabled={loading || !editForm.title.trim() || !editForm.description.trim() || !editForm.price}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {loading ? 'Updating...' : 'Update Content'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div className="bg-red-600 text-white p-6">
+              <h3 className="text-xl font-bold">Delete Premium Content</h3>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-gray-700 mb-4">
+                Are you sure you want to delete this premium content? This action cannot be undone.
+              </p>
+              <p className="text-sm text-gray-500">
+                <strong>Note:</strong> Any users who have purchased this content will lose access.
+              </p>
+            </div>
+
+            <div className="border-t border-gray-200 p-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                disabled={loading}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteContent(deleteConfirm)}
+                disabled={loading}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {loading ? 'Deleting...' : 'Delete Content'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
