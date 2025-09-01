@@ -240,6 +240,56 @@ class PremiumContentManagementTester:
             self.log_test("Premium Content Analytics Endpoint", False, f"Status: {response.status_code if response else 'None'}, Error: {error_msg}")
             return False
 
+    def test_database_collection_consistency(self):
+        """Test to identify the database collection mismatch issue"""
+        print("\n🔍 Testing Database Collection Consistency...")
+        
+        if not self.creator_token or not self.creator_id:
+            self.log_test("Database Collection Consistency", False, "No creator authentication")
+            return False
+
+        # Upload premium content first
+        upload_data = {
+            'title': 'Collection Test Content',
+            'description': 'Testing database collection consistency',
+            'content_type': 'document',
+            'category': 'business',
+            'price': 5.99,
+            'tags': '["test", "collection"]',
+            'preview_available': False
+        }
+        
+        test_content = "Testing collection consistency."
+        files = {
+            'content_file': ('collection_test.txt', test_content, 'text/plain')
+        }
+        
+        upload_response = self.run_api_request('POST', 'creator/content/upload', upload_data, files=files)
+        if upload_response and upload_response.status_code in [200, 201]:
+            self.log_test("Collection Test - Premium Upload", True)
+            
+            # Now check if it appears in creator content retrieval
+            retrieval_response = self.run_api_request('GET', f'creators/{self.creator_id}/content')
+            if retrieval_response and retrieval_response.status_code == 200:
+                content_data = retrieval_response.json()
+                uploaded_content = content_data.get('content', [])
+                
+                found_test_content = False
+                for content in uploaded_content:
+                    if content.get('title') == 'Collection Test Content':
+                        found_test_content = True
+                        break
+                
+                if found_test_content:
+                    self.log_test("Collection Test - Content Found in Retrieval", True)
+                else:
+                    self.log_test("Collection Test - Content Found in Retrieval", False, 
+                                "CONFIRMED: Premium content upload and creator content retrieval use different database collections")
+            else:
+                self.log_test("Collection Test - Retrieval Failed", False, "Could not test retrieval")
+        else:
+            self.log_test("Collection Test - Premium Upload", False, "Upload failed")
+
     def test_authentication_security(self):
         """Test authentication and authorization security"""
         print("\n🔒 Testing Authentication and Security...")
