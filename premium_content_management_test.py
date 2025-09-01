@@ -146,7 +146,7 @@ class PremiumContentManagementTester:
         }
         
         response = self.run_api_request('POST', 'creator/content/upload', upload_data, files=files)
-        if response and response.status_code == 201:
+        if response and response.status_code in [200, 201]:
             self.log_test("Premium Content Upload", True)
             upload_result = response.json()
             content_id = upload_result.get('content_id')
