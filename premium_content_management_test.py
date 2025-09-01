@@ -85,9 +85,11 @@ class PremiumContentManagementTester:
             "email": creator_email,
             "password": creator_password,
             "full_name": "Test Premium Creator",
-            "bio": "Testing premium content management",
-            "expertise": "Content Creation",
-            "hourly_rate": 150.0
+            "account_name": f"testcreator{timestamp}",
+            "description": "Testing premium content management functionality",
+            "monthly_price": 29.99,
+            "category": "business",
+            "expertise_areas": ["Content Creation", "Testing", "Premium Content"]
         }
         
         response = self.run_api_request('POST', 'creators/signup', signup_data)
