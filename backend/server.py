@@ -4040,7 +4040,14 @@ async def get_platform_health(current_admin = Depends(get_current_admin)):
 
 @app.post("/api/creator/content/upload")
 async def upload_premium_content(
-    content_data: PremiumContentCreate,
+    title: str = Form(...),
+    description: str = Form(...),
+    content_type: str = Form(...),
+    category: str = Form(None),
+    price: float = Form(...),
+    tags: str = Form("[]"),
+    preview_available: bool = Form(False),
+    content_file: UploadFile = File(None),
     current_creator = Depends(get_current_creator)
 ):
     """Upload premium content for pay-per-view"""
