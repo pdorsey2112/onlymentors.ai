@@ -390,6 +390,7 @@ class PremiumContentManagementTester:
         # Core management functionality tests
         self.test_creator_content_retrieval()
         self.test_premium_content_analytics()
+        self.test_database_collection_consistency()
         self.test_authentication_security()
         self.test_end_to_end_management_flow()
         
