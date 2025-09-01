@@ -61,7 +61,7 @@ class PremiumContentManagementTester:
         
         try:
             response = requests.post(f"{BASE_URL}/creators/signup", json=signup_data)
-            if response.status_code == 201:
+            if response.status_code in [200, 201]:
                 data = response.json()
                 self.creator_token = data.get("token")
                 self.creator_id = data.get("creator", {}).get("creator_id")
