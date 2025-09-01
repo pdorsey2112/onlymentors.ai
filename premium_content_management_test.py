@@ -299,19 +299,25 @@ class PremiumContentManagementTester:
         self.creator_token = None
         
         response = self.run_api_request('GET', f'creators/{self.creator_id}/content')
-        if response and response.status_code in [401, 403]:
-            self.log_test("Unauthenticated Access Blocked", True)
+        if response:
+            if response.status_code in [401, 403]:
+                self.log_test("Unauthenticated Access Blocked", True)
+            else:
+                self.log_test("Unauthenticated Access Blocked", False, f"Expected 401/403, got {response.status_code}")
         else:
-            self.log_test("Unauthenticated Access Blocked", False, f"Expected 401/403, got {response.status_code if response else 'None'}")
+            self.log_test("Unauthenticated Access Blocked", False, "Network error - could not test")
         
         # Test access with invalid token
         self.creator_token = "invalid_token_12345"
         
         response = self.run_api_request('GET', f'creators/{self.creator_id}/content')
-        if response and response.status_code in [401, 403]:
-            self.log_test("Invalid Token Rejected", True)
+        if response:
+            if response.status_code in [401, 403]:
+                self.log_test("Invalid Token Rejected", True)
+            else:
+                self.log_test("Invalid Token Rejected", False, f"Expected 401/403, got {response.status_code}")
         else:
-            self.log_test("Invalid Token Rejected", False, f"Expected 401/403, got {response.status_code if response else 'None'}")
+            self.log_test("Invalid Token Rejected", False, "Network error - could not test")
         
         # Restore valid token
         self.creator_token = original_token
@@ -320,10 +326,13 @@ class PremiumContentManagementTester:
         # For now, we'll test with a fake creator ID
         fake_creator_id = str(uuid.uuid4())
         response = self.run_api_request('GET', f'creators/{fake_creator_id}/content')
-        if response and response.status_code == 403:
-            self.log_test("Cross-Creator Access Blocked", True)
+        if response:
+            if response.status_code == 403:
+                self.log_test("Cross-Creator Access Blocked", True)
+            else:
+                self.log_test("Cross-Creator Access Blocked", False, f"Expected 403, got {response.status_code}")
         else:
-            self.log_test("Cross-Creator Access Blocked", False, f"Expected 403, got {response.status_code if response else 'None'}")
+            self.log_test("Cross-Creator Access Blocked", False, "Network error - could not test")
 
     def test_end_to_end_management_flow(self):
         """Test complete end-to-end management workflow"""
