@@ -51,7 +51,7 @@ class PremiumContentTester:
                 "hourly_rate": 150.0
             }
             
-            response = self.session.post(f"{BACKEND_URL}/creator/signup", json=creator_data)
+            response = self.session.post(f"{BACKEND_URL}/creators/signup", json=creator_data)
             
             if response.status_code == 200:
                 data = response.json()
