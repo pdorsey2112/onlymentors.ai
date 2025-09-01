@@ -129,7 +129,7 @@ function CreatorApp() {
         setIsCreator(true);
       } catch (e) {
         // Clear invalid data
-        localStorage.removeItem('creator_token');
+        localStorage.removeItem('creatorToken');
         localStorage.removeItem('creator_data');
       }
     }
