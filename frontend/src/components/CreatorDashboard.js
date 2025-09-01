@@ -177,7 +177,7 @@ const CreatorDashboard = () => {
             <button 
               onClick={() => {
                 // Clear localStorage and redirect to home (logout)
-                localStorage.removeItem('creator_token');
+                localStorage.removeItem('creatorToken');
                 localStorage.removeItem('creator_data');
                 localStorage.removeItem('auth_token');
                 localStorage.removeItem('user');
