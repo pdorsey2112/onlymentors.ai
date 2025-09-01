@@ -23,7 +23,7 @@ import tempfile
 from datetime import datetime
 
 class ContentUploadTester:
-    def __init__(self, base_url="https://mentor-marketplace.preview.emergentagent.com"):
+    def __init__(self, base_url="http://localhost:8001"):
         self.base_url = base_url
         self.creator_token = None
         self.creator_data = None
