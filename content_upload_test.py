@@ -157,8 +157,8 @@ class ContentUploadTester:
             "api/creators/login",
             200,
             data={
-                "email": self.creator_data['email'],
-                "password": "TestCreator123!"
+                "email": self.creator_email,
+                "password": self.creator_password
             }
         )
         
