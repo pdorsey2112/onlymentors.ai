@@ -46,9 +46,11 @@ class PremiumContentTester:
                 "email": f"testcreator_{int(time.time())}@example.com",
                 "password": "TestPassword123!",
                 "full_name": "Test Creator Premium",
-                "bio": "Testing premium content management",
-                "expertise": "Premium Content Testing",
-                "hourly_rate": 150.0
+                "account_name": "TestCreatorPremium",
+                "description": "Testing premium content management system",
+                "monthly_price": 150.0,
+                "category": "business",
+                "expertise_areas": ["Premium Content Testing", "Content Management"]
             }
             
             response = self.session.post(f"{BACKEND_URL}/creators/signup", json=creator_data)
