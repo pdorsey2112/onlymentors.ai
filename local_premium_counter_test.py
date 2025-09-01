@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 # Configuration - Use localhost since external URL has 502 issues
-BASE_URL = "http://localhost:8001/api"
+BASE_URL = "http://localhost:8001"
 EXISTING_CREATOR_ID = "creator_fee1ffa3ece5"  # From logs
 
 class LocalPremiumCounterTester:
