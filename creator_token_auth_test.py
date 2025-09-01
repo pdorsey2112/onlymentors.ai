@@ -309,28 +309,27 @@ class CreatorTokenAuthTester:
             print("❌ No creator token or data available for content upload test")
             return False
         
-        # Simulate content upload data
-        content_data = {
+        # Simulate content upload data as form data (as required by the endpoint)
+        form_data = {
             "title": "Test Content Upload",
             "description": "Testing content upload with fixed creatorToken authentication",
             "content_type": "article",
             "category": "education",
-            "tags": ["test", "authentication", "fix"],
-            "is_public": True
+            "tags": '["test", "authentication", "fix"]'  # JSON string as required
         }
         
         print(f"📝 Uploading test content:")
-        print(f"   Title: {content_data['title']}")
-        print(f"   Type: {content_data['content_type']}")
+        print(f"   Title: {form_data['title']}")
+        print(f"   Type: {form_data['content_type']}")
         print(f"   Using token from 'creatorToken' localStorage key")
         
-        # Test content upload
-        success, response = self.run_test(
+        # Test content upload using form data
+        success, response = self.run_form_test(
             "Content Upload with Fixed Token",
             "POST",
             f"api/creators/{self.creator_data.get('creator_id')}/content",
             200,
-            data=content_data
+            form_data=form_data
         )
         
         if success:
