@@ -301,7 +301,7 @@ class PremiumContentManagementTester:
             self.log_test("E2E Flow - Analytics Step", False, "Analytics failed")
             return False
         
-        # Step 4: Verify data consistency
+        # Step 4: Verify data consistency - CRITICAL ISSUE IDENTIFIED
         response = self.run_api_request('GET', f'creators/{self.creator_id}/content')
         if response and response.status_code == 200:
             content_data = response.json()
@@ -317,7 +317,8 @@ class PremiumContentManagementTester:
             if found_content:
                 self.log_test("E2E Flow - Data Consistency", True)
             else:
-                self.log_test("E2E Flow - Data Consistency", False, "Uploaded content not found in retrieval")
+                self.log_test("E2E Flow - Data Consistency", False, 
+                            "CRITICAL: Premium content upload stores in 'premium_content' collection but creator content retrieval looks in 'creator_content' collection. This is the root cause of the management issue.")
         else:
             self.log_test("E2E Flow - Data Consistency", False, "Could not verify data consistency")
         
