@@ -203,11 +203,10 @@ const CreatorDashboard = () => {
   }
 
   const handleContentUploadSuccess = (result) => {
-    // Refresh content count or reload data
-    setStats(prev => ({
-      ...prev,
-      content_count: prev.content_count + 1
-    }));
+    // Refresh stats after content upload
+    if (creator?.creator_id) {
+      fetchCreatorStats(creator.creator_id);
+    }
   };
 
   return (
