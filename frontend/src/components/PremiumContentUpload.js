@@ -162,7 +162,7 @@ const PremiumContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
       }, 200);
 
       const backendURL = getBackendURL();
-      const token = localStorage.getItem('creator_token');
+      const token = localStorage.getItem('creatorToken');
       
       const response = await fetch(`${backendURL}/api/creator/content/upload`, {
         method: 'POST',
