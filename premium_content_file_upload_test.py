@@ -130,7 +130,7 @@ class PremiumContentFileUploadTester:
             data.add_field('preview_available', 'true')
             data.add_field('content_file', file_content, filename=filename, content_type=mime_type)
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 200:
                     response_data = await response.json()
