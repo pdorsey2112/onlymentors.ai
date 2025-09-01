@@ -34,12 +34,75 @@ const CreatorDashboard = () => {
       setStats(creatorData.stats || stats);
       setIsVerified(creatorData.is_verified || false);
       
+      // Fetch fresh stats including premium content
+      fetchCreatorStats(creatorData.creator_id);
+      
       // If not verified, show verification process
       if (!creatorData.is_verified) {
         setShowVerification(true);
       }
     }
   }, []);
+
+  const fetchCreatorStats = async (creatorId) => {
+    try {
+      const token = localStorage.getItem('creatorToken');
+      if (!token) return;
+
+      const backendURL = getBackendURL();
+      
+      // Fetch standard content count
+      const contentResponse = await fetch(`${backendURL}/api/creators/${creatorId}/content`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      // Fetch premium content count  
+      const premiumResponse = await fetch(`${backendURL}/api/creators/${creatorId}/premium-content`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      let contentCount = 0;
+      let premiumContentCount = 0;
+      let premiumEarnings = 0;
+
+      if (contentResponse.ok) {
+        const contentData = await contentResponse.json();
+        contentCount = contentData.total || (Array.isArray(contentData) ? contentData.length : 0);
+      }
+
+      if (premiumResponse.ok) {
+        const premiumData = await premiumResponse.json();
+        const premiumContent = premiumData.content || [];
+        premiumContentCount = premiumContent.length;
+        
+        // Calculate premium earnings
+        premiumEarnings = premiumContent.reduce((total, item) => {
+          const revenue = item.total_revenue || 0;
+          // Creator gets 80% or (revenue - $2.99 minimum platform fee)
+          const platformFee = Math.max(revenue * 0.2, revenue > 0 ? 2.99 : 0);
+          return total + Math.max(0, revenue - platformFee);
+        }, 0);
+      }
+
+      // Update stats
+      setStats(prev => ({
+        ...prev,
+        content_count: contentCount,
+        premium_content_count: premiumContentCount,
+        premium_earnings: premiumEarnings,
+        total_content_sales: 0 // This would need to come from analytics endpoint
+      }));
+      
+    } catch (error) {
+      console.error('Error fetching creator stats:', error);
+    }
+  };
 
   const handleVerificationComplete = () => {
     setShowVerification(false);
