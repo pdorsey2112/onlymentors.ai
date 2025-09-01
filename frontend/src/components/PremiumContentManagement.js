@@ -2,15 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { getBackendURL } from '../config';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
-import { Trash2, Edit, Eye, DollarSign, Calendar, FileText } from 'lucide-react';
+import { Trash2, Edit, Copy, Eye, DollarSign, Calendar, FileText } from 'lucide-react';
 
 const PremiumContentManagement = ({ creatorId, onClose }) => {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [editingContent, setEditingContent] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+
+  // Edit form state
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    category: '',
+    price: '',
+    tags: '',
+    preview_available: false
+  });
 
   useEffect(() => {
     if (creatorId) {
@@ -48,6 +63,144 @@ const PremiumContentManagement = ({ creatorId, onClose }) => {
     } catch (err) {
       console.error('Error loading premium content:', err);
       setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditContent = (contentItem) => {
+    setEditingContent(contentItem);
+    setEditForm({
+      title: contentItem.title,
+      description: contentItem.description,
+      category: contentItem.category || '',
+      price: contentItem.price.toString(),
+      tags: (contentItem.tags || []).join(', '),
+      preview_available: contentItem.preview_available || false
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateContent = async () => {
+    if (!editingContent) return;
+
+    try {
+      setLoading(true);
+      setError('');
+
+      const token = localStorage.getItem('creatorToken');
+      
+      const formData = new FormData();
+      formData.append('title', editForm.title.trim());
+      formData.append('description', editForm.description.trim());
+      formData.append('category', editForm.category.trim());
+      formData.append('price', parseFloat(editForm.price));
+      formData.append('tags', JSON.stringify(editForm.tags.split(',').map(tag => tag.trim()).filter(Boolean)));
+      formData.append('preview_available', editForm.preview_available);
+
+      const backendURL = getBackendURL();
+      const response = await fetch(
+        `${backendURL}/api/creators/${creatorId}/premium-content/${editingContent.content_id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        setSuccess('Premium content updated successfully!');
+        setShowEditModal(false);
+        setEditingContent(null);
+        
+        // Update content in local state
+        setContent(prev => prev.map(item => 
+          item.content_id === editingContent.content_id ? result.content : item
+        ));
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to update premium content');
+      }
+    } catch (err) {
+      setError('Network error while updating content');
+      console.error('Update content error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteContent = async (contentId) => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const token = localStorage.getItem('creatorToken');
+      
+      const backendURL = getBackendURL();
+      const response = await fetch(
+        `${backendURL}/api/creators/${creatorId}/premium-content/${contentId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.ok) {
+        setSuccess('Premium content deleted successfully!');
+        setDeleteConfirm(null);
+        
+        // Remove content from local state
+        setContent(prev => prev.filter(item => item.content_id !== contentId));
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to delete premium content');
+      }
+    } catch (err) {
+      setError('Network error while deleting content');
+      console.error('Delete content error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDuplicateContent = async (contentId) => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const token = localStorage.getItem('creatorToken');
+      
+      const backendURL = getBackendURL();
+      const response = await fetch(
+        `${backendURL}/api/creators/${creatorId}/premium-content/${contentId}/duplicate`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        setSuccess('Premium content duplicated successfully!');
+        
+        // Add duplicated content to local state
+        setContent(prev => [result.content, ...prev]);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to duplicate premium content');
+      }
+    } catch (err) {
+      setError('Network error while duplicating content');
+      console.error('Duplicate content error:', err);
     } finally {
       setLoading(false);
     }
