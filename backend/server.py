@@ -3130,6 +3130,66 @@ async def duplicate_premium_content(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to duplicate premium content: {str(e)}")
 
+@app.get("/api/creators/{creator_id}/stats")
+async def get_creator_stats(
+    creator_id: str,
+    current_creator = Depends(get_current_creator)
+):
+    """Get creator stats including content counts and earnings"""
+    try:
+        # Verify creator owns this data
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only access your own stats")
+        
+        # Get standard content count
+        standard_content_count = await db.creator_content.count_documents({"creator_id": creator_id})
+        
+        # Get premium content and calculate stats
+        premium_content_list = await db.premium_content.find({"creator_id": creator_id}).to_list(None)
+        premium_content_count = len(premium_content_list)
+        
+        # Calculate premium earnings and revenue
+        total_premium_revenue = 0
+        total_premium_sales = 0
+        creator_premium_earnings = 0
+        
+        for content in premium_content_list:
+            revenue = content.get("total_revenue", 0)
+            purchases = content.get("total_purchases", 0)
+            
+            total_premium_revenue += revenue
+            total_premium_sales += purchases
+            
+            # Creator gets 80% or (revenue - $2.99 minimum platform fee)
+            if revenue > 0:
+                platform_fee = max(revenue * 0.2, 2.99)
+                creator_earnings = max(0, revenue - platform_fee)
+                creator_premium_earnings += creator_earnings
+        
+        # Get total messages/interactions (optional)
+        total_messages = 0  # Could be implemented if needed
+        
+        stats = {
+            "content_count": standard_content_count,
+            "premium_content_count": premium_content_count,
+            "premium_earnings": round(creator_premium_earnings, 2),
+            "total_content_sales": total_premium_sales,
+            "total_premium_revenue": round(total_premium_revenue, 2),
+            "total_messages": total_messages,
+            "total_content": standard_content_count + premium_content_count
+        }
+        
+        return {
+            "creator_id": creator_id,
+            "stats": stats,
+            "last_updated": datetime.now().isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch creator stats: {str(e)}")
+
 @app.get("/api/creators/{creator_id}/verification-status")
 async def get_verification_status(creator_id: str):
     """Get creator verification status"""
