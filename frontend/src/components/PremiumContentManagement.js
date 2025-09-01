@@ -29,13 +29,13 @@ const PremiumContentManagement = ({ creator }) => {
         try {
             setLoading(true);
             const backendURL = getBackendURL();
-            const response = await fetch(`${backendURL}/api/creators/${creator.creator_id}/content`, {
+            const response = await fetch(`${backendURL}/api/creators/${creator.creator_id}/premium-content`, {
                 headers: getAuthHeaders()
             });
 
             if (response.ok) {
                 const data = await response.json();
-                setPremiumContent(data || []); // Direct array response from creator endpoint
+                setPremiumContent(data.content || []); // Use data.content from the new endpoint
             } else {
                 console.error('Failed to fetch premium content');
             }
