@@ -146,15 +146,19 @@ const PremiumContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
 
     try {
       // First create the premium content record
-      const contentData = {
-        title: uploadData.title,
-        description: uploadData.description,
-        content_type: uploadData.content_type,
-        category: uploadData.category,
-        price: parseFloat(uploadData.price),
-        tags: uploadData.tags,
-        preview_available: uploadData.preview_available
-      };
+      const formData = new FormData();
+      formData.append('title', uploadData.title);
+      formData.append('description', uploadData.description);
+      formData.append('content_type', uploadData.content_type);
+      formData.append('category', uploadData.category || '');
+      formData.append('price', parseFloat(uploadData.price));
+      formData.append('tags', JSON.stringify(uploadData.tags));
+      formData.append('preview_available', uploadData.preview_available);
+      
+      // Add the selected file if available
+      if (selectedFile) {
+        formData.append('content_file', selectedFile);
+      }
 
       // Simulate upload progress
       const progressInterval = setInterval(() => {
@@ -167,10 +171,10 @@ const PremiumContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
       const response = await fetch(`${backendURL}/api/creator/content/upload`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
+          // Note: Don't set Content-Type header for FormData, browser will set it with boundary
         },
-        body: JSON.stringify(contentData)
+        body: formData
       });
 
       clearInterval(progressInterval);
