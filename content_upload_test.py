@@ -36,6 +36,8 @@ class ContentUploadTester:
         """Run a single API test"""
         if endpoint.startswith('http'):
             url = endpoint
+        elif endpoint == "/" or endpoint == "":
+            url = f"{self.base_url}/"
         elif endpoint.startswith('api/'):
             url = f"{self.base_url}/{endpoint}"
         else:
