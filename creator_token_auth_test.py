@@ -439,12 +439,12 @@ class CreatorTokenAuthTester:
         
         print(f"🔒 Testing with invalid token...")
         
-        success, response = self.run_test(
+        success, response = self.run_form_test(
             "Content Upload - Invalid Token",
             "POST",
             f"api/creators/{self.creator_data.get('creator_id')}/content",
             401,  # Expect 401 Unauthorized
-            data={
+            form_data={
                 "title": "Test Content",
                 "description": "This should fail with invalid token",
                 "content_type": "article"
