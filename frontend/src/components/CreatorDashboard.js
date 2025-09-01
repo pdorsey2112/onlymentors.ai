@@ -762,7 +762,10 @@ const CreatorDashboard = () => {
         <PremiumContentUpload
           creatorId={creator.creator_id}
           onClose={() => setShowPremiumContentUpload(false)}
-          onUploadSuccess={handleContentUploadSuccess}
+          onUploadSuccess={(result) => {
+            handleContentUploadSuccess(result);
+            setShowPremiumContentUpload(false);
+          }}
         />
       )}
 
