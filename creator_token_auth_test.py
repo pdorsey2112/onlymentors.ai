@@ -168,6 +168,10 @@ class CreatorTokenAuthTester:
         test_password = "CreatorTest123!"
         test_name = "Token Test Creator"
         
+        # Store email for later use
+        self.test_email = test_email
+        self.test_password = test_password
+        
         print(f"📝 Creating test creator account:")
         print(f"   Email: {test_email}")
         print(f"   Password: {test_password}")
