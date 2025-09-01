@@ -52,10 +52,11 @@ class PremiumContentManagementTester:
             "email": TEST_CREATOR_EMAIL,
             "password": TEST_CREATOR_PASSWORD,
             "full_name": TEST_CREATOR_NAME,
-            "expertise": "Premium Content Creation",
-            "bio": "Test creator for premium content management",
-            "hourly_rate": 100.0,
-            "category": "business"
+            "account_name": "PremiumCreatorTest",
+            "description": "Test creator for premium content management",
+            "monthly_price": 100.0,
+            "category": "business",
+            "expertise_areas": ["Premium Content Creation", "Content Management"]
         }
         
         try:
