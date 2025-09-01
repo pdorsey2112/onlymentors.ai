@@ -2915,6 +2915,43 @@ async def duplicate_creator_content(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to duplicate content: {str(e)}")
 
+@app.get("/api/creators/{creator_id}/premium-content")
+async def get_creator_premium_content(
+    creator_id: str,
+    offset: int = 0,
+    limit: int = 20,
+    current_creator = Depends(get_current_creator)
+):
+    """Get creator's premium content for management"""
+    try:
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only access your own premium content")
+        
+        premium_content_list = await db.premium_content.find(
+            {"creator_id": creator_id}
+        ).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+        
+        # Convert ObjectId to string for JSON serialization
+        for content in premium_content_list:
+            if "_id" in content:
+                content["_id"] = str(content["_id"])
+        
+        # Get total count
+        total_count = await db.premium_content.count_documents({"creator_id": creator_id})
+        
+        return {
+            "content": premium_content_list,
+            "total": total_count,
+            "offset": offset,
+            "limit": limit
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch premium content: {str(e)}")
+
 @app.get("/api/creators/{creator_id}/verification-status")
 async def get_verification_status(creator_id: str):
     """Get creator verification status"""
