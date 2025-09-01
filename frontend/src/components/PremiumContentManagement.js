@@ -1,668 +1,236 @@
 import React, { useState, useEffect } from 'react';
 import { getBackendURL } from '../config';
+import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
+import { Alert, AlertDescription } from './ui/alert';
+import { Trash2, Edit, Eye, DollarSign, Calendar, FileText } from 'lucide-react';
 
-const PremiumContentManagement = ({ creator }) => {
-    const [activeTab, setActiveTab] = useState('content');
-    const [premiumContent, setPremiumContent] = useState([]);
-    const [analytics, setAnalytics] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [showUploadModal, setShowUploadModal] = useState(false);
-    const [uploadForm, setUploadForm] = useState({
-        title: '',
-        description: '',
-        content_type: 'document',
-        category: '',
-        price: '',
-        tags: [],
-        preview_available: false
-    });
+const PremiumContentManagement = ({ creatorId, onClose }) => {
+  const [content, setContent] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('creatorToken');
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
-    };
+  useEffect(() => {
+    if (creatorId) {
+      loadPremiumContent();
+    }
+  }, [creatorId]);
 
-    const fetchPremiumContent = async () => {
-        try {
-            setLoading(true);
-            const backendURL = getBackendURL();
-            const response = await fetch(`${backendURL}/api/creators/${creator.creator_id}/premium-content`, {
-                headers: getAuthHeaders()
-            });
+  const loadPremiumContent = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const token = localStorage.getItem('creatorToken');
+      
+      if (!token) {
+        setError('No authentication token found');
+        return;
+      }
 
-            if (response.ok) {
-                const data = await response.json();
-                setPremiumContent(data.content || []); // Use data.content from the new endpoint
-            } else {
-                console.error('Failed to fetch premium content');
-            }
-        } catch (error) {
-            console.error('Error fetching premium content:', error);
-        } finally {
-            setLoading(false);
+      const backendURL = getBackendURL();
+      const response = await fetch(`${backendURL}/api/creators/${creatorId}/premium-content`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-    };
+      });
 
-    const fetchAnalytics = async () => {
-        try {
-            setLoading(true);
-            const backendURL = getBackendURL();
-            const response = await fetch(`${backendURL}/api/creator/content/analytics`, {
-                headers: getAuthHeaders()
-            });
+      if (response.ok) {
+        const data = await response.json();
+        setContent(data.content || []);
+        console.log('Premium content loaded:', data.content);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to load premium content');
+      }
+    } catch (err) {
+      console.error('Error loading premium content:', err);
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            if (response.ok) {
-                const data = await response.json();
-                setAnalytics(data);
-            } else {
-                console.error('Failed to fetch analytics');
-            }
-        } catch (error) {
-            console.error('Error fetching analytics:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(price);
+  };
 
-    const handleUploadContent = async () => {
-        try {
-            setLoading(true);
-            const backendURL = getBackendURL();
-            
-            // Validate required fields
-            if (!uploadForm.title || !uploadForm.description || !uploadForm.category || !uploadForm.price) {
-                alert('Please fill in all required fields');
-                return;
-            }
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
 
-            const price = parseFloat(uploadForm.price);
-            if (isNaN(price) || price < 0.01 || price > 50) {
-                alert('Price must be between $0.01 and $50.00');
-                return;
-            }
+  const getContentIcon = (contentType) => {
+    switch (contentType) {
+      case 'document':
+        return <FileText className="h-4 w-4" />;
+      case 'video':
+        return <FileText className="h-4 w-4" />;
+      case 'image':
+        return <FileText className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
+    }
+  };
 
-            const response = await fetch(`${backendURL}/api/creator/content/upload`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({
-                    ...uploadForm,
-                    price: price,
-                    tags: uploadForm.tags.filter(tag => tag.trim() !== '')
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                alert(`Content uploaded successfully! You'll earn $${data.pricing_breakdown.creator_earnings.toFixed(2)} per purchase.`);
-                setShowUploadModal(false);
-                setUploadForm({
-                    title: '',
-                    description: '',
-                    content_type: 'document',
-                    category: '',
-                    price: '',
-                    tags: [],
-                    preview_available: false
-                });
-                fetchPremiumContent();
-            } else {
-                const errorData = await response.json();
-                alert(`Failed to upload content: ${errorData.detail || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Error uploading content:', error);
-            alert('Error uploading content');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const calculateEarnings = (price) => {
-        const numPrice = parseFloat(price) || 0;
-        const commission = numPrice * 0.20;
-        const platformFee = Math.max(commission, 2.99);
-        const creatorEarnings = numPrice - platformFee;
-        
-        return {
-            price: numPrice,
-            platformFee: platformFee,
-            creatorEarnings: Math.max(0, creatorEarnings)
-        };
-    };
-
-    const addTag = (tag) => {
-        if (tag.trim() && !uploadForm.tags.includes(tag.trim())) {
-            setUploadForm(prev => ({
-                ...prev,
-                tags: [...prev.tags, tag.trim()]
-            }));
-        }
-    };
-
-    const removeTag = (index) => {
-        setUploadForm(prev => ({
-            ...prev,
-            tags: prev.tags.filter((_, i) => i !== index)
-        }));
-    };
-
-    useEffect(() => {
-        if (activeTab === 'content') {
-            fetchPremiumContent();
-        } else if (activeTab === 'analytics') {
-            fetchAnalytics();
-        }
-    }, [activeTab]);
-
-    const renderContentList = () => (
-        <div style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ color: '#374151', fontSize: '20px', margin: 0 }}>My Premium Content ({premiumContent.length})</h3>
-                <button
-                    onClick={() => setShowUploadModal(true)}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#3b82f6',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        cursor: 'pointer'
-                    }}
-                >
-                    + Upload New Content
-                </button>
-            </div>
-
-            {premiumContent.length === 0 ? (
-                <div style={{ 
-                    textAlign: 'center', 
-                    padding: '60px 20px',
-                    backgroundColor: 'white',
-                    borderRadius: '8px',
-                    border: '1px solid #e5e7eb'
-                }}>
-                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>📄</div>
-                    <h3 style={{ color: '#374151', fontSize: '18px', marginBottom: '8px' }}>No Premium Content Yet</h3>
-                    <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '20px' }}>
-                        Upload your first premium content to start earning from your expertise
-                    </p>
-                    <button
-                        onClick={() => setShowUploadModal(true)}
-                        style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Upload Your First Content
-                    </button>
-                </div>
-            ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-                    {premiumContent.map((content, index) => (
-                        <div key={index} style={{
-                            backgroundColor: 'white',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            border: '1px solid #e5e7eb',
-                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                                <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    backgroundColor: content.content_type === 'video' ? '#ef4444' :
-                                                   content.content_type === 'document' ? '#3b82f6' :
-                                                   content.content_type === 'audio' ? '#10b981' : '#f59e0b',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'white',
-                                    fontSize: '18px',
-                                    marginRight: '12px'
-                                }}>
-                                    {content.content_type === 'video' ? '🎥' :
-                                     content.content_type === 'document' ? '📄' :
-                                     content.content_type === 'audio' ? '🎵' : '📁'}
-                                </div>
-                                <div>
-                                    <h4 style={{ color: '#374151', fontSize: '16px', margin: 0, fontWeight: '600' }}>
-                                        {content.title}
-                                    </h4>
-                                    <p style={{ color: '#6b7280', fontSize: '12px', margin: '4px 0 0 0', textTransform: 'capitalize' }}>
-                                        {content.content_type} • {content.category}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '16px', lineHeight: '1.5' }}>
-                                {content.description.length > 100 ? `${content.description.substring(0, 100)}...` : content.description}
-                            </p>
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#374151' }}>
-                                    ${content.price.toFixed(2)}
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '12px', color: '#6b7280' }}>
-                                        You earn: <span style={{ fontWeight: '600', color: '#10b981' }}>
-                                            ${content.creator_earnings.toFixed(2)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                <div style={{ fontSize: '14px', color: '#6b7280' }}>
-                                    <span style={{ fontWeight: '600' }}>{content.total_purchases || 0}</span> sales
-                                </div>
-                                <div style={{ fontSize: '14px', color: '#6b7280' }}>
-                                    Revenue: <span style={{ fontWeight: '600', color: '#10b981' }}>
-                                        ${(content.total_revenue || 0).toFixed(2)}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {content.tags && content.tags.length > 0 && (
-                                <div style={{ marginBottom: '16px' }}>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                        {content.tags.slice(0, 3).map((tag, tagIndex) => (
-                                            <span key={tagIndex} style={{
-                                                backgroundColor: '#f3f4f6',
-                                                color: '#6b7280',
-                                                fontSize: '12px',
-                                                padding: '2px 8px',
-                                                borderRadius: '12px'
-                                            }}>
-                                                {tag}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button style={{
-                                    flex: 1,
-                                    padding: '8px 12px',
-                                    backgroundColor: '#f3f4f6',
-                                    color: '#374151',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    fontSize: '14px',
-                                    cursor: 'pointer'
-                                }}>
-                                    Edit
-                                </button>
-                                <button style={{
-                                    flex: 1,
-                                    padding: '8px 12px',
-                                    backgroundColor: content.is_active ? '#f59e0b' : '#10b981',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    fontSize: '14px',
-                                    cursor: 'pointer'
-                                }}>
-                                    {content.is_active ? 'Deactivate' : 'Activate'}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-
-    const renderAnalytics = () => (
-        <div style={{ padding: '20px' }}>
-            <h3 style={{ color: '#374151', fontSize: '20px', marginBottom: '20px' }}>Premium Content Analytics</h3>
-            
-            {analytics ? (
-                <div>
-                    {/* Summary Cards */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-                        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#374151' }}>
-                                {analytics.summary.total_content}
-                            </div>
-                            <div style={{ fontSize: '14px', color: '#6b7280' }}>Total Content</div>
-                        </div>
-                        
-                        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>
-                                ${analytics.summary.creator_earnings.toFixed(2)}
-                            </div>
-                            <div style={{ fontSize: '14px', color: '#6b7280' }}>Total Earnings</div>
-                        </div>
-                        
-                        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#3b82f6' }}>
-                                {analytics.summary.total_sales}
-                            </div>
-                            <div style={{ fontSize: '14px', color: '#6b7280' }}>Total Sales</div>
-                        </div>
-                        
-                        <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#374151' }}>
-                                ${analytics.summary.total_revenue.toFixed(2)}
-                            </div>
-                            <div style={{ fontSize: '14px', color: '#6b7280' }}>Gross Revenue</div>
-                        </div>
-                    </div>
-
-                    {/* Top Performing Content */}
-                    <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '20px' }}>
-                        <h4 style={{ color: '#374151', fontSize: '18px', marginBottom: '16px' }}>Top Performing Content</h4>
-                        {analytics.top_performing_content.length > 0 ? (
-                            <div style={{ fontSize: '14px' }}>
-                                {analytics.top_performing_content.map((content, index) => (
-                                    <div key={index} style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '12px 0',
-                                        borderBottom: index < analytics.top_performing_content.length - 1 ? '1px solid #f3f4f6' : 'none'
-                                    }}>
-                                        <div>
-                                            <div style={{ color: '#374151', fontWeight: '600' }}>{content.title}</div>
-                                            <div style={{ color: '#6b7280', fontSize: '12px' }}>${content.price.toFixed(2)} each</div>
-                                        </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <div style={{ color: '#374151', fontWeight: '600' }}>{content.sales} sales</div>
-                                            <div style={{ color: '#10b981', fontSize: '12px' }}>${content.revenue.toFixed(2)}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div style={{ textAlign: 'center', color: '#6b7280', padding: '20px' }}>
-                                No sales data available yet
-                            </div>
-                        )}
-                    </div>
-                </div>
-            ) : (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
-                    No analytics data available
-                </div>
-            )}
-        </div>
-    );
-
-    const renderUploadModal = () => (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-        }}>
-            <div style={{
-                backgroundColor: 'white',
-                padding: '30px',
-                borderRadius: '12px',
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                width: '500px',
-                maxWidth: '90vw',
-                maxHeight: '90vh',
-                overflow: 'auto'
-            }}>
-                <h3 style={{ color: '#374151', fontSize: '20px', marginBottom: '20px' }}>Upload Premium Content</h3>
-                
-                <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                        Title *
-                    </label>
-                    <input
-                        type="text"
-                        value={uploadForm.title}
-                        onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
-                        placeholder="Enter content title"
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            fontSize: '14px'
-                        }}
-                    />
-                </div>
-
-                <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                        Description *
-                    </label>
-                    <textarea
-                        value={uploadForm.description}
-                        onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Describe your premium content"
-                        rows="3"
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            resize: 'vertical'
-                        }}
-                    />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-                    <div>
-                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                            Content Type *
-                        </label>
-                        <select
-                            value={uploadForm.content_type}
-                            onChange={(e) => setUploadForm(prev => ({ ...prev, content_type: e.target.value }))}
-                            style={{
-                                width: '100%',
-                                padding: '10px',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '6px',
-                                fontSize: '14px'
-                            }}
-                        >
-                            <option value="document">Document</option>
-                            <option value="video">Video</option>
-                            <option value="audio">Audio</option>
-                            <option value="image">Image</option>
-                            <option value="interactive">Interactive</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                            Category *
-                        </label>
-                        <input
-                            type="text"
-                            value={uploadForm.category}
-                            onChange={(e) => setUploadForm(prev => ({ ...prev, category: e.target.value }))}
-                            placeholder="e.g., Business, Health"
-                            style={{
-                                width: '100%',
-                                padding: '10px',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '6px',
-                                fontSize: '14px'
-                            }}
-                        />
-                    </div>
-                </div>
-
-                <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
-                        Price (USD) * <span style={{ color: '#6b7280', fontWeight: 'normal' }}>(Min: $0.01, Max: $50.00)</span>
-                    </label>
-                    <input
-                        type="number"
-                        step="0.01"
-                        min="0.01"
-                        max="50.00"
-                        value={uploadForm.price}
-                        onChange={(e) => setUploadForm(prev => ({ ...prev, price: e.target.value }))}
-                        placeholder="9.99"
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            fontSize: '14px'
-                        }}
-                    />
-                    {uploadForm.price && (
-                        <div style={{ marginTop: '8px', fontSize: '12px', color: '#6b7280' }}>
-                            <div>Platform fee: ${calculateEarnings(uploadForm.price).platformFee.toFixed(2)} (20% or min $2.99)</div>
-                            <div style={{ color: '#10b981', fontWeight: '600' }}>
-                                You earn: ${calculateEarnings(uploadForm.price).creatorEarnings.toFixed(2)} per sale
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
-                    <button
-                        onClick={() => setShowUploadModal(false)}
-                        style={{
-                            flex: 1,
-                            padding: '12px',
-                            backgroundColor: '#f3f4f6',
-                            color: '#374151',
-                            border: 'none',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={handleUploadContent}
-                        disabled={loading}
-                        style={{
-                            flex: 1,
-                            padding: '12px',
-                            backgroundColor: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            opacity: loading ? 0.6 : 1
-                        }}
-                    >
-                        {loading ? 'Creating...' : 'Create Content'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
+  if (loading) {
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
-            {/* Tab Navigation */}
-            <div style={{ backgroundColor: 'white', borderBottom: '1px solid #e5e7eb' }}>
-                <div style={{ padding: '0 20px' }}>
-                    <div style={{ display: 'flex', gap: '30px' }}>
-                        {[
-                            { key: 'content', label: 'My Content' },
-                            { key: 'analytics', label: 'Analytics' }
-                        ].map((tab) => (
-                            <button
-                                key={tab.key}
-                                onClick={() => setActiveTab(tab.key)}
-                                style={{
-                                    padding: '15px 0',
-                                    fontSize: '16px',
-                                    fontWeight: '600',
-                                    color: activeTab === tab.key ? '#3b82f6' : '#6b7280',
-                                    backgroundColor: 'transparent',
-                                    border: 'none',
-                                    borderBottom: activeTab === tab.key ? '2px solid #3b82f6' : '2px solid transparent',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Loading Indicator */}
-            {loading && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 999
-                }}>
-                    <div style={{
-                        backgroundColor: 'white',
-                        padding: '20px',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '15px'
-                    }}>
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            border: '2px solid #f3f4f6',
-                            borderTop: '2px solid #3b82f6',
-                            borderRadius: '50%',
-                            animation: 'spin 1s linear infinite'
-                        }}></div>
-                        <span>Loading...</span>
-                    </div>
-                </div>
-            )}
-
-            {/* Tab Content */}
-            {activeTab === 'content' && renderContentList()}
-            {activeTab === 'analytics' && renderAnalytics()}
-
-            {/* Upload Modal */}
-            {showUploadModal && renderUploadModal()}
-
-            <style>
-                {`
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}
-            </style>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading premium content...</p>
+          </div>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden mx-4">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Manage Premium Content</h2>
+              <p className="text-purple-100 mt-1">
+                {content.length} premium {content.length === 1 ? 'item' : 'items'} total
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-white hover:text-purple-200 text-2xl"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6 max-h-96 overflow-y-auto">
+          {error && (
+            <Alert className="mb-6 border-red-200 bg-red-50">
+              <AlertDescription className="text-red-700">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert className="mb-6 border-green-200 bg-green-50">
+              <AlertDescription className="text-green-700">
+                {success}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {content.length === 0 && !error ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 text-6xl mb-4">📦</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Premium Content Yet</h3>
+              <p className="text-gray-600 mb-4">Start creating premium content to earn from your expertise</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {content.map((item) => (
+                <Card key={item.content_id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2">
+                        {getContentIcon(item.content_type)}
+                        <CardTitle className="text-lg leading-tight">{item.title}</CardTitle>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-purple-600">
+                          {formatPrice(item.price)}
+                        </div>
+                      </div>
+                    </div>
+                    <CardDescription className="text-sm line-clamp-2">
+                      {item.description}
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-3">
+                      {/* Content Type and Category */}
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {item.content_type}
+                        </Badge>
+                        {item.category && (
+                          <Badge variant="outline" className="text-xs">
+                            {item.category}
+                          </Badge>
+                        )}
+                        {item.preview_available && (
+                          <Badge variant="default" className="text-xs bg-green-100 text-green-700">
+                            Preview Available
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Stats */}
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <div className="text-gray-500">Sales</div>
+                          <div className="font-semibold">{item.total_purchases || 0}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Revenue</div>
+                          <div className="font-semibold text-green-600">
+                            {formatPrice(item.total_revenue || 0)}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Tags */}
+                      {item.tags && item.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {item.tags.slice(0, 3).map((tag, index) => (
+                            <span key={index} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                              #{tag}
+                            </span>
+                          ))}
+                          {item.tags.length > 3 && (
+                            <span className="text-gray-400 text-xs">+{item.tags.length - 3} more</span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Creation Date */}
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Created {formatDate(item.created_at)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-gray-200 p-4 bg-gray-50 flex justify-between items-center">
+          <div className="text-sm text-gray-600">
+            Total: {content.length} premium content items
+          </div>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default PremiumContentManagement;
