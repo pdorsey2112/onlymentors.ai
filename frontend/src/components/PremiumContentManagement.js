@@ -8,7 +8,7 @@ import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
 import { Trash2, Edit, Copy, Eye, DollarSign, Calendar, FileText } from 'lucide-react';
 
-const PremiumContentManagement = ({ creatorId, onClose }) => {
+const PremiumContentManagement = ({ creatorId, onClose, onContentUpdate }) => {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
