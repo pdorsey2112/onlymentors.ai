@@ -451,7 +451,7 @@ class CreatorTokenAuthTester:
             form_data={
                 "title": "Test Content",
                 "description": "This should fail with invalid token",
-                "content_type": "article"
+                "content_type": "document"
             }
         )
         
