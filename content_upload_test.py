@@ -132,6 +132,9 @@ class ContentUploadTester:
             self.creator_token = response['token']
             self.creator_data = response['creator']
             self.creator_id = response['creator']['creator_id']
+            # Store email separately since it's not in the creator object
+            self.creator_email = test_email
+            self.creator_password = test_password
             print(f"✅ Creator account created successfully")
             print(f"   Creator ID: {self.creator_id}")
             print(f"   Email: {test_email}")
