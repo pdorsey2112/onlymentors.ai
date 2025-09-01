@@ -399,12 +399,12 @@ class CreatorTokenAuthTester:
         print(f"🔒 Testing endpoints without authentication token...")
         
         # Test content upload without token (should fail)
-        success, response = self.run_test(
+        success, response = self.run_form_test(
             "Content Upload - No Auth",
             "POST",
             f"api/creators/{self.creator_data.get('creator_id')}/content",
             401,  # Expect 401 Unauthorized
-            data={
+            form_data={
                 "title": "Test Content",
                 "description": "This should fail",
                 "content_type": "article"
