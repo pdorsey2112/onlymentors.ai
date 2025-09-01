@@ -774,6 +774,11 @@ const CreatorDashboard = () => {
         <PremiumContentManagement
           creatorId={creator.creator_id}
           onClose={() => setShowPremiumContentManagement(false)}
+          onContentUpdate={() => {
+            if (creator?.creator_id) {
+              fetchCreatorStats(creator.creator_id);
+            }
+          }}
         />
       )}
     </div>
