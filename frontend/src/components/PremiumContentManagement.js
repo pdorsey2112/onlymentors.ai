@@ -204,6 +204,11 @@ const PremiumContentManagement = ({ creatorId, onClose, onContentUpdate }) => {
         
         // Add duplicated content to local state
         setContent(prev => [result.content, ...prev]);
+        
+        // Refresh dashboard stats
+        if (onContentUpdate) {
+          onContentUpdate();
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.detail || 'Failed to duplicate premium content');
