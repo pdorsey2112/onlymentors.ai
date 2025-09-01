@@ -2952,6 +2952,184 @@ async def get_creator_premium_content(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch premium content: {str(e)}")
 
+@app.put("/api/creators/{creator_id}/premium-content/{content_id}")
+async def update_premium_content(
+    creator_id: str,
+    content_id: str,
+    title: str = Form(...),
+    description: str = Form(...),
+    category: str = Form(None),
+    price: float = Form(...),
+    tags: str = Form("[]"),
+    preview_available: bool = Form(False),
+    current_creator = Depends(get_current_creator)
+):
+    """Update premium content"""
+    try:
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only update your own content")
+        
+        # Parse tags
+        import json
+        try:
+            tag_list = json.loads(tags) if tags != "[]" else []
+        except:
+            tag_list = []
+        
+        # Validate pricing
+        if price < 0.01 or price > 50.00:
+            raise HTTPException(status_code=400, detail="Price must be between $0.01 and $50.00")
+        
+        # Find the content
+        content = await db.premium_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        
+        if not content:
+            raise HTTPException(status_code=404, detail="Premium content not found or doesn't belong to creator")
+        
+        # Update the content
+        update_data = {
+            "title": title,
+            "description": description,
+            "category": category,
+            "price": price,
+            "tags": tag_list,
+            "preview_available": preview_available,
+            "updated_at": datetime.now().isoformat()
+        }
+        
+        result = await db.premium_content.update_one(
+            {"content_id": content_id, "creator_id": creator_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        # Get updated content
+        updated_content = await db.premium_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        
+        # Convert ObjectId for JSON serialization
+        if updated_content and "_id" in updated_content:
+            updated_content["_id"] = str(updated_content["_id"])
+        
+        return {
+            "message": "Premium content updated successfully",
+            "content": updated_content
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update premium content: {str(e)}")
+
+@app.delete("/api/creators/{creator_id}/premium-content/{content_id}")
+async def delete_premium_content(
+    creator_id: str,
+    content_id: str,
+    current_creator = Depends(get_current_creator)
+):
+    """Delete premium content"""
+    try:
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only delete your own content")
+        
+        # Find the content first to verify it exists and get file path for cleanup
+        content = await db.premium_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        
+        if not content:
+            raise HTTPException(status_code=404, detail="Premium content not found or doesn't belong to creator")
+        
+        # Delete the content record
+        result = await db.premium_content.delete_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        # Clean up file if it exists
+        file_path = content.get("file_path")
+        if file_path and os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except OSError:
+                pass  # Don't fail if file cleanup fails
+        
+        return {"message": "Premium content deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete premium content: {str(e)}")
+
+@app.post("/api/creators/{creator_id}/premium-content/{content_id}/duplicate")
+async def duplicate_premium_content(
+    creator_id: str,
+    content_id: str,
+    current_creator = Depends(get_current_creator)
+):
+    """Duplicate premium content"""
+    try:
+        # Verify creator owns this content
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only duplicate your own content")
+        
+        # Find the original content
+        original_content = await db.premium_content.find_one({
+            "content_id": content_id,
+            "creator_id": creator_id
+        })
+        
+        if not original_content:
+            raise HTTPException(status_code=404, detail="Premium content not found or doesn't belong to creator")
+        
+        # Create duplicate content
+        import uuid
+        duplicate_content = original_content.copy()
+        
+        # Remove the original _id and content_id, create new ones
+        duplicate_content.pop("_id", None)
+        duplicate_content["content_id"] = str(uuid.uuid4())
+        duplicate_content["title"] = f"{original_content['title']} (Copy)"
+        duplicate_content["created_at"] = datetime.now().isoformat()
+        duplicate_content["updated_at"] = datetime.now().isoformat()
+        
+        # Reset stats for the duplicate
+        duplicate_content["total_purchases"] = 0
+        duplicate_content["total_revenue"] = 0
+        duplicate_content["creator_earnings"] = 0
+        
+        # Note: File is not duplicated, both will reference same file
+        # In production, you might want to copy the file as well
+        
+        # Insert the duplicate
+        await db.premium_content.insert_one(duplicate_content)
+        
+        # Convert ObjectId for JSON serialization
+        duplicate_content["_id"] = str(duplicate_content["_id"]) if "_id" in duplicate_content else None
+        
+        return {
+            "message": "Premium content duplicated successfully",
+            "content": duplicate_content
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to duplicate premium content: {str(e)}")
+
 @app.get("/api/creators/{creator_id}/verification-status")
 async def get_verification_status(creator_id: str):
     """Get creator verification status"""
