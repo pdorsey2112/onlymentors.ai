@@ -2583,6 +2583,10 @@ async def upload_creator_content(
 ):
     """Upload content for creator"""
     try:
+        # Verify the authenticated creator matches the creator_id
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Cannot upload content for another creator")
+        
         creator = await db.creators.find_one({"creator_id": creator_id})
         if not creator:
             raise HTTPException(status_code=404, detail="Creator not found")
