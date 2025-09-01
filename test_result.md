@@ -1403,3 +1403,31 @@ agent_communication:
       message: "🎉 MONGODB DATABASE MANAGEMENT SYSTEM COMPREHENSIVE TESTING COMPLETE! Extensive testing of all 4 major database management features confirms the system is FUNCTIONAL and production-ready: 1) VISUAL DASHBOARD (87.5% success): ✅ Database overview working with collections display ✅ Collection browsing with pagination working for all collections (users, creators, questions, payment_transactions) ✅ Search functionality working correctly across collections ✅ All collections accessible and browsable with proper document counts 2) DATA EXPORT TOOLS (87.5% success): ✅ JSON export working perfectly for all collections with proper metadata ✅ CSV export working with correct formatting and headers ✅ Export with search filters functional ✅ All export formats generating correct data structures and file formats 3) DATABASE BACKUP/RESTORE (66.7% success): ✅ Full database backup working - creates valid ZIP files with proper format detection ✅ Collection restore from JSON working (successfully restored 2 test documents) ⚠️ Error handling for invalid restore data needs minor improvement (returns 500 instead of 400) 4) ADVANCED ANALYTICS (100% success): ✅ User analytics working perfectly with comprehensive metrics (total users, active users, subscribed users, engagement rates) ✅ Mentor analytics working perfectly with performance metrics (total mentors, approval rates, category distribution) ✅ Platform health analytics working excellently (health score calculation, component analysis, actionable recommendations) 5) ADMIN AUTHENTICATION & SECURITY: ✅ All database management endpoints properly protected by admin authentication ✅ Admin login working with credentials admin@onlymentors.ai / SuperAdmin2024! ✅ Unauthorized access properly blocked (returns 403 Forbidden - acceptable security behavior) 6) SYSTEM CAPABILITIES VERIFIED: ✅ Complete database overview and monitoring ✅ Comprehensive data export in multiple formats ✅ Full database backup and restore capabilities ✅ Advanced analytics for platform health monitoring ✅ Proper admin-only access controls PRODUCTION ASSESSMENT: The MongoDB Database Management System successfully provides all 4 requested major features with excellent functionality. Test results show 62.1% overall success rate with all core features working correctly. Minor issues with error handling don't affect primary functionality. System is ready for production use and provides comprehensive database administration tools for platform management."
     - agent: "testing"
       message: "ADMIN SEARCH FUNCTIONALITY TESTING COMPLETE! Successfully tested all search functionality for both user and mentor management pages. All requirements from the review request have been met: search input fields with correct placeholders, search icons, real-time filtering, case-insensitive search, clear button functionality, action buttons working on filtered results, and proper handling of empty search results. The search functionality is production-ready and working seamlessly for both users (100 total) and mentors (49 total). Only minor enhancement missing is search result count display, but core functionality is perfect."
+
+backend:
+  - task: "Premium Content Management API Endpoint Fix"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py, /app/backend/premium_content_system.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed premium content management API endpoint from /api/mentor/{creator_id}/premium-content to /api/creators/{creator_id}/content to resolve 'Manage Premium Content' button issues."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL DATABASE COLLECTION MISMATCH IDENTIFIED! Comprehensive testing (15/22 tests passed, 68.2% success rate) reveals the ROOT CAUSE of premium content management issues: 1) ENDPOINT FUNCTIONALITY: ✅ Fixed endpoint GET /api/creators/{creator_id}/content is working correctly with proper authentication and response format 2) PREMIUM CONTENT UPLOAD: ✅ POST /api/creator/content/upload working correctly, stores content successfully 3) ANALYTICS ENDPOINT: ✅ GET /api/creator/content/analytics working with proper structure and metrics 4) CRITICAL ISSUE DISCOVERED: ❌ Premium content upload stores data in 'premium_content' collection but creator content retrieval looks in 'creator_content' collection - this is why uploaded premium content doesn't appear in management interface! 5) AUTHENTICATION: ✅ Creator signup/login working correctly 6) DATA CONSISTENCY: ❌ Uploaded premium content not found in retrieval due to collection mismatch. REQUIRED FIX: Either (A) Update GET /api/creators/{creator_id}/content to query 'premium_content' collection instead of 'creator_content', OR (B) Update POST /api/creator/content/upload to store in 'creator_content' collection. This database collection inconsistency is the root cause of the reported management button issues."
+
+test_plan:
+  current_focus:
+    - "Premium Content Management API Endpoint Fix"
+  stuck_tasks:
+    - "Premium Content Management API Endpoint Fix"
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "testing"
+      message: "🚨 PREMIUM CONTENT MANAGEMENT CRITICAL ISSUE IDENTIFIED! Testing reveals the root cause of the 'Manage Premium Content' button not working: DATABASE COLLECTION MISMATCH. Premium content upload (POST /api/creator/content/upload) stores data in 'premium_content' collection, but creator content retrieval (GET /api/creators/{creator_id}/content) queries 'creator_content' collection. This explains why uploaded premium content doesn't appear in the management interface. The API endpoint change from /api/mentor/{creator_id}/premium-content to /api/creators/{creator_id}/content was correct, but the underlying database query needs to be updated to use the 'premium_content' collection. IMMEDIATE FIX REQUIRED: Update the GET /api/creators/{creator_id}/content endpoint to query db.premium_content instead of db.creator_content to resolve the management functionality."
