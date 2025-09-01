@@ -123,8 +123,11 @@ class CreatorTokenAuthTester:
                 "email": test_email,
                 "password": test_password,
                 "full_name": test_name,
-                "expertise": "Content Creation",
-                "bio": "Test creator for token authentication verification"
+                "account_name": f"token_test_{timestamp}",
+                "description": "Test creator for token authentication verification",
+                "monthly_price": 29.99,
+                "category": "education",
+                "expertise_areas": ["Content Creation", "Testing", "Authentication"]
             }
         )
         
