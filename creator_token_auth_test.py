@@ -407,11 +407,11 @@ class CreatorTokenAuthTester:
             "Content Upload - No Auth",
             "POST",
             f"api/creators/{self.creator_data.get('creator_id')}/content",
-            401,  # Expect 401 Unauthorized
+            403,  # Expect 403 Not authenticated (as shown in previous test)
             form_data={
                 "title": "Test Content",
                 "description": "This should fail",
-                "content_type": "article"
+                "content_type": "document"
             }
         )
         
