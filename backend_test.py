@@ -67,7 +67,7 @@ class PremiumContentManagementTester:
                 self.creator_id = data.get("creator", {}).get("creator_id")
                 self.log_result("Creator Signup", True, f"Creator ID: {self.creator_id}")
                 return True
-            elif response.status_code == 400 and "already exists" in response.text:
+            elif response.status_code == 400 and ("already exists" in response.text or "already registered" in response.text):
                 # Try login instead
                 return self.login_test_creator()
             else:
