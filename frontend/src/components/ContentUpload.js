@@ -136,8 +136,20 @@ const ContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
         onUploadSuccess && onUploadSuccess(result);
         onClose && onClose();
       } else {
-        const errorData = await response.json();
-        setErrors({ submit: errorData.detail || 'Upload failed' });
+        let errorMessage = 'Upload failed';
+        
+        if (response.status === 401 || response.status === 403) {
+          errorMessage = 'Authentication failed. Please log in again.';
+        } else {
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.detail || errorMessage;
+          } catch (e) {
+            // If we can't parse the error response, use default message
+          }
+        }
+        
+        setErrors({ submit: errorMessage });
       }
     } catch (error) {
       setErrors({ submit: 'Network error. Please try again.' });
