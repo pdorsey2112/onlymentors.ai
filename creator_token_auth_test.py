@@ -43,6 +43,66 @@ class CreatorTokenAuthTester:
             "timestamp": datetime.now().isoformat()
         })
 
+    def run_form_test(self, name, method, endpoint, expected_status, form_data=None, headers=None):
+        """Run a single API test with form data"""
+        if endpoint == "":
+            url = self.base_url
+        elif endpoint.startswith('api/'):
+            url = f"{self.base_url}/{endpoint}"
+        else:
+            url = f"{self.base_url}/api/{endpoint}"
+            
+        test_headers = {}
+        
+        if self.creator_token:
+            test_headers['Authorization'] = f'Bearer {self.creator_token}'
+        
+        if headers:
+            test_headers.update(headers)
+
+        self.tests_run += 1
+        print(f"\n🔍 Testing {name}...")
+        print(f"   URL: {url}")
+        
+        try:
+            if method == 'POST':
+                response = requests.post(url, data=form_data, headers=test_headers, timeout=30)
+            else:
+                response = requests.request(method, url, data=form_data, headers=test_headers, timeout=30)
+
+            success = response.status_code == expected_status
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                try:
+                    response_data = response.json()
+                    print(f"   Response preview: {json.dumps(response_data, indent=2)[:300]}...")
+                    return True, response_data
+                except:
+                    return True, {}
+            else:
+                print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
+                try:
+                    error_data = response.json()
+                    print(f"   Error: {error_data}")
+                    return False, error_data
+                except:
+                    print(f"   Error: {response.text}")
+                    return False, {"error": response.text}
+
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False, {"error": str(e)}
+
+    def log_test_result(self, test_name, success, details=""):
+        """Log test result for final reporting"""
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
         if endpoint == "":
