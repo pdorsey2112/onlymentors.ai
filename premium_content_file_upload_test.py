@@ -108,7 +108,7 @@ class PremiumContentFileUploadTester:
         return content, filename, mime_type
     
     async def test_premium_content_upload_with_file(self):
-        """Test POST /api/creator/content/upload with FormData and file"""
+        """Test POST /api/api/creator/content/upload with FormData and file"""
         if not self.creator_token:
             self.log_test("Premium Content Upload with File", False, "No creator token available")
             return
@@ -130,7 +130,7 @@ class PremiumContentFileUploadTester:
             data.add_field('preview_available', 'true')
             data.add_field('content_file', file_content, filename=filename, content_type=mime_type)
             
-            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 200:
                     response_data = await response.json()
@@ -174,7 +174,7 @@ class PremiumContentFileUploadTester:
             data.add_field('preview_available', 'false')
             data.add_field('content_file', file_content, filename=filename, content_type=mime_type)
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 200:
                     response_data = await response.json()
@@ -206,7 +206,7 @@ class PremiumContentFileUploadTester:
             data.add_field('tags', '["education", "text", "content"]')
             data.add_field('preview_available', 'true')
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 200:
                     response_data = await response.json()
@@ -246,7 +246,7 @@ class PremiumContentFileUploadTester:
             data.add_field('preview_available', 'false')
             data.add_field('content_file', file_content, filename=filename, content_type=mime_type)
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 200:
                     response_data = await response.json()
@@ -283,7 +283,7 @@ class PremiumContentFileUploadTester:
                 data.add_field('preview_available', 'false')
                 data.add_field('content_file', file_content, filename=filename, content_type=mime_type)
                 
-                async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+                async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                            data=data, headers=headers) as response:
                     if response.status != 200:
                         error_text = await response.text()
@@ -311,7 +311,7 @@ class PremiumContentFileUploadTester:
             data.add_field('title', 'Test Content')
             # Missing description, content_type, price
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 422:  # Validation error
                     self.log_test("Form Data Validation - Missing Required Fields", True, 
@@ -334,7 +334,7 @@ class PremiumContentFileUploadTester:
             data.add_field('tags', '[]')
             data.add_field('preview_available', 'false')
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 400:
                     self.log_test("Form Data Validation - Price Too Low", True, 
@@ -357,7 +357,7 @@ class PremiumContentFileUploadTester:
             data.add_field('tags', '[]')
             data.add_field('preview_available', 'false')
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 400:
                     self.log_test("Form Data Validation - Price Too High", True, 
@@ -380,7 +380,7 @@ class PremiumContentFileUploadTester:
             data.add_field('tags', '["test", "validation"]')
             data.add_field('preview_available', 'true')
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 200:
                     response_data = await response.json()
@@ -407,7 +407,7 @@ class PremiumContentFileUploadTester:
             data.add_field('price', '12.99')
             # category, tags, preview_available are optional
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=headers) as response:
                 if response.status == 200:
                     response_data = await response.json()
@@ -437,7 +437,7 @@ class PremiumContentFileUploadTester:
             data.add_field('category', 'test')
             data.add_field('price', '10.00')
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data) as response:
                 if response.status in [401, 403]:
                     self.log_test("Authentication - No Token", True, 
@@ -460,7 +460,7 @@ class PremiumContentFileUploadTester:
             data.add_field('category', 'test')
             data.add_field('price', '10.00')
             
-            async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+            async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                        data=data, headers=invalid_headers) as response:
                 if response.status in [401, 403]:
                     self.log_test("Authentication - Invalid Token", True, 
@@ -484,7 +484,7 @@ class PremiumContentFileUploadTester:
                 data.add_field('category', 'test')
                 data.add_field('price', '8.99')
                 
-                async with self.session.post(f"{BACKEND_URL}/creator/content/upload", 
+                async with self.session.post(f"{BACKEND_URL}/api/creator/content/upload", 
                                            data=data, headers=headers) as response:
                     if response.status == 200:
                         response_data = await response.json()
