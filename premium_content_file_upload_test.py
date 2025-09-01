@@ -66,7 +66,7 @@ class PremiumContentFileUploadTester:
                 "expertise_areas": ["content creation", "digital marketing"]
             }
             
-            async with self.session.post(f"{BACKEND_URL}/creators/signup", json=creator_data) as response:
+            async with self.session.post(f"{BACKEND_URL}/api/creators/signup", json=creator_data) as response:
                 if response.status == 200:
                     data = await response.json()
                     self.creator_token = data.get("token")
