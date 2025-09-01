@@ -18,7 +18,7 @@ const PremiumContentManagement = ({ creator }) => {
     });
 
     const getAuthHeaders = () => {
-        const token = localStorage.getItem('creator_token');
+        const token = localStorage.getItem('creatorToken');
         return {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
