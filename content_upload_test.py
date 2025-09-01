@@ -121,10 +121,10 @@ class ContentUploadTester:
                 "password": test_password,
                 "full_name": test_name,
                 "account_name": f"creator_{timestamp}",
+                "description": "Test creator for content upload testing",
+                "monthly_price": 50.0,
                 "category": "business",
-                "bio": "Test creator for content upload testing",
-                "expertise": "Content Creation Testing",
-                "hourly_rate": 50.0
+                "expertise_areas": ["Content Creation", "Testing", "Business"]
             }
         )
         
