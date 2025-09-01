@@ -144,7 +144,7 @@ const EnhancedContentManagement = ({ creatorId, onClose, onUploadSuccess }) => {
       setLoading(true);
       setError('');
 
-      const token = localStorage.getItem('creator_token') || localStorage.getItem('auth_token');
+      const token = localStorage.getItem('creatorToken') || localStorage.getItem('auth_token');
       
       const backendURL = getBackendURL();
       const response = await fetch(
