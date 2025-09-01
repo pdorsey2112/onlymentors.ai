@@ -5,6 +5,7 @@ import MessagingInterface from './MessagingInterface';
 import EnhancedContentManagement from './EnhancedContentManagement';
 import PremiumContentUpload from './PremiumContentUpload';
 import PremiumContentManagement from './PremiumContentManagement';
+import { getBackendURL } from '../config';
 
 const CreatorDashboard = () => {
   const [creator, setCreator] = useState(null);
