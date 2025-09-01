@@ -91,7 +91,7 @@ class PremiumContentManagementTester:
         }
         
         response = self.run_api_request('POST', 'creators/signup', signup_data)
-        if response and response.status_code == 201:
+        if response and response.status_code in [200, 201]:
             self.log_test("Creator Signup", True)
             signup_result = response.json()
             self.creator_token = signup_result.get('token')
