@@ -11,7 +11,7 @@ import tempfile
 import os
 
 # Configuration
-BACKEND_URL = "https://mentor-marketplace.preview.emergentagent.com"
+BACKEND_URL = "http://127.0.0.1:8001"
 
 def test_premium_content_upload():
     """Test premium content upload with file functionality"""
