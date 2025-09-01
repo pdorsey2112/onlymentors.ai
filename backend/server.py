@@ -2578,7 +2578,8 @@ async def upload_creator_content(
     content_type: str = Form(...),
     category: str = Form(None),
     tags: str = Form("[]"),
-    content_file: UploadFile = File(None)
+    content_file: UploadFile = File(None),
+    current_creator = Depends(get_current_creator)
 ):
     """Upload content for creator"""
     try:
