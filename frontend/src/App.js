@@ -119,7 +119,7 @@ function CreatorApp() {
 
   useEffect(() => {
     // Check if creator is already logged in
-    const token = localStorage.getItem('creator_token');
+    const token = localStorage.getItem('creatorToken');
     const creatorData = localStorage.getItem('creator_data');
     
     if (token && creatorData) {
