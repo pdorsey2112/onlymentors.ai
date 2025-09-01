@@ -118,8 +118,13 @@ const ContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
       }, 200);
 
       const backendURL = getBackendURL();
+      const token = localStorage.getItem('creator_token');
+      
       const response = await fetch(`${backendURL}/api/creators/${creatorId}/content`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
 
