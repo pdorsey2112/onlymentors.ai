@@ -687,7 +687,7 @@ def main():
     
     # Test basic connectivity first
     print(f"\n🌐 Testing Basic API Connectivity")
-    success, _ = tester.run_test("Root Endpoint", "GET", "", 200)
+    success, _ = tester.run_test("Root Endpoint", "GET", "/", 200)
     if not success:
         print("❌ Cannot connect to API - aborting tests")
         return 1
