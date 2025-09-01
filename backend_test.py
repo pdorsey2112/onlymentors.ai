@@ -1,560 +1,639 @@
 #!/usr/bin/env python3
 """
 Premium Content Management System Testing
-Testing the corrected premium content management system with proper separation of standard and premium content.
+Tests edit, duplicate, and delete functionality for premium content
 """
 
 import requests
 import json
 import time
-import os
+import uuid
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://mentor-marketplace.preview.emergentagent.com/api"
+BASE_URL = "https://mentor-marketplace.preview.emergentagent.com/api"
+TEST_CREATOR_EMAIL = "premium.creator@test.com"
+TEST_CREATOR_PASSWORD = "TestPass123!"
+TEST_CREATOR_NAME = "Premium Content Creator"
 
-class PremiumContentTester:
+class PremiumContentManagementTester:
     def __init__(self):
-        self.session = requests.Session()
         self.creator_token = None
         self.creator_id = None
-        self.user_token = None
-        self.user_id = None
-        self.test_results = []
+        self.test_content_id = None
+        self.duplicate_content_id = None
+        self.results = []
         
-    def log_test(self, test_name, success, details=""):
-        """Log test results"""
+    def log_result(self, test_name, success, details="", response_data=None):
+        """Log test result"""
         status = "✅ PASS" if success else "❌ FAIL"
         result = {
             "test": test_name,
             "status": status,
             "success": success,
             "details": details,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "response_data": response_data
         }
-        self.test_results.append(result)
+        self.results.append(result)
         print(f"{status}: {test_name}")
         if details:
             print(f"   Details: {details}")
-        return success
+        if not success and response_data:
+            print(f"   Response: {response_data}")
+        print()
 
-    def create_test_creator(self):
-        """Create a test creator account"""
+    def setup_test_creator(self):
+        """Create and authenticate test creator"""
+        print("🔧 Setting up test creator...")
+        
+        # Creator signup
+        signup_data = {
+            "email": TEST_CREATOR_EMAIL,
+            "password": TEST_CREATOR_PASSWORD,
+            "full_name": TEST_CREATOR_NAME,
+            "expertise": "Premium Content Creation",
+            "bio": "Test creator for premium content management",
+            "hourly_rate": 100.0,
+            "category": "business"
+        }
+        
         try:
-            # Creator signup
-            creator_data = {
-                "email": f"testcreator_{int(time.time())}@example.com",
-                "password": "TestPassword123!",
-                "full_name": "Test Creator Premium",
-                "account_name": "TestCreatorPremium",
-                "description": "Testing premium content management system",
-                "monthly_price": 150.0,
-                "category": "business",
-                "expertise_areas": ["Premium Content Testing", "Content Management"]
-            }
-            
-            response = self.session.post(f"{BACKEND_URL}/creators/signup", json=creator_data)
-            
+            response = requests.post(f"{BASE_URL}/creators/signup", json=signup_data)
+            if response.status_code == 201:
+                data = response.json()
+                self.creator_token = data.get("token")
+                self.creator_id = data.get("creator", {}).get("creator_id")
+                self.log_result("Creator Signup", True, f"Creator ID: {self.creator_id}")
+                return True
+            elif response.status_code == 400 and "already exists" in response.text:
+                # Try login instead
+                return self.login_test_creator()
+            else:
+                self.log_result("Creator Signup", False, f"Status: {response.status_code}", response.text)
+                return False
+        except Exception as e:
+            self.log_result("Creator Signup", False, f"Exception: {str(e)}")
+            return False
+
+    def login_test_creator(self):
+        """Login existing test creator"""
+        login_data = {
+            "email": TEST_CREATOR_EMAIL,
+            "password": TEST_CREATOR_PASSWORD
+        }
+        
+        try:
+            response = requests.post(f"{BASE_URL}/creators/login", json=login_data)
             if response.status_code == 200:
                 data = response.json()
                 self.creator_token = data.get("token")
                 self.creator_id = data.get("creator", {}).get("creator_id")
-                
-                # Set authorization header
-                self.session.headers.update({
-                    "Authorization": f"Bearer {self.creator_token}"
-                })
-                
-                return self.log_test(
-                    "Creator Account Creation", 
-                    True, 
-                    f"Creator ID: {self.creator_id}"
-                )
+                self.log_result("Creator Login", True, f"Creator ID: {self.creator_id}")
+                return True
             else:
-                return self.log_test(
-                    "Creator Account Creation", 
-                    False, 
-                    f"Status: {response.status_code}, Response: {response.text}"
-                )
-                
+                self.log_result("Creator Login", False, f"Status: {response.status_code}", response.text)
+                return False
         except Exception as e:
-            return self.log_test("Creator Account Creation", False, f"Exception: {str(e)}")
+            self.log_result("Creator Login", False, f"Exception: {str(e)}")
+            return False
 
-    def create_test_user(self):
-        """Create a test user account"""
+    def create_test_premium_content(self):
+        """Create premium content for testing"""
+        print("📝 Creating test premium content...")
+        
+        headers = {"Authorization": f"Bearer {self.creator_token}"}
+        
+        # Create premium content using form data
+        content_data = {
+            "title": "Test Premium Content for Management",
+            "description": "This is a test premium content for testing edit, duplicate, and delete operations",
+            "content_type": "document",
+            "category": "business",
+            "price": 9.99,
+            "tags": '["test", "premium", "management"]',
+            "preview_available": True
+        }
+        
         try:
-            # User signup
-            user_data = {
-                "email": f"testuser_{int(time.time())}@example.com",
-                "password": "TestPassword123!",
-                "full_name": "Test User Premium"
-            }
-            
-            response = self.session.post(f"{BACKEND_URL}/auth/signup", json=user_data)
+            response = requests.post(f"{BASE_URL}/creator/content/upload", data=content_data, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                self.test_content_id = data.get("content_id")
+                self.log_result("Create Test Premium Content", True, 
+                              f"Content ID: {self.test_content_id}, Price: ${content_data['price']}")
+                return True
+            else:
+                self.log_result("Create Test Premium Content", False, 
+                              f"Status: {response.status_code}", response.text)
+                return False
+        except Exception as e:
+            self.log_result("Create Test Premium Content", False, f"Exception: {str(e)}")
+            return False
+
+    def test_premium_content_edit(self):
+        """Test premium content edit functionality"""
+        print("✏️ Testing Premium Content Edit...")
+        
+        headers = {"Authorization": f"Bearer {self.creator_token}"}
+        
+        # Test 1: Valid content update
+        updated_data = {
+            "title": "Updated Premium Content Title",
+            "description": "Updated description with new information",
+            "category": "health",
+            "price": 15.99,
+            "tags": '["updated", "premium", "health"]',
+            "preview_available": False
+        }
+        
+        try:
+            response = requests.put(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.test_content_id}",
+                data=updated_data,
+                headers=headers
+            )
             
             if response.status_code == 200:
                 data = response.json()
-                self.user_token = data.get("token")
-                self.user_id = data.get("user", {}).get("user_id")
+                content = data.get("content", {})
                 
-                return self.log_test(
-                    "User Account Creation", 
-                    True, 
-                    f"User ID: {self.user_id}"
-                )
+                # Verify updates
+                title_correct = content.get("title") == updated_data["title"]
+                price_correct = content.get("price") == updated_data["price"]
+                category_correct = content.get("category") == updated_data["category"]
+                preview_correct = content.get("preview_available") == updated_data["preview_available"]
+                
+                if all([title_correct, price_correct, category_correct, preview_correct]):
+                    self.log_result("Premium Content Edit - Valid Update", True,
+                                  f"All fields updated correctly. New price: ${content.get('price')}")
+                else:
+                    self.log_result("Premium Content Edit - Valid Update", False,
+                                  f"Field validation failed. Title: {title_correct}, Price: {price_correct}, Category: {category_correct}, Preview: {preview_correct}")
             else:
-                return self.log_test(
-                    "User Account Creation", 
-                    False, 
-                    f"Status: {response.status_code}, Response: {response.text}"
+                self.log_result("Premium Content Edit - Valid Update", False,
+                              f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_result("Premium Content Edit - Valid Update", False, f"Exception: {str(e)}")
+
+        # Test 2: Price validation (too low)
+        try:
+            invalid_price_data = updated_data.copy()
+            invalid_price_data["price"] = 0.005  # Below minimum
+            
+            response = requests.put(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.test_content_id}",
+                data=invalid_price_data,
+                headers=headers
+            )
+            
+            if response.status_code == 400:
+                self.log_result("Premium Content Edit - Price Validation (Low)", True,
+                              "Correctly rejected price below $0.01")
+            else:
+                self.log_result("Premium Content Edit - Price Validation (Low)", False,
+                              f"Should reject low price. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Edit - Price Validation (Low)", False, f"Exception: {str(e)}")
+
+        # Test 3: Price validation (too high)
+        try:
+            invalid_price_data = updated_data.copy()
+            invalid_price_data["price"] = 55.00  # Above maximum
+            
+            response = requests.put(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.test_content_id}",
+                data=invalid_price_data,
+                headers=headers
+            )
+            
+            if response.status_code == 400:
+                self.log_result("Premium Content Edit - Price Validation (High)", True,
+                              "Correctly rejected price above $50.00")
+            else:
+                self.log_result("Premium Content Edit - Price Validation (High)", False,
+                              f"Should reject high price. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Edit - Price Validation (High)", False, f"Exception: {str(e)}")
+
+        # Test 4: Authentication required
+        try:
+            response = requests.put(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.test_content_id}",
+                data=updated_data
+                # No headers (no auth)
+            )
+            
+            if response.status_code in [401, 403]:
+                self.log_result("Premium Content Edit - Authentication Required", True,
+                              "Correctly requires authentication")
+            else:
+                self.log_result("Premium Content Edit - Authentication Required", False,
+                              f"Should require auth. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Edit - Authentication Required", False, f"Exception: {str(e)}")
+
+        # Test 5: Cross-creator access denied
+        try:
+            fake_creator_id = str(uuid.uuid4())
+            response = requests.put(
+                f"{BASE_URL}/creators/{fake_creator_id}/premium-content/{self.test_content_id}",
+                data=updated_data,
+                headers=headers
+            )
+            
+            if response.status_code == 403:
+                self.log_result("Premium Content Edit - Cross-Creator Access Denied", True,
+                              "Correctly denies access to other creator's content")
+            else:
+                self.log_result("Premium Content Edit - Cross-Creator Access Denied", False,
+                              f"Should deny cross-creator access. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Edit - Cross-Creator Access Denied", False, f"Exception: {str(e)}")
+
+    def test_premium_content_duplicate(self):
+        """Test premium content duplicate functionality"""
+        print("📋 Testing Premium Content Duplicate...")
+        
+        headers = {"Authorization": f"Bearer {self.creator_token}"}
+        
+        # Test 1: Valid content duplication
+        try:
+            response = requests.post(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.test_content_id}/duplicate",
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                duplicate_content = data.get("content", {})
+                self.duplicate_content_id = duplicate_content.get("content_id")
+                
+                # Verify duplicate properties
+                title_has_copy = "(Copy)" in duplicate_content.get("title", "")
+                new_content_id = duplicate_content.get("content_id") != self.test_content_id
+                stats_reset = (duplicate_content.get("total_purchases", -1) == 0 and 
+                             duplicate_content.get("total_revenue", -1) == 0 and
+                             duplicate_content.get("creator_earnings", -1) == 0)
+                
+                if all([title_has_copy, new_content_id, stats_reset]):
+                    self.log_result("Premium Content Duplicate - Valid Duplication", True,
+                                  f"Duplicate created with ID: {self.duplicate_content_id}, Title: {duplicate_content.get('title')}")
+                else:
+                    self.log_result("Premium Content Duplicate - Valid Duplication", False,
+                                  f"Validation failed. Copy suffix: {title_has_copy}, New ID: {new_content_id}, Stats reset: {stats_reset}")
+            else:
+                self.log_result("Premium Content Duplicate - Valid Duplication", False,
+                              f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_result("Premium Content Duplicate - Valid Duplication", False, f"Exception: {str(e)}")
+
+        # Test 2: Authentication required
+        try:
+            response = requests.post(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.test_content_id}/duplicate"
+                # No headers (no auth)
+            )
+            
+            if response.status_code in [401, 403]:
+                self.log_result("Premium Content Duplicate - Authentication Required", True,
+                              "Correctly requires authentication")
+            else:
+                self.log_result("Premium Content Duplicate - Authentication Required", False,
+                              f"Should require auth. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Duplicate - Authentication Required", False, f"Exception: {str(e)}")
+
+        # Test 3: Cross-creator access denied
+        try:
+            fake_creator_id = str(uuid.uuid4())
+            response = requests.post(
+                f"{BASE_URL}/creators/{fake_creator_id}/premium-content/{self.test_content_id}/duplicate",
+                headers=headers
+            )
+            
+            if response.status_code == 403:
+                self.log_result("Premium Content Duplicate - Cross-Creator Access Denied", True,
+                              "Correctly denies access to other creator's content")
+            else:
+                self.log_result("Premium Content Duplicate - Cross-Creator Access Denied", False,
+                              f"Should deny cross-creator access. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Duplicate - Cross-Creator Access Denied", False, f"Exception: {str(e)}")
+
+        # Test 4: Non-existent content
+        try:
+            fake_content_id = str(uuid.uuid4())
+            response = requests.post(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{fake_content_id}/duplicate",
+                headers=headers
+            )
+            
+            if response.status_code == 404:
+                self.log_result("Premium Content Duplicate - Non-Existent Content", True,
+                              "Correctly handles non-existent content")
+            else:
+                self.log_result("Premium Content Duplicate - Non-Existent Content", False,
+                              f"Should return 404 for non-existent content. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Duplicate - Non-Existent Content", False, f"Exception: {str(e)}")
+
+    def test_premium_content_delete(self):
+        """Test premium content delete functionality"""
+        print("🗑️ Testing Premium Content Delete...")
+        
+        headers = {"Authorization": f"Bearer {self.creator_token}"}
+        
+        # Test 1: Authentication required
+        try:
+            response = requests.delete(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.duplicate_content_id}"
+                # No headers (no auth)
+            )
+            
+            if response.status_code in [401, 403]:
+                self.log_result("Premium Content Delete - Authentication Required", True,
+                              "Correctly requires authentication")
+            else:
+                self.log_result("Premium Content Delete - Authentication Required", False,
+                              f"Should require auth. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Delete - Authentication Required", False, f"Exception: {str(e)}")
+
+        # Test 2: Cross-creator access denied
+        try:
+            fake_creator_id = str(uuid.uuid4())
+            response = requests.delete(
+                f"{BASE_URL}/creators/{fake_creator_id}/premium-content/{self.duplicate_content_id}",
+                headers=headers
+            )
+            
+            if response.status_code == 403:
+                self.log_result("Premium Content Delete - Cross-Creator Access Denied", True,
+                              "Correctly denies access to other creator's content")
+            else:
+                self.log_result("Premium Content Delete - Cross-Creator Access Denied", False,
+                              f"Should deny cross-creator access. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Delete - Cross-Creator Access Denied", False, f"Exception: {str(e)}")
+
+        # Test 3: Valid content deletion (delete duplicate first)
+        if self.duplicate_content_id:
+            try:
+                response = requests.delete(
+                    f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.duplicate_content_id}",
+                    headers=headers
                 )
                 
-        except Exception as e:
-            return self.log_test("User Account Creation", False, f"Exception: {str(e)}")
+                if response.status_code == 200:
+                    self.log_result("Premium Content Delete - Valid Deletion (Duplicate)", True,
+                                  f"Successfully deleted duplicate content: {self.duplicate_content_id}")
+                else:
+                    self.log_result("Premium Content Delete - Valid Deletion (Duplicate)", False,
+                                  f"Status: {response.status_code}", response.text)
+            except Exception as e:
+                self.log_result("Premium Content Delete - Valid Deletion (Duplicate)", False, f"Exception: {str(e)}")
 
-    def test_standard_content_endpoint(self):
-        """Test that standard content endpoint only returns standard content from db.creator_content"""
+        # Test 4: Delete non-existent content
         try:
-            if not self.creator_token:
-                return self.log_test("Standard Content Endpoint Test", False, "No creator token available")
-            
-            # First upload some standard content
-            standard_content_data = {
-                "title": "Standard Content Test",
-                "description": "This is standard content for testing",
-                "content_type": "article_link",
-                "category": "business",
-                "tags": '["standard", "test"]'
-            }
-            
-            # Upload standard content
-            upload_response = self.session.post(
-                f"{BACKEND_URL}/creators/{self.creator_id}/content",
-                data=standard_content_data
+            fake_content_id = str(uuid.uuid4())
+            response = requests.delete(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{fake_content_id}",
+                headers=headers
             )
+            
+            if response.status_code == 404:
+                self.log_result("Premium Content Delete - Non-Existent Content", True,
+                              "Correctly handles non-existent content")
+            else:
+                self.log_result("Premium Content Delete - Non-Existent Content", False,
+                              f"Should return 404 for non-existent content. Status: {response.status_code}")
+        except Exception as e:
+            self.log_result("Premium Content Delete - Non-Existent Content", False, f"Exception: {str(e)}")
+
+        # Test 5: Valid content deletion (delete original)
+        if self.test_content_id:
+            try:
+                response = requests.delete(
+                    f"{BASE_URL}/creators/{self.creator_id}/premium-content/{self.test_content_id}",
+                    headers=headers
+                )
+                
+                if response.status_code == 200:
+                    self.log_result("Premium Content Delete - Valid Deletion (Original)", True,
+                                  f"Successfully deleted original content: {self.test_content_id}")
+                    
+                    # Verify content is actually deleted by trying to access it
+                    verify_response = requests.get(
+                        f"{BASE_URL}/creators/{self.creator_id}/premium-content",
+                        headers=headers
+                    )
+                    
+                    if verify_response.status_code == 200:
+                        content_list = verify_response.json().get("content", [])
+                        content_exists = any(c.get("content_id") == self.test_content_id for c in content_list)
+                        
+                        if not content_exists:
+                            self.log_result("Premium Content Delete - Verification", True,
+                                          "Content successfully removed from database")
+                        else:
+                            self.log_result("Premium Content Delete - Verification", False,
+                                          "Content still exists in database after deletion")
+                else:
+                    self.log_result("Premium Content Delete - Valid Deletion (Original)", False,
+                                  f"Status: {response.status_code}", response.text)
+            except Exception as e:
+                self.log_result("Premium Content Delete - Valid Deletion (Original)", False, f"Exception: {str(e)}")
+
+    def test_end_to_end_workflow(self):
+        """Test complete end-to-end premium content management workflow"""
+        print("🔄 Testing End-to-End Premium Content Management Workflow...")
+        
+        headers = {"Authorization": f"Bearer {self.creator_token}"}
+        
+        # Step 1: Upload new content
+        workflow_content_data = {
+            "title": "E2E Workflow Test Content",
+            "description": "Content for testing complete workflow",
+            "content_type": "video",
+            "category": "science",
+            "price": 25.00,
+            "tags": '["workflow", "test", "e2e"]',
+            "preview_available": True
+        }
+        
+        try:
+            # Upload
+            upload_response = requests.post(f"{BASE_URL}/creator/content/upload", 
+                                          data=workflow_content_data, headers=headers)
             
             if upload_response.status_code != 200:
-                return self.log_test(
-                    "Standard Content Endpoint Test", 
-                    False, 
-                    f"Failed to upload standard content: {upload_response.status_code}"
-                )
+                self.log_result("E2E Workflow - Upload", False, 
+                              f"Upload failed. Status: {upload_response.status_code}")
+                return
             
-            # Now test the standard content endpoint
-            response = self.session.get(f"{BACKEND_URL}/creators/{self.creator_id}/content")
+            workflow_content_id = upload_response.json().get("content_id")
+            self.log_result("E2E Workflow - Upload", True, f"Content uploaded: {workflow_content_id}")
             
-            if response.status_code == 200:
-                data = response.json()
-                content_list = data.get("content", [])
-                
-                # Verify content is from standard content collection
-                has_standard_content = any(
-                    content.get("title") == "Standard Content Test" 
-                    for content in content_list
-                )
-                
-                # Verify no premium content appears in standard endpoint
-                has_premium_content = any(
-                    "price" in content and content.get("price") is not None
-                    for content in content_list
-                )
-                
-                if has_standard_content and not has_premium_content:
-                    return self.log_test(
-                        "Standard Content Endpoint Test", 
-                        True, 
-                        f"Standard endpoint returns only standard content. Found {len(content_list)} items"
-                    )
-                else:
-                    return self.log_test(
-                        "Standard Content Endpoint Test", 
-                        False, 
-                        f"Content mixing detected. Standard: {has_standard_content}, Premium: {has_premium_content}"
-                    )
-            else:
-                return self.log_test(
-                    "Standard Content Endpoint Test", 
-                    False, 
-                    f"Status: {response.status_code}, Response: {response.text}"
-                )
-                
-        except Exception as e:
-            return self.log_test("Standard Content Endpoint Test", False, f"Exception: {str(e)}")
-
-    def test_premium_content_endpoint(self):
-        """Test new dedicated premium content endpoint"""
-        try:
-            if not self.creator_token:
-                return self.log_test("Premium Content Endpoint Test", False, "No creator token available")
-            
-            # Test the new premium content management endpoint
-            response = self.session.get(f"{BACKEND_URL}/creators/{self.creator_id}/premium-content")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Verify response structure matches frontend expectations
-                required_fields = ["content", "total", "offset", "limit"]
-                has_required_fields = all(field in data for field in required_fields)
-                
-                if has_required_fields:
-                    content_list = data.get("content", [])
-                    
-                    # Verify this endpoint only returns premium content (should have pricing info)
-                    all_premium = all(
-                        "price" in content or "pricing" in content
-                        for content in content_list
-                    ) if content_list else True  # Empty list is valid
-                    
-                    return self.log_test(
-                        "Premium Content Endpoint Test", 
-                        True, 
-                        f"Premium endpoint working. Found {len(content_list)} premium items. Structure: {list(data.keys())}"
-                    )
-                else:
-                    return self.log_test(
-                        "Premium Content Endpoint Test", 
-                        False, 
-                        f"Missing required fields. Got: {list(data.keys())}, Expected: {required_fields}"
-                    )
-            else:
-                return self.log_test(
-                    "Premium Content Endpoint Test", 
-                    False, 
-                    f"Status: {response.status_code}, Response: {response.text}"
-                )
-                
-        except Exception as e:
-            return self.log_test("Premium Content Endpoint Test", False, f"Exception: {str(e)}")
-
-    def test_premium_content_upload(self):
-        """Test premium content upload via /api/creator/content/upload"""
-        try:
-            if not self.creator_token:
-                return self.log_test("Premium Content Upload Test", False, "No creator token available")
-            
-            # Upload premium content
-            premium_content_data = {
-                "title": "Premium Test Content",
-                "description": "This is premium content for testing separation",
-                "content_type": "document",
-                "category": "business",
-                "price": 9.99,
-                "tags": '["premium", "test", "separation"]',
-                "preview_available": True
+            # Step 2: Edit the content
+            edit_data = {
+                "title": "E2E Workflow Test Content (Edited)",
+                "description": "Updated description for workflow test",
+                "category": "health",
+                "price": 30.00,
+                "tags": '["workflow", "test", "e2e", "edited"]',
+                "preview_available": False
             }
             
-            response = self.session.post(
-                f"{BACKEND_URL}/creator/content/upload",
-                data=premium_content_data
+            edit_response = requests.put(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{workflow_content_id}",
+                data=edit_data, headers=headers
             )
             
-            if response.status_code == 200:
-                data = response.json()
-                content_id = data.get("content_id")
-                
-                if content_id:
-                    return self.log_test(
-                        "Premium Content Upload Test", 
-                        True, 
-                        f"Premium content uploaded successfully. Content ID: {content_id}"
-                    )
-                else:
-                    return self.log_test(
-                        "Premium Content Upload Test", 
-                        False, 
-                        f"No content_id in response: {data}"
-                    )
+            if edit_response.status_code == 200:
+                self.log_result("E2E Workflow - Edit", True, "Content successfully edited")
             else:
-                return self.log_test(
-                    "Premium Content Upload Test", 
-                    False, 
-                    f"Status: {response.status_code}, Response: {response.text}"
-                )
-                
-        except Exception as e:
-            return self.log_test("Premium Content Upload Test", False, f"Exception: {str(e)}")
-
-    def test_content_separation_verification(self):
-        """Test that uploaded premium content appears only in premium management"""
-        try:
-            if not self.creator_token:
-                return self.log_test("Content Separation Verification", False, "No creator token available")
+                self.log_result("E2E Workflow - Edit", False, 
+                              f"Edit failed. Status: {edit_response.status_code}")
+                return
             
-            # Check premium content endpoint for our uploaded content
-            premium_response = self.session.get(f"{BACKEND_URL}/creators/{self.creator_id}/premium-content")
-            
-            # Check standard content endpoint
-            standard_response = self.session.get(f"{BACKEND_URL}/creators/{self.creator_id}/content")
-            
-            if premium_response.status_code == 200 and standard_response.status_code == 200:
-                premium_data = premium_response.json()
-                standard_data = standard_response.json()
-                
-                premium_content = premium_data.get("content", [])
-                standard_content = standard_data.get("content", [])
-                
-                # Look for our test premium content
-                premium_test_content = any(
-                    content.get("title") == "Premium Test Content"
-                    for content in premium_content
-                )
-                
-                # Verify it doesn't appear in standard content
-                premium_in_standard = any(
-                    content.get("title") == "Premium Test Content"
-                    for content in standard_content
-                )
-                
-                # Look for our test standard content
-                standard_test_content = any(
-                    content.get("title") == "Standard Content Test"
-                    for content in standard_content
-                )
-                
-                # Verify it doesn't appear in premium content
-                standard_in_premium = any(
-                    content.get("title") == "Standard Content Test"
-                    for content in premium_content
-                )
-                
-                if premium_test_content and not premium_in_standard and standard_test_content and not standard_in_premium:
-                    return self.log_test(
-                        "Content Separation Verification", 
-                        True, 
-                        "Perfect separation: Premium content only in premium endpoint, standard content only in standard endpoint"
-                    )
-                else:
-                    return self.log_test(
-                        "Content Separation Verification", 
-                        False, 
-                        f"Separation failed. Premium in premium: {premium_test_content}, Premium in standard: {premium_in_standard}, Standard in standard: {standard_test_content}, Standard in premium: {standard_in_premium}"
-                    )
-            else:
-                return self.log_test(
-                    "Content Separation Verification", 
-                    False, 
-                    f"API calls failed. Premium: {premium_response.status_code}, Standard: {standard_response.status_code}"
-                )
-                
-        except Exception as e:
-            return self.log_test("Content Separation Verification", False, f"Exception: {str(e)}")
-
-    def test_authentication_and_authorization(self):
-        """Test proper creator authentication and authorization"""
-        try:
-            # Test 1: Access without authentication
-            temp_session = requests.Session()  # No auth headers
-            
-            response = temp_session.get(f"{BACKEND_URL}/creators/{self.creator_id}/premium-content")
-            
-            if response.status_code in [401, 403]:
-                auth_required = True
-            else:
-                auth_required = False
-            
-            # Test 2: Access with invalid token
-            temp_session.headers.update({"Authorization": "Bearer invalid_token_12345"})
-            
-            response = temp_session.get(f"{BACKEND_URL}/creators/{self.creator_id}/premium-content")
-            
-            if response.status_code in [401, 403]:
-                invalid_token_blocked = True
-            else:
-                invalid_token_blocked = False
-            
-            # Test 3: Cross-creator access (if we had another creator)
-            # For now, we'll test with a different creator_id
-            fake_creator_id = "fake_creator_123"
-            
-            response = self.session.get(f"{BACKEND_URL}/creators/{fake_creator_id}/premium-content")
-            
-            if response.status_code in [403, 404]:
-                cross_creator_blocked = True
-            else:
-                cross_creator_blocked = False
-            
-            # Test 4: Valid authentication works
-            response = self.session.get(f"{BACKEND_URL}/creators/{self.creator_id}/premium-content")
-            
-            if response.status_code == 200:
-                valid_auth_works = True
-            else:
-                valid_auth_works = False
-            
-            all_auth_tests_pass = auth_required and invalid_token_blocked and cross_creator_blocked and valid_auth_works
-            
-            return self.log_test(
-                "Authentication and Authorization Test", 
-                all_auth_tests_pass, 
-                f"Auth required: {auth_required}, Invalid token blocked: {invalid_token_blocked}, Cross-creator blocked: {cross_creator_blocked}, Valid auth works: {valid_auth_works}"
+            # Step 3: Duplicate the content
+            duplicate_response = requests.post(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{workflow_content_id}/duplicate",
+                headers=headers
             )
-                
-        except Exception as e:
-            return self.log_test("Authentication and Authorization Test", False, f"Exception: {str(e)}")
-
-    def test_premium_content_discovery(self):
-        """Test premium content discovery endpoint for users"""
-        try:
-            if not self.creator_id:
-                return self.log_test("Premium Content Discovery Test", False, "No creator ID available")
             
-            # Test the mentor premium content discovery endpoint (for users to browse)
-            response = self.session.get(f"{BACKEND_URL}/mentor/{self.creator_id}/premium-content")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Verify response structure for discovery
-                if "content" in data:
-                    content_list = data["content"]
-                    
-                    # Verify content doesn't expose sensitive data (like file paths)
-                    safe_content = True
-                    for content in content_list:
-                        if "file_path" in content or "internal_path" in content:
-                            safe_content = False
-                            break
-                    
-                    return self.log_test(
-                        "Premium Content Discovery Test", 
-                        safe_content, 
-                        f"Discovery endpoint working. Found {len(content_list)} items. Safe content: {safe_content}"
-                    )
-                else:
-                    return self.log_test(
-                        "Premium Content Discovery Test", 
-                        False, 
-                        f"Invalid response structure: {list(data.keys())}"
-                    )
+            if duplicate_response.status_code == 200:
+                duplicate_id = duplicate_response.json().get("content", {}).get("content_id")
+                self.log_result("E2E Workflow - Duplicate", True, f"Content duplicated: {duplicate_id}")
             else:
-                return self.log_test(
-                    "Premium Content Discovery Test", 
-                    False, 
-                    f"Status: {response.status_code}, Response: {response.text}"
-                )
+                self.log_result("E2E Workflow - Duplicate", False, 
+                              f"Duplicate failed. Status: {duplicate_response.status_code}")
+                return
+            
+            # Step 4: Delete the duplicate
+            delete_duplicate_response = requests.delete(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{duplicate_id}",
+                headers=headers
+            )
+            
+            if delete_duplicate_response.status_code == 200:
+                self.log_result("E2E Workflow - Delete Duplicate", True, "Duplicate successfully deleted")
+            else:
+                self.log_result("E2E Workflow - Delete Duplicate", False, 
+                              f"Delete duplicate failed. Status: {delete_duplicate_response.status_code}")
+            
+            # Step 5: Delete the original
+            delete_original_response = requests.delete(
+                f"{BASE_URL}/creators/{self.creator_id}/premium-content/{workflow_content_id}",
+                headers=headers
+            )
+            
+            if delete_original_response.status_code == 200:
+                self.log_result("E2E Workflow - Delete Original", True, "Original content successfully deleted")
+                self.log_result("E2E Workflow - Complete", True, 
+                              "Full workflow completed: Upload → Edit → Duplicate → Delete")
+            else:
+                self.log_result("E2E Workflow - Delete Original", False, 
+                              f"Delete original failed. Status: {delete_original_response.status_code}")
                 
         except Exception as e:
-            return self.log_test("Premium Content Discovery Test", False, f"Exception: {str(e)}")
+            self.log_result("E2E Workflow", False, f"Exception during workflow: {str(e)}")
 
     def run_all_tests(self):
         """Run all premium content management tests"""
-        print("🧪 PREMIUM CONTENT MANAGEMENT SYSTEM TESTING")
+        print("🚀 Starting Premium Content Management System Testing")
         print("=" * 60)
-        print("Testing the corrected premium content management system with proper separation of standard and premium content.")
-        print()
         
-        # Setup phase
-        print("📋 SETUP PHASE")
-        print("-" * 30)
-        if not self.create_test_creator():
-            print("❌ Cannot proceed without creator account")
-            return False
+        # Setup
+        if not self.setup_test_creator():
+            print("❌ Failed to setup test creator. Aborting tests.")
+            return
         
-        if not self.create_test_user():
-            print("⚠️  User account creation failed, but continuing with creator tests")
+        if not self.create_test_premium_content():
+            print("❌ Failed to create test content. Aborting tests.")
+            return
         
-        print()
+        # Run tests
+        self.test_premium_content_edit()
+        self.test_premium_content_duplicate()
+        self.test_premium_content_delete()
+        self.test_end_to_end_workflow()
         
-        # Core testing phase
-        print("🔍 CONTENT SEPARATION TESTING")
-        print("-" * 40)
-        
-        # Test 1: Standard content endpoint
-        self.test_standard_content_endpoint()
-        
-        # Test 2: Premium content endpoint
-        self.test_premium_content_endpoint()
-        
-        # Test 3: Premium content upload
-        self.test_premium_content_upload()
-        
-        # Test 4: Content separation verification
-        self.test_content_separation_verification()
-        
-        print()
-        
-        # Security testing phase
-        print("🔒 AUTHENTICATION & AUTHORIZATION TESTING")
-        print("-" * 50)
-        
-        # Test 5: Authentication and authorization
-        self.test_authentication_and_authorization()
-        
-        print()
-        
-        # Discovery testing phase
-        print("🔍 CONTENT DISCOVERY TESTING")
-        print("-" * 35)
-        
-        # Test 6: Premium content discovery
-        self.test_premium_content_discovery()
-        
-        print()
-        
-        # Results summary
+        # Summary
         self.print_summary()
-        
-        return True
 
     def print_summary(self):
-        """Print test results summary"""
-        print("📊 TEST RESULTS SUMMARY")
+        """Print test summary"""
+        print("\n" + "=" * 60)
+        print("🎯 PREMIUM CONTENT MANAGEMENT TESTING SUMMARY")
         print("=" * 60)
         
-        total_tests = len(self.test_results)
-        passed_tests = sum(1 for result in self.test_results if result["success"])
+        total_tests = len(self.results)
+        passed_tests = sum(1 for r in self.results if r["success"])
         failed_tests = total_tests - passed_tests
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
         
-        print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests} ✅")
-        print(f"Failed: {failed_tests} ❌")
-        print(f"Success Rate: {success_rate:.1f}%")
+        print(f"📊 Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"📈 Success Rate: {success_rate:.1f}%")
         print()
         
-        if failed_tests > 0:
-            print("❌ FAILED TESTS:")
-            for result in self.test_results:
-                if not result["success"]:
-                    print(f"   • {result['test']}: {result['details']}")
+        # Group results by category
+        categories = {
+            "Setup": [],
+            "Edit": [],
+            "Duplicate": [],
+            "Delete": [],
+            "E2E Workflow": []
+        }
+        
+        for result in self.results:
+            test_name = result["test"]
+            if "Setup" in test_name or "Signup" in test_name or "Login" in test_name or "Create Test" in test_name:
+                categories["Setup"].append(result)
+            elif "Edit" in test_name:
+                categories["Edit"].append(result)
+            elif "Duplicate" in test_name:
+                categories["Duplicate"].append(result)
+            elif "Delete" in test_name:
+                categories["Delete"].append(result)
+            elif "E2E" in test_name or "Workflow" in test_name:
+                categories["E2E Workflow"].append(result)
+        
+        for category, tests in categories.items():
+            if tests:
+                passed = sum(1 for t in tests if t["success"])
+                total = len(tests)
+                print(f"📂 {category}: {passed}/{total} passed")
+                for test in tests:
+                    print(f"   {test['status']}: {test['test']}")
+                print()
+        
+        # Critical issues
+        critical_failures = [r for r in self.results if not r["success"] and 
+                           ("Authentication" in r["test"] or "Cross-Creator" in r["test"] or 
+                            "Valid" in r["test"] and ("Edit" in r["test"] or "Delete" in r["test"] or "Duplicate" in r["test"]))]
+        
+        if critical_failures:
+            print("🚨 CRITICAL ISSUES FOUND:")
+            for failure in critical_failures:
+                print(f"   ❌ {failure['test']}: {failure['details']}")
             print()
         
-        # Critical success criteria check
-        critical_tests = [
-            "Standard Content Endpoint Test",
-            "Premium Content Endpoint Test", 
-            "Content Separation Verification",
-            "Authentication and Authorization Test"
-        ]
-        
-        critical_passed = sum(
-            1 for result in self.test_results 
-            if result["test"] in critical_tests and result["success"]
-        )
-        
-        print("🎯 CRITICAL SUCCESS CRITERIA:")
-        print(f"   • Standard content endpoint returns only standard content: {'✅' if any(r['test'] == 'Standard Content Endpoint Test' and r['success'] for r in self.test_results) else '❌'}")
-        print(f"   • Premium content endpoint returns only premium content: {'✅' if any(r['test'] == 'Premium Content Endpoint Test' and r['success'] for r in self.test_results) else '❌'}")
-        print(f"   • Content separation working correctly: {'✅' if any(r['test'] == 'Content Separation Verification' and r['success'] for r in self.test_results) else '❌'}")
-        print(f"   • Authentication and authorization enforced: {'✅' if any(r['test'] == 'Authentication and Authorization Test' and r['success'] for r in self.test_results) else '❌'}")
-        
-        print()
-        
-        if critical_passed == len(critical_tests):
-            print("🎉 ALL CRITICAL SUCCESS CRITERIA MET!")
-            print("The premium content management system is working correctly with proper content separation.")
+        # Overall assessment
+        if success_rate >= 90:
+            print("🎉 EXCELLENT: Premium Content Management System is working excellently!")
+        elif success_rate >= 75:
+            print("✅ GOOD: Premium Content Management System is working well with minor issues.")
+        elif success_rate >= 50:
+            print("⚠️ MODERATE: Premium Content Management System has some significant issues.")
         else:
-            print("⚠️  SOME CRITICAL CRITERIA NOT MET")
-            print("The premium content management system needs attention.")
+            print("🚨 CRITICAL: Premium Content Management System has major issues requiring immediate attention.")
         
-        print()
-        print("📝 DETAILED TEST LOG:")
-        for result in self.test_results:
-            print(f"   {result['status']} {result['test']}")
-            if result['details']:
-                print(f"      └─ {result['details']}")
+        print("=" * 60)
 
 if __name__ == "__main__":
-    tester = PremiumContentTester()
+    tester = PremiumContentManagementTester()
     tester.run_all_tests()
