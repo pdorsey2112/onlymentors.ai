@@ -231,17 +231,26 @@
         }
 
         .market-segment {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
+            background: white;
+            color: #1a1a1a;
             padding: 2rem;
             border-radius: 16px;
             text-align: center;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .market-segment:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
         }
 
         .market-segment h4 {
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 1rem;
+            color: #3b82f6;
         }
 
         /* Navigation */
