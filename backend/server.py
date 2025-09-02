@@ -442,21 +442,82 @@ async def get_category_mentors(category_id: str):
     }
 
 @app.get("/api/search/mentors")
-async def search_mentors(q: str = "", category: Optional[str] = None):
-    """Search mentors across categories"""
+async def search_mentors(
+    q: str = "", 
+    category: Optional[str] = None,
+    mentor_type: Optional[str] = None  # New parameter: 'ai', 'human', or 'all'
+):
+    """Search mentors across categories with mentor type filtering"""
     results = []
     search_term = q.lower()
     
     categories_to_search = [category] if category and category in ALL_MENTORS else ALL_MENTORS.keys()
     
+    # Add AI mentors from static data
     for cat in categories_to_search:
         for mentor in ALL_MENTORS[cat]:
             if (search_term in mentor["name"].lower() or 
                 search_term in mentor["expertise"].lower() or
                 search_term in mentor["bio"].lower()):
-                results.append({**mentor, "category": cat})
+                
+                # Add mentor_type field to AI mentors
+                ai_mentor = {
+                    **mentor, 
+                    "category": cat,
+                    "mentor_type": "ai",
+                    "is_ai_mentor": True
+                }
+                
+                # Apply mentor type filter
+                if mentor_type == "ai" or mentor_type == "all" or mentor_type is None:
+                    results.append(ai_mentor)
     
-    return {"results": results, "count": len(results), "query": q}
+    # Add Human mentors (creators) if requested
+    if mentor_type == "human" or mentor_type == "all" or mentor_type is None:
+        try:
+            # Get verified human mentors from creators collection
+            human_mentors_cursor = db.creators.find({
+                "is_verified": True,
+                "$or": [
+                    {"account_name": {"$regex": search_term, "$options": "i"}},
+                    {"expertise": {"$regex": search_term, "$options": "i"}}, 
+                    {"bio": {"$regex": search_term, "$options": "i"}}
+                ] if search_term else [{}]
+            })
+            
+            async for creator in human_mentors_cursor:
+                # Convert creator to mentor format
+                human_mentor = {
+                    "id": creator["creator_id"],
+                    "name": creator["account_name"],
+                    "title": creator.get("title", "Professional Mentor"),
+                    "bio": creator.get("bio", "Professional mentor offering personalized guidance"),
+                    "expertise": creator.get("expertise", ""),
+                    "image_url": creator.get("profile_image_url"),
+                    "category": category or "business",  # Default category
+                    "mentor_type": "human",
+                    "is_ai_mentor": False,
+                    # Add tier information for human mentors
+                    "tier": creator.get("tier", "New Mentor"),
+                    "tier_level": creator.get("tier_level", "new"),
+                    "tier_badge_color": creator.get("tier_badge_color", "#d1d5db"),
+                    "subscriber_count": creator.get("subscriber_count", 0),
+                    "monthly_price": creator.get("monthly_price", 9.99)
+                }
+                results.append(human_mentor)
+                
+        except Exception as e:
+            print(f"Error fetching human mentors: {e}")
+            # Continue with just AI mentors if database error
+    
+    return {
+        "results": results, 
+        "count": len(results), 
+        "query": q,
+        "mentor_type_filter": mentor_type,
+        "ai_count": len([r for r in results if r["mentor_type"] == "ai"]),
+        "human_count": len([r for r in results if r["mentor_type"] == "human"])
+    }
 
 # Enhanced User Registration endpoint with full profile collection
 @app.post("/api/auth/register")
