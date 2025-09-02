@@ -38,7 +38,7 @@ async def test_backend_sendgrid():
         reset_token = "test_token_123"
         
         # Create reset link (exactly like backend)
-        frontend_base_url = "https://mentor-marketplace.preview.emergentagent.com"
+        frontend_base_url = "https://mentor-search.preview.emergentagent.com"
         reset_link = f"{frontend_base_url}/reset-password?token={reset_token}&type=user"
         
         # Email subject (exactly like backend)

@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class AdminLoginTester:
-    def __init__(self, base_url="https://mentor-marketplace.preview.emergentagent.com"):
+    def __init__(self, base_url="https://mentor-search.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.tests_run = 0

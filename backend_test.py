@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://mentor-marketplace.preview.emergentagent.com/api"
+BASE_URL = "https://mentor-search.preview.emergentagent.com/api"
 TEST_CREATOR_EMAIL = "premium.creator@test.com"
 TEST_CREATOR_PASSWORD = "TestPass123!"
 TEST_CREATOR_NAME = "Premium Content Creator"

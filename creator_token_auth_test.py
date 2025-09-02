@@ -26,7 +26,7 @@ from datetime import datetime
 import os
 
 class CreatorTokenAuthTester:
-    def __init__(self, base_url="https://mentor-marketplace.preview.emergentagent.com"):
+    def __init__(self, base_url="https://mentor-search.preview.emergentagent.com"):
         self.base_url = base_url
         self.creator_token = None
         self.creator_data = None

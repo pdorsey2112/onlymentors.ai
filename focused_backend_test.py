@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 class FocusedBackendTester:
-    def __init__(self, base_url="https://mentor-marketplace.preview.emergentagent.com"):
+    def __init__(self, base_url="https://mentor-search.preview.emergentagent.com"):
         self.base_url = base_url
         self.user_token = None
         self.admin_token = None

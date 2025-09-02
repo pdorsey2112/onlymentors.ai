@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 # Configuration
-BACKEND_URL = "https://mentor-marketplace.preview.emergentagent.com"
+BACKEND_URL = "https://mentor-search.preview.emergentagent.com"
 
 class PremiumContentFileUploadTester:
     def __init__(self):

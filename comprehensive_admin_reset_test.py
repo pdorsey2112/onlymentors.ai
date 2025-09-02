@@ -13,7 +13,7 @@ from datetime import datetime
 
 class ComprehensiveAdminResetTester:
     def __init__(self):
-        self.base_url = "https://mentor-marketplace.preview.emergentagent.com/api"
+        self.base_url = "https://mentor-search.preview.emergentagent.com/api"
         self.admin_token = None
         self.test_user_id = None
         self.test_user_email = "testuser1@test.com"

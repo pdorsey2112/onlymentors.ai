@@ -8,7 +8,7 @@ import requests
 import json
 
 def test_422_scenarios():
-    base_url = "https://mentor-marketplace.preview.emergentagent.com"
+    base_url = "https://mentor-search.preview.emergentagent.com"
     
     # Get admin token
     login_response = requests.post(f"{base_url}/api/admin/login", json={

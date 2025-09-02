@@ -8,7 +8,7 @@ import json
 import re
 
 # Configuration
-BACKEND_URL = "https://mentor-marketplace.preview.emergentagent.com/api"
+BACKEND_URL = "https://mentor-search.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
 TEST_USER_EMAIL = "pdorsey@dorseyandassociates.com"
@@ -28,7 +28,7 @@ def test_password_reset_token():
     """Test if password reset token was created and is valid"""
     
     # Extract token from the logs we saw earlier
-    # From logs: https://mentor-marketplace.preview.emergentagent.com/reset-password?token=grMVWTWNLfxguItVD1P5pyMZBmrhY4BpRwAEHH71E0Y&type=user
+    # From logs: https://mentor-search.preview.emergentagent.com/reset-password?token=grMVWTWNLfxguItVD1P5pyMZBmrhY4BpRwAEHH71E0Y&type=user
     token = "grMVWTWNLfxguItVD1P5pyMZBmrhY4BpRwAEHH71E0Y"
     
     print(f"🔍 Testing password reset token: {token[:20]}...")

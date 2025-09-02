@@ -57,12 +57,12 @@ class OAuthConfig:
     def __init__(self):
         self.google_client_id = os.getenv("GOOGLE_CLIENT_ID")
         self.google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
-        self.google_redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "https://mentor-marketplace.preview.emergentagent.com")
+        self.google_redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "https://mentor-search.preview.emergentagent.com")
         
         # Facebook OAuth Configuration
         self.facebook_app_id = os.getenv("FACEBOOK_APP_ID")
         self.facebook_app_secret = os.getenv("FACEBOOK_APP_SECRET")
-        self.facebook_redirect_uri = os.getenv("FACEBOOK_REDIRECT_URI", "https://mentor-marketplace.preview.emergentagent.com")
+        self.facebook_redirect_uri = os.getenv("FACEBOOK_REDIRECT_URI", "https://mentor-search.preview.emergentagent.com")
         
         self.jwt_secret = os.getenv("JWT_SECRET", "mentorship-jwt-secret-key-2024")
         

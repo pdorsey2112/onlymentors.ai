@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class SMSCheckboxTester:
-    def __init__(self, base_url="https://mentor-marketplace.preview.emergentagent.com"):
+    def __init__(self, base_url="https://mentor-search.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None

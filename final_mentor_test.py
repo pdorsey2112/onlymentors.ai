@@ -13,7 +13,7 @@ def test_mentor_forgot_password_fixed():
     print("🚀 Testing FIXED Mentor Forgot Password Functionality")
     print("=" * 60)
     
-    base_url = "https://mentor-marketplace.preview.emergentagent.com"
+    base_url = "https://mentor-search.preview.emergentagent.com"
     
     # Test with a different email to avoid rate limiting
     test_emails = [
@@ -68,7 +68,7 @@ def test_user_vs_mentor_comparison():
     print(f"\n🔍 Testing User vs Mentor Comparison (Fixed)")
     print("=" * 50)
     
-    base_url = "https://mentor-marketplace.preview.emergentagent.com"
+    base_url = "https://mentor-search.preview.emergentagent.com"
     test_email = "comparison.test@example.com"
     
     # Test user type
