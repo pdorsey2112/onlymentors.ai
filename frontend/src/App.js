@@ -682,7 +682,7 @@ function MainApp() {
       mentorTypeFilter 
     });
     fetchMentors();
-  }, [selectedCategory, searchTerm, mentorTypeFilter]);
+  }, [fetchMentors]);
 
   // Removed selectAll useEffect - now limiting to 5 mentors max
 
