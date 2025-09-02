@@ -224,6 +224,9 @@ function MainApp() {
   const [questionHistory, setQuestionHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   // Removed selectAll state - now limiting to 5 mentors max
+  
+  // Mentor type filter state
+  const [mentorTypeFilter, setMentorTypeFilter] = useState('all'); // 'all', 'ai', 'human'
 
   // Category icons mapping
   const categoryIcons = {
