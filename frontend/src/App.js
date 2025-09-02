@@ -591,13 +591,75 @@ function MainApp() {
     }
   };
 
-  // Filter mentors based on search
-  const filteredMentors = selectedCategory ? 
-    selectedCategory.mentors.filter(mentor =>
-      mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mentor.bio.toLowerCase().includes(searchTerm.toLowerCase())
-    ) : [];
+  // State for filtered mentors
+  const [filteredMentors, setFilteredMentors] = useState([]);
+  const [isLoadingMentors, setIsLoadingMentors] = useState(false);
+
+  // Fetch mentors based on search term, category, and mentor type filter
+  const fetchMentors = async () => {
+    if (!selectedCategory) return;
+    
+    setIsLoadingMentors(true);
+    try {
+      const backendURL = getBackendURL();
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('q', searchTerm);
+      if (selectedCategory.id) params.append('category', selectedCategory.id);
+      if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
+      
+      const response = await fetch(`${backendURL}/api/search/mentors?${params}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setFilteredMentors(data.results || []);
+      } else {
+        console.error('Failed to fetch mentors:', data);
+        // Fallback to category mentors if API fails
+        const categoryMentors = selectedCategory.mentors || [];
+        const filtered = categoryMentors
+          .map(mentor => ({ ...mentor, mentor_type: "ai", is_ai_mentor: true }))
+          .filter(mentor => {
+            const matchesSearch = searchTerm === '' || 
+              mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              mentor.bio.toLowerCase().includes(searchTerm.toLowerCase());
+            
+            const matchesType = mentorTypeFilter === 'all' || 
+              (mentorTypeFilter === 'ai' && mentor.mentor_type === 'ai') ||
+              (mentorTypeFilter === 'human' && mentor.mentor_type === 'human');
+            
+            return matchesSearch && matchesType;
+          });
+        setFilteredMentors(filtered);
+      }
+    } catch (error) {
+      console.error('Error fetching mentors:', error);
+      // Fallback to category mentors
+      const categoryMentors = selectedCategory.mentors || [];
+      const filtered = categoryMentors
+        .map(mentor => ({ ...mentor, mentor_type: "ai", is_ai_mentor: true }))
+        .filter(mentor => {
+          const matchesSearch = searchTerm === '' || 
+            mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            mentor.bio.toLowerCase().includes(searchTerm.toLowerCase());
+          
+          const matchesType = mentorTypeFilter === 'all' || 
+            (mentorTypeFilter === 'ai' && mentor.mentor_type === 'ai') ||
+            (mentorTypeFilter === 'human' && mentor.mentor_type === 'human');
+          
+          return matchesSearch && matchesType;
+        });
+      setFilteredMentors(filtered);
+    } finally {
+      setIsLoadingMentors(false);
+    }
+  };
+
+  // Update mentors when search term, category, or filter changes
+  useEffect(() => {
+    fetchMentors();
+  }, [selectedCategory, searchTerm, mentorTypeFilter]);
 
   // Removed selectAll useEffect - now limiting to 5 mentors max
 
