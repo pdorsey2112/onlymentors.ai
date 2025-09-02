@@ -8,7 +8,9 @@ ADDITIONAL_BUSINESS_MENTORS = [
         "bio": "Leading banker who guided JPMorgan through financial crises",
         "expertise": "Banking, finance, risk management, leadership",
         "image_url": None,
-        "wiki_description": "James Dimon is an American billionaire businessman and banker who is chairman and CEO of JPMorgan Chase."
+        "wiki_description": "James Dimon is an American billionaire businessman and banker who is chairman and CEO of JPMorgan Chase.",
+        "mentor_type": "ai",
+        "is_ai_mentor": True
     },
     {
         "id": "lloyd_blankfein", "name": "Lloyd Blankfein", "title": "Former Goldman Sachs CEO", 
