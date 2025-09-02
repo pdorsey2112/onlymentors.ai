@@ -596,7 +596,7 @@ function MainApp() {
   const [isLoadingMentors, setIsLoadingMentors] = useState(false);
 
   // Fetch mentors based on search term, category, and mentor type filter
-  const fetchMentors = async () => {
+  const fetchMentors = useCallback(async () => {
     if (!selectedCategory) return;
     
     console.log('🔍 fetchMentors called with:', { 
