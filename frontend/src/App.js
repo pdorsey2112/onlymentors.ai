@@ -608,7 +608,7 @@ function MainApp() {
     }
     
     // Create new AbortController for this request
-    abortControllerRef.current = new AbortController();
+    abortControllerRef.current = new window.AbortController();
     const { signal } = abortControllerRef.current;
     
     setIsLoadingMentors(true);
