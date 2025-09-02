@@ -692,13 +692,21 @@ async def become_mentor(current_user = Depends(get_current_user)):
             "creator_id": creator_id,
             "user_id": user_id,
             "account_name": user["full_name"],
+            "full_name": user["full_name"],  # Required by admin console
             "email": user["email"],
             "phone_number": user.get("phone_number", ""),
             "bio": f"Professional mentor offering personalized guidance in various fields.",
             "expertise": "General Mentoring",
             "title": "Professional Mentor",
+            "category": "business",  # Default category, required by admin console
+            "status": "active",  # Required by admin console
             "is_verified": True,  # Auto-approved
             "verification_status": "APPROVED",
+            "verification": {  # Required by admin console
+                "status": "APPROVED",
+                "approved_at": datetime.utcnow(),
+                "approved_by": "system"
+            },
             "monthly_price": 29.99,
             "subscriber_count": 0,
             "tier": "New Mentor",
