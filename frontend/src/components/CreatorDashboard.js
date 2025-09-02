@@ -262,19 +262,33 @@ const CreatorDashboard = () => {
               </div>
             </div>
             
-            <button 
-              onClick={() => {
-                // Clear localStorage and redirect to home (logout)
-                localStorage.removeItem('creatorToken');
-                localStorage.removeItem('creator_data');
-                localStorage.removeItem('auth_token');
-                localStorage.removeItem('user');
-                window.location.href = '/';
-              }}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
-            >
-              Logoff
-            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setShowTierInfo(true)}
+                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+              >
+                Tier Info
+              </button>
+              <button
+                onClick={updateCreatorTier}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                Update Tier
+              </button>
+              <button 
+                onClick={() => {
+                  // Clear localStorage and redirect to home (logout)
+                  localStorage.removeItem('creatorToken');
+                  localStorage.removeItem('creator_data');
+                  localStorage.removeItem('auth_token');
+                  localStorage.removeItem('user');
+                  window.location.href = '/';
+                }}
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+              >
+                Logoff
+              </button>
+            </div>
           </div>
         </div>
       </div>
