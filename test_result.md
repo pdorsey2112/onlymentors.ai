@@ -132,7 +132,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the newly implemented mentor tier rating system for human mentors."
+user_problem_statement: "Test the new mentor type filtering system for AI vs Human mentors."
 
 backend:
   - task: "Mentor Tier Rating System Implementation"
