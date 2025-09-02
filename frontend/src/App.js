@@ -666,6 +666,12 @@ function MainApp() {
         setFilteredMentors(filtered);
       }
     } catch (error) {
+      // Handle AbortError (request cancelled)
+      if (error.name === 'AbortError') {
+        console.log('🚫 Fetch request was cancelled');
+        return;
+      }
+      
       console.error('Error fetching mentors:', error);
       // Fallback to category mentors
       const categoryMentors = selectedCategory.mentors || [];
