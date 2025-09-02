@@ -528,7 +528,8 @@ async def register_user_with_profile(
     phone_number: str = Form(...),
     communication_preferences: str = Form(...),  # JSON string
     subscription_plan: str = Form(...),
-    payment_info: str = Form(None)  # JSON string, optional
+    payment_info: str = Form(None),  # JSON string, optional
+    become_mentor: bool = Form(False)  # Option to become a mentor
 ):
     """Enhanced user registration with complete profile data collection"""
     try:
