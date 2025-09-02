@@ -322,6 +322,7 @@ test_plan:
     - "Human Mentor Discovery System"
     - "New User Signup with Mentor Option Frontend Implementation"
     - "Race Condition Fix for Mentor Type Filtering System"
+    - "Admin Console Mentor Data Fix"
 
 backend:
   - task: "New User Registration with Mentor Option"
