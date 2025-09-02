@@ -3190,6 +3190,184 @@ async def get_creator_stats(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch creator stats: {str(e)}")
 
+# Mentor Rating System Functions
+def calculate_mentor_tier(subscriber_count):
+    """Calculate mentor tier based on subscriber count"""
+    if subscriber_count >= 100000:
+        return {
+            "tier": "Ultimate Mentor",
+            "level": "ultimate",
+            "badge_color": "#8b5cf6",  # Purple
+            "description": "Elite / Celebrity Status",
+            "min_subscribers": 100000
+        }
+    elif subscriber_count >= 10000:
+        return {
+            "tier": "Platinum Mentor", 
+            "level": "platinum",
+            "badge_color": "#6b7280",  # Gray/Platinum
+            "description": "Top 5-10% Performers",
+            "min_subscribers": 10000
+        }
+    elif subscriber_count >= 1000:
+        return {
+            "tier": "Gold Mentor",
+            "level": "gold", 
+            "badge_color": "#f59e0b",  # Gold
+            "description": "Established Presence",
+            "min_subscribers": 1000
+        }
+    elif subscriber_count >= 100:
+        return {
+            "tier": "Silver Mentor",
+            "level": "silver",
+            "badge_color": "#9ca3af",  # Silver
+            "description": "Entry-Level Credibility", 
+            "min_subscribers": 100
+        }
+    else:
+        return {
+            "tier": "New Mentor",
+            "level": "new",
+            "badge_color": "#d1d5db",  # Light gray
+            "description": "Building Following",
+            "min_subscribers": 0
+        }
+
+async def update_mentor_tier(creator_id):
+    """Update mentor tier based on current subscriber count"""
+    try:
+        # Get current subscriber count (this would come from your subscription system)
+        # For now, we'll use a placeholder - you'd replace this with actual subscriber count logic
+        creator = await db.creators.find_one({"creator_id": creator_id})
+        if not creator:
+            return None
+            
+        # Get subscriber count - you might have this in a separate collection
+        # For demo purposes, using monthly_price as a proxy for popularity
+        subscriber_count = creator.get("subscriber_count", 0)
+        
+        # Calculate tier
+        tier_info = calculate_mentor_tier(subscriber_count)
+        
+        # Update creator with tier information
+        await db.creators.update_one(
+            {"creator_id": creator_id},
+            {
+                "$set": {
+                    "tier": tier_info["tier"],
+                    "tier_level": tier_info["level"], 
+                    "tier_badge_color": tier_info["badge_color"],
+                    "tier_description": tier_info["description"],
+                    "tier_min_subscribers": tier_info["min_subscribers"],
+                    "tier_updated_at": datetime.now().isoformat()
+                }
+            }
+        )
+        
+        return tier_info
+        
+    except Exception as e:
+        print(f"Error updating mentor tier for {creator_id}: {str(e)}")
+        return None
+
+@app.get("/api/mentor-tiers/info")
+async def get_mentor_tier_info():
+    """Get information about all mentor tiers"""
+    tiers = [
+        {
+            "level": "ultimate",
+            "tier": "Ultimate Mentor", 
+            "min_subscribers": 100000,
+            "badge_color": "#8b5cf6",
+            "description": "Elite / Celebrity Status",
+            "benefits": [
+                "Highest visibility in search results",
+                "Featured mentor spotlight",
+                "Custom profile customization",
+                "Priority customer support",
+                "Higher revenue share on premium content"
+            ]
+        },
+        {
+            "level": "platinum", 
+            "tier": "Platinum Mentor",
+            "min_subscribers": 10000,
+            "badge_color": "#6b7280", 
+            "description": "Top 5-10% Performers",
+            "benefits": [
+                "Enhanced profile visibility",
+                "Advanced analytics dashboard", 
+                "Priority in mentor recommendations",
+                "Exclusive mentor community access"
+            ]
+        },
+        {
+            "level": "gold",
+            "tier": "Gold Mentor",
+            "min_subscribers": 1000,
+            "badge_color": "#f59e0b",
+            "description": "Established Presence", 
+            "benefits": [
+                "Verified mentor badge",
+                "Enhanced profile features",
+                "Priority customer support",
+                "Access to mentor tools"
+            ]
+        },
+        {
+            "level": "silver",
+            "tier": "Silver Mentor", 
+            "min_subscribers": 100,
+            "badge_color": "#9ca3af",
+            "description": "Entry-Level Credibility",
+            "benefits": [
+                "Basic mentor verification",
+                "Standard profile features", 
+                "Community access"
+            ]
+        },
+        {
+            "level": "new",
+            "tier": "New Mentor",
+            "min_subscribers": 0, 
+            "badge_color": "#d1d5db",
+            "description": "Building Following",
+            "benefits": [
+                "Basic mentor profile",
+                "Getting started support"
+            ]
+        }
+    ]
+    
+    return {"tiers": tiers}
+
+@app.post("/api/creators/{creator_id}/update-tier")
+async def update_creator_tier(
+    creator_id: str,
+    current_creator = Depends(get_current_creator)
+):
+    """Update creator's tier based on current metrics"""
+    try:
+        # Verify creator owns this account or is admin
+        if current_creator["creator_id"] != creator_id:
+            raise HTTPException(status_code=403, detail="Access denied: can only update your own tier")
+        
+        tier_info = await update_mentor_tier(creator_id)
+        
+        if tier_info:
+            return {
+                "message": "Tier updated successfully",
+                "tier_info": tier_info
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Creator not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update tier: {str(e)}")
+
 @app.get("/api/creators/{creator_id}/verification-status")
 async def get_verification_status(creator_id: str):
     """Get creator verification status"""
