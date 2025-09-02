@@ -585,13 +585,21 @@ async def register_user_with_profile(
                 "creator_id": creator_id,
                 "user_id": user_id,  # Link to user account
                 "account_name": full_name,
+                "full_name": full_name,  # Required by admin console
                 "email": email,
                 "phone_number": phone_number,
                 "bio": f"Professional mentor offering personalized guidance in various fields.",
                 "expertise": "General Mentoring",  # Default, can be updated later
                 "title": "Professional Mentor",
+                "category": "business",  # Default category, required by admin console
+                "status": "active",  # Required by admin console
                 "is_verified": True,  # Auto-approved for mentors
                 "verification_status": "APPROVED",
+                "verification": {  # Required by admin console
+                    "status": "APPROVED",
+                    "approved_at": datetime.utcnow(),
+                    "approved_by": "system"
+                },
                 "monthly_price": 29.99,  # Default price
                 "subscriber_count": 0,
                 "tier": "New Mentor",
