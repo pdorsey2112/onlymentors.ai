@@ -21,6 +21,9 @@ const UserSignup = ({ onSuccess, onSwitchToLogin }) => {
     // Subscription Choice
     subscription_plan: 'free', // 'free' or 'premium'
     
+    // Mentor Option
+    become_mentor: false,
+    
     // Payment Information (for premium)
     payment_info: {
       card_number: '',
