@@ -1121,6 +1121,46 @@ function MainApp() {
                     ))}
                   </div>
 
+                  {/* Mentor Type Badge */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-1">
+                      {mentor.mentor_type === 'ai' ? (
+                        <Badge className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5">
+                          🤖 AI Mentor
+                        </Badge>
+                      ) : (
+                        <div className="flex items-center space-x-1">
+                          <Badge className="bg-green-100 text-green-700 text-xs px-2 py-0.5">
+                            👥 Human
+                          </Badge>
+                          {mentor.tier && mentor.tier !== 'New Mentor' && (
+                            <Badge 
+                              className="text-xs px-2 py-0.5"
+                              style={{ 
+                                backgroundColor: `${mentor.tier_badge_color}15`, 
+                                color: mentor.tier_badge_color,
+                                border: `1px solid ${mentor.tier_badge_color}`
+                              }}
+                            >
+                              {mentor.tier_level === 'ultimate' && '👑'}
+                              {mentor.tier_level === 'platinum' && '💎'}
+                              {mentor.tier_level === 'gold' && '🥇'}
+                              {mentor.tier_level === 'silver' && '🥈'}
+                              {mentor.tier?.replace(' Mentor', '')}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {mentor.mentor_type === 'human' && mentor.subscriber_count > 0 && (
+                      <span className="text-xs text-gray-500">
+                        {mentor.subscriber_count >= 1000 
+                          ? `${Math.floor(mentor.subscriber_count / 1000)}K` 
+                          : mentor.subscriber_count} subs
+                      </span>
+                    )}
+                  </div>
+
                 </CardContent>
 
                 {!user && (
