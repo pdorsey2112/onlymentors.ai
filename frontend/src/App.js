@@ -599,6 +599,12 @@ function MainApp() {
   const fetchMentors = async () => {
     if (!selectedCategory) return;
     
+    console.log('🔍 fetchMentors called with:', { 
+      mentorTypeFilter, 
+      searchTerm, 
+      categoryId: selectedCategory.id 
+    });
+    
     setIsLoadingMentors(true);
     try {
       const backendURL = getBackendURL();
@@ -607,10 +613,22 @@ function MainApp() {
       if (selectedCategory.id) params.append('category', selectedCategory.id);
       if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
       
-      const response = await fetch(`${backendURL}/api/search/mentors?${params}`);
+      const apiUrl = `${backendURL}/api/search/mentors?${params}`;
+      console.log('📡 API call:', apiUrl);
+      
+      const response = await fetch(apiUrl);
       const data = await response.json();
       
+      console.log('📥 API response:', { 
+        ok: response.ok, 
+        resultsCount: data.results?.length || 0,
+        mentorTypeFilter: data.mentor_type_filter,
+        aiCount: data.ai_count,
+        humanCount: data.human_count
+      });
+      
       if (response.ok) {
+        console.log('✅ Setting filtered mentors:', data.results?.length || 0, 'mentors');
         setFilteredMentors(data.results || []);
       } else {
         console.error('Failed to fetch mentors:', data);
