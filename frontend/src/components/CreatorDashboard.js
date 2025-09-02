@@ -820,6 +820,13 @@ const CreatorDashboard = () => {
           }}
         />
       )}
+
+      {/* Mentor Tier Info Modal */}
+      {showTierInfo && (
+        <MentorTierInfo
+          onClose={() => setShowTierInfo(false)}
+        />
+      )}
     </div>
   );
 };
