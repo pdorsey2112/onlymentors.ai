@@ -921,6 +921,41 @@ function MainApp() {
                 className="pl-10 border-gray-300 focus:border-purple-500 focus:ring-purple-500"
               />
             </div>
+            
+            {/* Mentor Type Filter Toggle Pills */}
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setMentorTypeFilter('ai')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  mentorTypeFilter === 'ai'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                🤖 AI Mentors
+              </button>
+              <button
+                onClick={() => setMentorTypeFilter('human')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  mentorTypeFilter === 'human'
+                    ? 'bg-green-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                👥 Human Mentors
+              </button>
+              <button
+                onClick={() => setMentorTypeFilter('all')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  mentorTypeFilter === 'all'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                🌟 All Mentors
+              </button>
+            </div>
+            
             <div className="text-sm text-gray-600">
               Select up to <span className="font-semibold">5 mentors</span> for your question ({selectedMentors.length}/5 selected)
             </div>
