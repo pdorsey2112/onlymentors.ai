@@ -5,6 +5,8 @@ import MessagingInterface from './MessagingInterface';
 import EnhancedContentManagement from './EnhancedContentManagement';
 import PremiumContentUpload from './PremiumContentUpload';
 import PremiumContentManagement from './PremiumContentManagement';
+import MentorTierBadge from './MentorTierBadge';
+import MentorTierInfo from './MentorTierInfo';
 import { getBackendURL } from '../config';
 
 const CreatorDashboard = () => {
