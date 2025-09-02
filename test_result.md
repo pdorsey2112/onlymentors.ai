@@ -287,6 +287,43 @@ test_plan:
     - "Mentor Type Filtering System for AI vs Human Mentors"
     - "Mentor Type Filtering Empty State Linting Fix"
 
+backend:
+  - task: "New User Registration with Mentor Option"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW USER REGISTRATION WITH MENTOR OPTION FULLY FUNCTIONAL! Comprehensive testing confirms excellent implementation: 1) USER ACCOUNT CREATION: ✅ POST /api/auth/register endpoint with become_mentor=true successfully creates user accounts with proper authentication tokens and user IDs 2) MENTOR FLAG SETTING: ✅ Users are correctly marked as mentors during registration (is_mentor=true in response) 3) SIMPLIFIED CREATOR PROFILE CREATION: ✅ Mentor profiles are automatically created in creators collection with proper structure including creator_id, user_id linkage, account_name, bio, expertise, verification status, tier information, and pricing 4) AUTO-APPROVAL SYSTEM: ✅ Mentors are auto-approved with is_verified=true and verification_status='APPROVED' 5) MENTOR PROFILE STRUCTURE: ✅ Created mentors have all required fields (id, name, bio, expertise, mentor_type='human', is_ai_mentor=false, tier='New Mentor', tier_level='new', tier_badge_color='#d1d5db', subscriber_count=0, monthly_price=29.99) 6) DATABASE INTEGRATION: ✅ Mentor profiles properly stored in creators collection and immediately available for search. The registration with mentor option creates complete user accounts with linked mentor profiles that are immediately discoverable and functional."
+
+  - task: "Existing User Upgrade to Mentor"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ EXISTING USER UPGRADE TO MENTOR FULLY FUNCTIONAL! Comprehensive testing confirms excellent implementation: 1) AUTHENTICATION REQUIREMENT: ✅ POST /api/users/become-mentor endpoint correctly requires authentication (returns 401/403 for unauthenticated requests) 2) MENTOR PROFILE CREATION: ✅ Successfully creates mentor profiles for existing users with proper creator_id generation and complete profile structure 3) USER-MENTOR LINKAGE: ✅ Properly links existing user accounts to new mentor profiles via user_id field 4) DUPLICATE HANDLING: ✅ Gracefully handles cases where user is already a mentor by returning success message 'You are already a mentor!' with existing creator_id 5) IMMEDIATE AVAILABILITY: ✅ Upgraded mentors immediately appear in human mentor search results with proper mentor_type='human' and is_ai_mentor=false 6) PROFILE COMPLETENESS: ✅ Created mentor profiles include all required fields (tier information, pricing, bio, expertise) with sensible defaults. The upgrade system allows seamless transition from regular user to mentor status with complete profile creation and immediate discoverability."
+
+  - task: "Human Mentor Discovery System"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ HUMAN MENTOR DISCOVERY SYSTEM FULLY FUNCTIONAL! Comprehensive testing confirms excellent implementation: 1) MENTOR TYPE FILTERING: ✅ GET /api/search/mentors endpoint with mentor_type='human' correctly returns only human mentors (mentor_type='human', is_ai_mentor=false) ✅ mentor_type='ai' returns 270 AI mentors with proper identification ✅ mentor_type='all' returns combined results (270 AI + 3 human = 273 total) 2) AI VS HUMAN DIFFERENTIATION: ✅ Perfect separation between AI mentors (historical figures) and human mentors (real users who became mentors) ✅ AI mentors have mentor_type='ai' and is_ai_mentor=true ✅ Human mentors have mentor_type='human' and is_ai_mentor=false 3) MENTOR PROFILE STRUCTURE: ✅ Human mentors include all required fields (id, name, bio, expertise, mentor_type, is_ai_mentor, tier, tier_level, tier_badge_color, subscriber_count, monthly_price) ✅ Field values are appropriate and properly typed 4) SEARCH FUNCTIONALITY: ✅ Text search works with mentor type filtering ✅ Category filtering combined with mentor type works correctly ✅ Response includes proper metadata (count, ai_count, human_count, mentor_type_filter) 5) NEWLY CREATED MENTORS VISIBILITY: ✅ Mentors created through both registration and upgrade paths immediately appear in human mentor search results. The discovery system successfully resolves the issue where 'Human Mentors' filter was showing no results - now it properly shows users who signed up as mentors."
+
 agent_communication:
   - agent: "main"
     message: "Completed frontend implementation of pay-per-view content system. Created 4 new components: PremiumContentUpload (creator content upload with pricing), PremiumContentDiscovery (user content browsing), PremiumContentPurchase (payment processing), and integrated premium content into CreatorDashboard and main App. System allows creators to upload content with $0.01-$50 pricing, users can discover content by mentor, and purchase with mock Stripe integration. Ready for backend and frontend testing."
