@@ -672,7 +672,7 @@ function MainApp() {
     } finally {
       setIsLoadingMentors(false);
     }
-  };
+  }, [mentorTypeFilter, searchTerm, selectedCategory]);
 
   // Update mentors when search term, category, or filter changes
   useEffect(() => {
