@@ -658,6 +658,91 @@ async def register_user_with_profile(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
+@app.post("/api/users/become-mentor")
+async def become_mentor(current_user = Depends(get_current_user)):
+    """Allow existing users to become mentors"""
+    try:
+        user_id = current_user["user_id"]
+        
+        # Check if user already has a creator profile
+        existing_creator = await db.creators.find_one({"user_id": user_id})
+        if existing_creator:
+            return {
+                "success": True,
+                "message": "You are already a mentor!",
+                "creator_id": existing_creator["creator_id"]
+            }
+        
+        # Get user details
+        user = await db.users.find_one({"user_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Create simplified creator profile
+        creator_id = str(uuid.uuid4())
+        mentor_doc = {
+            "creator_id": creator_id,
+            "user_id": user_id,
+            "account_name": user["full_name"],
+            "email": user["email"],
+            "phone_number": user.get("phone_number", ""),
+            "bio": f"Professional mentor offering personalized guidance in various fields.",
+            "expertise": "General Mentoring",
+            "title": "Professional Mentor",
+            "is_verified": True,  # Auto-approved
+            "verification_status": "APPROVED",
+            "monthly_price": 29.99,
+            "subscriber_count": 0,
+            "tier": "New Mentor",
+            "tier_level": "new",
+            "tier_badge_color": "#d1d5db",
+            "profile_image_url": None,
+            "social_links": {},
+            "banking_info": {},
+            "id_document": {},
+            "profile": {
+                "description": f"Welcome to my mentoring profile! I'm {user['full_name']} and I'm here to help guide you through your challenges and goals.",
+                "experience_years": 1,
+                "specialties": ["General Guidance", "Life Coaching", "Professional Development"],
+                "languages": ["English"],
+                "response_time": "Within 24 hours",
+                "availability": "Monday-Friday, 9 AM - 6 PM"
+            },
+            "stats": {
+                "total_earnings": 0.0,
+                "monthly_earnings": 0.0,
+                "subscriber_count": 0,
+                "content_count": 0,
+                "total_questions": 0,
+                "average_rating": 5.0
+            },
+            "settings": {
+                "auto_approve_messages": True,
+                "allow_tips": True,
+                "response_time": "24 hours"
+            },
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+            "last_active": datetime.utcnow()
+        }
+        
+        await db.creators.insert_one(mentor_doc)
+        
+        return {
+            "success": True,
+            "message": "Congratulations! You are now a mentor on OnlyMentors.ai",
+            "creator_id": creator_id,
+            "mentor_profile": {
+                "name": mentor_doc["account_name"],
+                "title": mentor_doc["title"],
+                "bio": mentor_doc["bio"],
+                "expertise": mentor_doc["expertise"]
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to become mentor: {str(e)}")
+
 @app.post("/api/mentor/{mentor_id}/ask")
 async def ask_mentor_question(
     mentor_id: str, 
