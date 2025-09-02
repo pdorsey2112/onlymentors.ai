@@ -306,6 +306,7 @@ test_plan:
     - "Existing User Upgrade to Mentor"
     - "Human Mentor Discovery System"
     - "New User Signup with Mentor Option Frontend Implementation"
+    - "Race Condition Fix for Mentor Type Filtering System"
 
 backend:
   - task: "New User Registration with Mentor Option"
