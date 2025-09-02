@@ -1231,12 +1231,6 @@ function MainApp() {
             );
           })}
         </div>
-
-        {filteredMentors.length === 0 && searchTerm && (
-          <div className="text-center py-12">
-            <Search className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600">No mentors found matching "{searchTerm}"</p>
-          </div>
         )}
       </div>
     </div>
