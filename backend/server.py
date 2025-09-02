@@ -578,6 +578,57 @@ async def register_user_with_profile(
         
         await db.users.insert_one(user_doc)
         
+        # If user wants to become a mentor, create simplified creator profile
+        if become_mentor:
+            creator_id = str(uuid.uuid4())
+            mentor_doc = {
+                "creator_id": creator_id,
+                "user_id": user_id,  # Link to user account
+                "account_name": full_name,
+                "email": email,
+                "phone_number": phone_number,
+                "bio": f"Professional mentor offering personalized guidance in various fields.",
+                "expertise": "General Mentoring",  # Default, can be updated later
+                "title": "Professional Mentor",
+                "is_verified": True,  # Auto-approved for mentors
+                "verification_status": "APPROVED",
+                "monthly_price": 29.99,  # Default price
+                "subscriber_count": 0,
+                "tier": "New Mentor",
+                "tier_level": "new",
+                "tier_badge_color": "#d1d5db",
+                "profile_image_url": None,
+                "social_links": {},
+                "banking_info": {},  # Can be filled later if they want payouts
+                "id_document": {},  # Simplified for mentors
+                "profile": {
+                    "description": f"Welcome to my mentoring profile! I'm {full_name} and I'm here to help guide you through your challenges and goals.",
+                    "experience_years": 1,  # Default
+                    "specialties": ["General Guidance", "Life Coaching", "Professional Development"],
+                    "languages": ["English"],
+                    "response_time": "Within 24 hours",
+                    "availability": "Monday-Friday, 9 AM - 6 PM"
+                },
+                "stats": {
+                    "total_earnings": 0.0,
+                    "monthly_earnings": 0.0,
+                    "subscriber_count": 0,
+                    "content_count": 0,
+                    "total_questions": 0,
+                    "average_rating": 5.0
+                },
+                "settings": {
+                    "auto_approve_messages": True,
+                    "allow_tips": True,
+                    "response_time": "24 hours"
+                },
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+                "last_active": datetime.utcnow()
+            }
+            
+            await db.creators.insert_one(mentor_doc)
+        
         # Create access token
         token = create_access_token({"user_id": user_id})
         
