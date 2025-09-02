@@ -236,9 +236,20 @@ const CreatorDashboard = () => {
                 </span>
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  {creator.account_name || 'Mentor Dashboard'}
-                </h1>
+                <div className="flex items-center space-x-3">
+                  <h1 className="text-xl font-semibold text-gray-900">
+                    {creator.account_name || 'Mentor Dashboard'}
+                  </h1>
+                  {creator.tier && (
+                    <MentorTierBadge
+                      tier={creator.tier}
+                      level={creator.tier_level}
+                      badgeColor={creator.tier_badge_color || '#9ca3af'}
+                      description={creator.tier_description}
+                      size="medium"
+                    />
+                  )}
+                </div>
                 <p className="text-sm text-gray-600">
                   {isVerified ? (
                     <span className="text-green-600 flex items-center">
