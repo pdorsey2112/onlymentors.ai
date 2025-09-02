@@ -13,7 +13,7 @@ from datetime import datetime
 # Configuration
 BASE_URL = "https://mentor-search.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
-ADMIN_PASSWORD = "admin123"
+ADMIN_PASSWORD = "SuperAdmin2024!"
 
 class AdminMentorsDataTester:
     def __init__(self):
