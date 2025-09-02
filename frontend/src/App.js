@@ -596,10 +596,22 @@ function MainApp() {
   const [isLoadingMentors, setIsLoadingMentors] = useState(false);
 
   // Fetch mentors based on search term, category, and mentor type filter
+  // AbortController ref to cancel previous requests
+  const abortControllerRef = useRef(null);
+
   const fetchMentors = useCallback(async () => {
     if (!selectedCategory) return;
     
     console.log('🔍 fetchMentors called with mentorTypeFilter:', mentorTypeFilter);
+    
+    // Cancel previous request if it exists
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new AbortController for this request
+    abortControllerRef.current = new AbortController();
+    const { signal } = abortControllerRef.current;
     
     setIsLoadingMentors(true);
     try {
@@ -612,7 +624,14 @@ function MainApp() {
       const apiUrl = `${backendURL}/api/search/mentors?${params}`;
       console.log('📡 API URL:', apiUrl);
       
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl, { signal });
+      
+      // Check if request was aborted
+      if (signal.aborted) {
+        console.log('🚫 Request aborted');
+        return;
+      }
+      
       const data = await response.json();
       
       console.log('📥 API Response:', {
