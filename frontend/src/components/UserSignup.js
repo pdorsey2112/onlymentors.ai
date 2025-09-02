@@ -426,6 +426,34 @@ const UserSignup = ({ onSuccess, onSwitchToLogin }) => {
                 </p>
               </div>
             )}
+
+            {/* Mentor Option */}
+            <div className="border-t pt-6">
+              <h4 className="text-md font-semibold text-gray-900 mb-3">🧑‍🏫 Want to help others as a mentor?</h4>
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="become_mentor"
+                  checked={formData.become_mentor}
+                  onChange={(e) => setFormData(prev => ({ ...prev, become_mentor: e.target.checked }))}
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="become_mentor" className="text-sm text-gray-700">
+                  <span className="font-medium">Yes, I want to become a mentor</span>
+                  <p className="text-gray-600 text-xs mt-1">
+                    Share your knowledge and help others achieve their goals. You can set your own rates and availability.
+                  </p>
+                </label>
+              </div>
+              
+              {formData.become_mentor && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-3">
+                  <p className="text-sm text-green-800">
+                    🎉 <strong>Great choice!</strong> After registration, you'll have access to your mentor dashboard where you can customize your profile, set your expertise areas, and start helping others!
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
