@@ -286,6 +286,9 @@ test_plan:
     - "Mentor Tier Rating System Frontend Implementation"
     - "Mentor Type Filtering System for AI vs Human Mentors"
     - "Mentor Type Filtering Empty State Linting Fix"
+    - "New User Registration with Mentor Option"
+    - "Existing User Upgrade to Mentor"
+    - "Human Mentor Discovery System"
 
 backend:
   - task: "New User Registration with Mentor Option"
