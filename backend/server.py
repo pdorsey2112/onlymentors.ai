@@ -643,6 +643,7 @@ async def register_user_with_profile(
             "is_subscribed": user_doc["is_subscribed"],
             "questions_asked": 0,
             "profile_completed": True,
+            "is_mentor": become_mentor,  # Indicate if they became a mentor
             "created_at": user_doc["created_at"].isoformat()
         }
         
