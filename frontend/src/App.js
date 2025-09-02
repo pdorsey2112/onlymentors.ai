@@ -658,11 +658,6 @@ function MainApp() {
 
   // Update mentors when search term, category, or filter changes
   useEffect(() => {
-    console.log('🔄 useEffect triggered with:', { 
-      selectedCategory: selectedCategory?.id, 
-      searchTerm, 
-      mentorTypeFilter 
-    });
     fetchMentors();
   }, [fetchMentors]);
 
