@@ -1010,7 +1010,10 @@ function MainApp() {
             {/* Mentor Type Filter Toggle Pills */}
             <div className="flex bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setMentorTypeFilter('ai')}
+                onClick={() => {
+                  console.log('🤖 AI Mentors button clicked');
+                  setMentorTypeFilter('ai');
+                }}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   mentorTypeFilter === 'ai'
                     ? 'bg-blue-600 text-white shadow-sm'
@@ -1020,7 +1023,10 @@ function MainApp() {
                 🤖 AI Mentors
               </button>
               <button
-                onClick={() => setMentorTypeFilter('human')}
+                onClick={() => {
+                  console.log('👥 Human Mentors button clicked');
+                  setMentorTypeFilter('human');
+                }}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   mentorTypeFilter === 'human'
                     ? 'bg-green-600 text-white shadow-sm'
@@ -1030,7 +1036,10 @@ function MainApp() {
                 👥 Human Mentors
               </button>
               <button
-                onClick={() => setMentorTypeFilter('all')}
+                onClick={() => {
+                  console.log('🌟 All Mentors button clicked');
+                  setMentorTypeFilter('all');
+                }}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   mentorTypeFilter === 'all'
                     ? 'bg-purple-600 text-white shadow-sm'
