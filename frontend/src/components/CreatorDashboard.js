@@ -125,6 +125,37 @@ const CreatorDashboard = () => {
     setShowPremiumContentManagement(true);
   };
 
+  const updateCreatorTier = async () => {
+    try {
+      if (!creator?.creator_id) return;
+      
+      const token = localStorage.getItem('creatorToken');
+      const backendURL = getBackendURL();
+      
+      const response = await fetch(`${backendURL}/api/creators/${creator.creator_id}/update-tier`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Update creator data with new tier info
+        setCreator(prev => ({
+          ...prev,
+          tier: result.tier_info.tier,
+          tier_level: result.tier_info.level,
+          tier_badge_color: result.tier_info.badge_color,
+          tier_description: result.tier_info.description
+        }));
+      }
+    } catch (error) {
+      console.error('Error updating tier:', error);
+    }
+  };
+
   const handleSaveSettings = async () => {
     // TODO: Implement settings save functionality
     alert('Settings saved successfully!');
