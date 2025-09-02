@@ -170,22 +170,22 @@ const UserSignup = ({ onSuccess, onSwitchToLogin }) => {
     try {
       const backendURL = getBackendURL();
       
-      const userData = {
-        email: formData.email,
-        password: formData.password,
-        full_name: formData.full_name,
-        phone_number: formData.phone_number,
-        communication_preferences: formData.communication_preferences,
-        subscription_plan: formData.subscription_plan,
-        payment_info: formData.subscription_plan === 'premium' ? formData.payment_info : null
-      };
+      const formDataToSend = new FormData();
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('full_name', formData.full_name);
+      formDataToSend.append('phone_number', formData.phone_number);
+      formDataToSend.append('communication_preferences', JSON.stringify(formData.communication_preferences));
+      formDataToSend.append('subscription_plan', formData.subscription_plan);
+      formDataToSend.append('become_mentor', formData.become_mentor);
+      
+      if (formData.subscription_plan === 'premium' && formData.payment_info) {
+        formDataToSend.append('payment_info', JSON.stringify(formData.payment_info));
+      }
 
       const response = await fetch(`${backendURL}/api/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData)
+        body: formDataToSend
       });
 
       if (response.ok) {
