@@ -267,8 +267,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Mentor Type Filtering System for AI vs Human Mentors"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -277,6 +276,7 @@ test_plan:
     - "Mentor Tier Rating System Implementation"
     - "Mentor Tier Rating System Frontend Implementation"
     - "Mentor Type Filtering System for AI vs Human Mentors"
+    - "Mentor Type Filtering Empty State Linting Fix"
 
 agent_communication:
   - agent: "main"
