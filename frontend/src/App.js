@@ -602,15 +602,8 @@ function MainApp() {
   const fetchMentors = useCallback(async () => {
     if (!selectedCategory) return;
     
-    console.log('🔍 fetchMentors called:', { 
-      mentorTypeFilter, 
-      searchTerm, 
-      categoryId: selectedCategory.id 
-    });
-    
     // Cancel previous request if it exists
     if (abortControllerRef.current) {
-      console.log('🚫 Cancelling previous request');
       abortControllerRef.current.abort();
     }
     
@@ -626,28 +619,16 @@ function MainApp() {
       if (selectedCategory.id) params.append('category', selectedCategory.id);
       if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
       
-      const apiUrl = `${backendURL}/api/search/mentors?${params}`;
-      console.log('📡 API request:', apiUrl);
-      
-      const response = await fetch(apiUrl, { signal });
+      const response = await fetch(`${backendURL}/api/search/mentors?${params}`, { signal });
       
       // Check if request was aborted
       if (signal.aborted) {
-        console.log('🚫 Request was aborted');
         return;
       }
       
       const data = await response.json();
-      console.log('📥 API response:', { 
-        ok: response.ok, 
-        resultCount: data.results?.length || 0, 
-        mentorType: data.mentor_type_filter,
-        aiCount: data.ai_count,
-        humanCount: data.human_count
-      });
       
       if (response.ok) {
-        console.log('✅ Setting filtered mentors:', data.results?.length || 0);
         setFilteredMentors(data.results || []);
       } else {
         console.error('Failed to fetch mentors:', data);
