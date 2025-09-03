@@ -965,22 +965,94 @@ function MainApp() {
               />
             </div>
             
-            {/* Amazon-style Sort Dropdown */}
+            {/* Simple Filter Buttons - Direct API Calls */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Sort by:</span>
-              <select 
-                value={mentorTypeFilter === 'all' ? '' : mentorTypeFilter}
-                onChange={(e) => {
-                  const value = e.target.value || 'all';
-                  setMentorTypeFilter(value);
-                  setTimeout(() => loadMentors(value), 50);
-                }}
-                className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-blue-500"
-              >
-                <option value="">All Mentors</option>
-                <option value="ai">🤖 AI Mentors</option>
-                <option value="human">👥 Human Mentors</option>
-              </select>
+              <span className="text-sm text-gray-600">Show:</span>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => {
+                    setIsLoadingMentors(true);
+                    const params = new URLSearchParams();
+                    if (searchTerm) params.append('q', searchTerm);
+                    if (selectedCategory.id) params.append('category', selectedCategory.id);
+                    
+                    fetch(`${getBackendURL()}/api/search/mentors?${params}`)
+                      .then(response => response.json())
+                      .then(data => {
+                        setFilteredMentors(data.results || []);
+                        setMentorTypeFilter('all');
+                        setIsLoadingMentors(false);
+                      })
+                      .catch(() => {
+                        setFilteredMentors([]);
+                        setIsLoadingMentors(false);
+                      });
+                  }}
+                  className={`px-3 py-1 rounded text-sm transition-colors ${
+                    mentorTypeFilter === 'all'
+                      ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                      : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                  }`}
+                >
+                  All Mentors
+                </button>
+                <button
+                  onClick={() => {
+                    setIsLoadingMentors(true);
+                    const params = new URLSearchParams();
+                    if (searchTerm) params.append('q', searchTerm);
+                    if (selectedCategory.id) params.append('category', selectedCategory.id);
+                    params.append('mentor_type', 'ai');
+                    
+                    fetch(`${getBackendURL()}/api/search/mentors?${params}`)
+                      .then(response => response.json())
+                      .then(data => {
+                        setFilteredMentors(data.results || []);
+                        setMentorTypeFilter('ai');
+                        setIsLoadingMentors(false);
+                      })
+                      .catch(() => {
+                        setFilteredMentors([]);
+                        setIsLoadingMentors(false);
+                      });
+                  }}
+                  className={`px-3 py-1 rounded text-sm transition-colors ${
+                    mentorTypeFilter === 'ai'
+                      ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                      : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                  }`}
+                >
+                  🤖 AI Mentors
+                </button>
+                <button
+                  onClick={() => {
+                    setIsLoadingMentors(true);
+                    const params = new URLSearchParams();
+                    if (searchTerm) params.append('q', searchTerm);
+                    if (selectedCategory.id) params.append('category', selectedCategory.id);
+                    params.append('mentor_type', 'human');
+                    
+                    fetch(`${getBackendURL()}/api/search/mentors?${params}`)
+                      .then(response => response.json())
+                      .then(data => {
+                        setFilteredMentors(data.results || []);
+                        setMentorTypeFilter('human');
+                        setIsLoadingMentors(false);
+                      })
+                      .catch(() => {
+                        setFilteredMentors([]);
+                        setIsLoadingMentors(false);
+                      });
+                  }}
+                  className={`px-3 py-1 rounded text-sm transition-colors ${
+                    mentorTypeFilter === 'human'
+                      ? 'bg-green-100 text-green-700 border border-green-300'
+                      : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                  }`}
+                >
+                  👥 Human Mentors
+                </button>
+              </div>
             </div>
             
             <div className="text-sm text-gray-600">
