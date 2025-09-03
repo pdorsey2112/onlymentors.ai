@@ -3840,13 +3840,13 @@ async def get_all_mentors(
             mentor_data.append({
                 "creator_id": mentor["creator_id"],
                 "email": mentor["email"],
-                "full_name": mentor["full_name"],
-                "account_name": mentor["account_name"],
-                "category": mentor["category"],
-                "monthly_price": mentor["monthly_price"],
-                "status": mentor["status"],
-                "subscriber_count": mentor["stats"]["subscriber_count"],
-                "total_earnings": mentor["stats"]["total_earnings"],
+                "full_name": mentor.get("full_name", mentor.get("account_name", "Unknown")),
+                "account_name": mentor.get("account_name", "Unknown"),
+                "category": mentor.get("category", "business"),
+                "monthly_price": mentor.get("monthly_price", 0.0),
+                "status": mentor.get("status", "pending"),
+                "subscriber_count": mentor.get("stats", {}).get("subscriber_count", 0),
+                "total_earnings": mentor.get("stats", {}).get("total_earnings", 0.0),
                 "verification": {
                     "id_verified": mentor["verification"].get("id_verified", mentor["verification"].get("status") == "APPROVED"),
                     "bank_verified": mentor["verification"].get("bank_verified", mentor["verification"].get("status") == "APPROVED")
