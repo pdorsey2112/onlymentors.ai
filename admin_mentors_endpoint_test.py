@@ -13,7 +13,7 @@ from datetime import datetime
 # Configuration
 BASE_URL = "https://mentor-search.preview.emergentagent.com/api"
 TEST_ADMIN_EMAIL = "admin@onlymentors.ai"
-TEST_ADMIN_PASSWORD = "AdminPass123!"
+TEST_ADMIN_PASSWORD = "SuperAdmin2024!"
 TEST_USER_EMAIL = f"testmentor_{int(time.time())}@test.com"
 TEST_USER_PASSWORD = "TestPass123!"
 TEST_USER_NAME = "Test Mentor User"
