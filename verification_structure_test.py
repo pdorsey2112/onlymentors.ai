@@ -93,7 +93,7 @@ def test_mentor_creation_and_verification():
             # Now try to get mentors
             headers = {"Authorization": f"Bearer {admin_token}"}
             mentors_response = requests.get(
-                f"{BACKEND_URL}/admin/mentors?limit=1",
+                f"{BACKEND_URL}/admin/mentors?limit=100",
                 headers=headers,
                 timeout=30
             )
