@@ -49,7 +49,7 @@ class AdminMentorsDebugTester:
         }
         
         try:
-            response = requests.post(f"{BASE_URL}/admin/auth/login", json=login_data)
+            response = requests.post(f"{BASE_URL}/admin/login", json=login_data)
             if response.status_code == 200:
                 data = response.json()
                 self.admin_token = data.get("token")
