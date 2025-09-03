@@ -596,59 +596,44 @@ function MainApp() {
   const [isLoadingMentors, setIsLoadingMentors] = useState(false);
 
   // Fetch mentors based on search term, category, and mentor type filter
-  // Simple request ID tracking to handle race conditions
-  const requestIdRef = useRef(0);
-
-  // Simple, reliable mentor fetching using state values directly
-  useEffect(() => {
+  // Simple function to fetch mentors - no complex React patterns
+  const loadMentors = async () => {
     if (!selectedCategory) return;
-
-    // Generate unique request ID to handle race conditions
-    const requestId = ++requestIdRef.current;
     
     setIsLoadingMentors(true);
     
-    const fetchMentors = async () => {
-      try {
-        const backendURL = getBackendURL();
-        const params = new URLSearchParams();
-        
-        // Use state values directly - no ref complexity
-        if (searchTerm) params.append('q', searchTerm);
-        if (selectedCategory.id) params.append('category', selectedCategory.id);
-        if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
-        
-        const response = await fetch(`${backendURL}/api/search/mentors?${params}`);
-        const data = await response.json();
-        
-        // Only update state if this is still the latest request
-        if (requestId === requestIdRef.current) {
-          if (response.ok) {
-            setFilteredMentors(data.results || []);
-          } else {
-            console.error('Failed to fetch mentors:', data);
-            setFilteredMentors([]);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching mentors:', error);
-        // Only update state if this is still the latest request
-        if (requestId === requestIdRef.current) {
-          setFilteredMentors([]);
-        }
-      } finally {
-        // Only update loading state if this is still the latest request
-        if (requestId === requestIdRef.current) {
-          setIsLoadingMentors(false);
-        }
+    try {
+      const backendURL = getBackendURL();
+      const params = new URLSearchParams();
+      
+      if (searchTerm) params.append('q', searchTerm);
+      if (selectedCategory.id) params.append('category', selectedCategory.id);
+      if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
+      
+      const response = await fetch(`${backendURL}/api/search/mentors?${params}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setFilteredMentors(data.results || []);
+      } else {
+        setFilteredMentors([]);
       }
-    };
-
-    // Small delay to prevent excessive API calls during rapid clicking
-    const timeoutId = setTimeout(fetchMentors, 100);
+    } catch (error) {
+      setFilteredMentors([]);
+    }
     
-    return () => clearTimeout(timeoutId);
-  }, [mentorTypeFilter, searchTerm, selectedCategory]);
+    setIsLoadingMentors(false);
+  };
+
+  // Load mentors when category changes
+  useEffect(() => {
+    loadMentors();
+  }, [selectedCategory]);
+
+  // Load mentors when search term changes
+  useEffect(() => {
+    loadMentors();
+  }, [searchTerm]);
 
   // Removed selectAll useEffect - now limiting to 5 mentors max
 
