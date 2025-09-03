@@ -596,63 +596,67 @@ function MainApp() {
   const [isLoadingMentors, setIsLoadingMentors] = useState(false);
 
   // Fetch mentors based on search term, category, and mentor type filter
-  // AbortController ref to cancel previous requests
-  const abortControllerRef = useRef(null);
+  // Simple ref to track current filter state and avoid stale closures
+  const currentFilterRef = useRef({ mentorTypeFilter, searchTerm, selectedCategory });
+  const requestIdRef = useRef(0);
 
-  const fetchMentors = useCallback(async () => {
-    if (!selectedCategory) return;
-    
-    // Cancel previous request if it exists
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    
-    // Create new AbortController for this request
-    abortControllerRef.current = new window.AbortController();
-    const { signal } = abortControllerRef.current;
-    
-    setIsLoadingMentors(true);
-    try {
-      const backendURL = getBackendURL();
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('q', searchTerm);
-      if (selectedCategory.id) params.append('category', selectedCategory.id);
-      if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
-      
-      const response = await fetch(`${backendURL}/api/search/mentors?${params}`, { signal });
-      
-      // Check if request was aborted
-      if (signal.aborted) {
-        return;
-      }
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setFilteredMentors(data.results || []);
-      } else {
-        console.error('Failed to fetch mentors:', data);
-        // Don't fallback - just show empty results for API failures
-        setFilteredMentors([]);
-      }
-    } catch (error) {
-      // Handle AbortError (request cancelled)
-      if (error.name === 'AbortError') {
-        return;
-      }
-      
-      console.error('Error fetching mentors:', error);
-      // Show empty results for network errors - don't fallback to avoid confusion
-      setFilteredMentors([]);
-    } finally {
-      setIsLoadingMentors(false);
-    }
+  // Update refs whenever state changes
+  useEffect(() => {
+    currentFilterRef.current = { mentorTypeFilter, searchTerm, selectedCategory };
   }, [mentorTypeFilter, searchTerm, selectedCategory]);
 
-  // Update mentors when search term, category, or filter changes
+  // Simple, reliable mentor fetching without useCallback complexity
   useEffect(() => {
-    fetchMentors();
-  }, [fetchMentors]);
+    if (!selectedCategory) return;
+
+    // Generate unique request ID to handle race conditions
+    const requestId = ++requestIdRef.current;
+    
+    setIsLoadingMentors(true);
+    
+    const fetchMentors = async () => {
+      try {
+        const backendURL = getBackendURL();
+        const params = new URLSearchParams();
+        
+        // Use current values from ref to avoid stale closures
+        const { mentorTypeFilter: currentFilter, searchTerm: currentSearch, selectedCategory: currentCategory } = currentFilterRef.current;
+        
+        if (currentSearch) params.append('q', currentSearch);
+        if (currentCategory.id) params.append('category', currentCategory.id);
+        if (currentFilter !== 'all') params.append('mentor_type', currentFilter);
+        
+        const response = await fetch(`${backendURL}/api/search/mentors?${params}`);
+        const data = await response.json();
+        
+        // Only update state if this is still the latest request
+        if (requestId === requestIdRef.current) {
+          if (response.ok) {
+            setFilteredMentors(data.results || []);
+          } else {
+            console.error('Failed to fetch mentors:', data);
+            setFilteredMentors([]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching mentors:', error);
+        // Only update state if this is still the latest request
+        if (requestId === requestIdRef.current) {
+          setFilteredMentors([]);
+        }
+      } finally {
+        // Only update loading state if this is still the latest request
+        if (requestId === requestIdRef.current) {
+          setIsLoadingMentors(false);
+        }
+      }
+    };
+
+    // Small delay to prevent excessive API calls during rapid clicking
+    const timeoutId = setTimeout(fetchMentors, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [mentorTypeFilter, searchTerm, selectedCategory]);
 
   // Removed selectAll useEffect - now limiting to 5 mentors max
 
