@@ -38,56 +38,19 @@ class AdminMentorsIssueTester:
         
     def setup_admin_auth(self):
         """Setup admin authentication"""
-        try:
-            # Try to create admin account first
-            admin_data = {
-                "email": "admin@test.com",
-                "password": "AdminTest123!",
-                "full_name": "Test Admin",
-                "role": "super_admin"
-            }
-            
-            response = requests.post(
-                f"{BACKEND_URL}/admin/auth/signup",
-                json=admin_data,
-                timeout=30
-            )
-            
-            if response.status_code == 201:
-                data = response.json()
-                self.admin_token = data.get("token")
-                self.log_result(
-                    "Admin Account Creation", 
-                    True, 
-                    "Admin account created successfully"
-                )
-                return True
-            elif response.status_code == 400:
-                # Admin might already exist, try login
-                return self.login_admin()
-            else:
-                self.log_result(
-                    "Admin Account Creation", 
-                    False, 
-                    f"Status: {response.status_code}",
-                    response.text
-                )
-                return self.login_admin()
-                
-        except Exception as e:
-            self.log_result("Admin Account Creation", False, "Exception occurred", e)
-            return self.login_admin()
+        # Use the initial super admin credentials from the backend
+        return self.login_admin()
             
     def login_admin(self):
         """Login with admin credentials"""
         try:
             login_data = {
-                "email": "admin@test.com", 
-                "password": "AdminTest123!"
+                "email": "admin@onlymentors.ai", 
+                "password": "SuperAdmin2024!"
             }
             
             response = requests.post(
-                f"{BACKEND_URL}/admin/auth/login",
+                f"{BACKEND_URL}/admin/login",
                 json=login_data,
                 timeout=30
             )
