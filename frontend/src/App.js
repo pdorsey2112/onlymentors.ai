@@ -597,49 +597,27 @@ function MainApp() {
 
   // Fetch mentors based on search term, category, and mentor type filter
   // Simple function to load mentors - Amazon-style approach
-  const loadMentors = (typeFilter = mentorTypeFilter) => {
+  // Simple function to load all mentors when category or search changes
+  useEffect(() => {
     if (!selectedCategory) return;
     
-    console.log('🔍 loadMentors called with typeFilter:', typeFilter);
-    
     setIsLoadingMentors(true);
-    
-    const backendURL = getBackendURL();
     const params = new URLSearchParams();
-    
     if (searchTerm) params.append('q', searchTerm);
     if (selectedCategory.id) params.append('category', selectedCategory.id);
-    if (typeFilter !== 'all') params.append('mentor_type', typeFilter);
     
-    const apiUrl = `${backendURL}/api/search/mentors?${params}`;
-    console.log('📡 API call:', apiUrl);
-    
-    fetch(apiUrl)
+    fetch(`${getBackendURL()}/api/search/mentors?${params}`)
       .then(response => response.json())
       .then(data => {
-        console.log('📥 API response:', {
-          mentorTypeFilter: data.mentor_type_filter,
-          aiCount: data.ai_count,
-          humanCount: data.human_count,
-          resultsLength: data.results?.length || 0
-        });
-        
-        if (data.results) {
-          setFilteredMentors(data.results);
-        } else {
-          setFilteredMentors([]);
-        }
+        setFilteredMentors(data.results || []);
+        setMentorTypeFilter('all');
         setIsLoadingMentors(false);
       })
       .catch(() => {
         setFilteredMentors([]);
+        setMentorTypeFilter('all');
         setIsLoadingMentors(false);
       });
-  };
-
-  // Load mentors when category or search changes  
-  useEffect(() => {
-    loadMentors();
   }, [selectedCategory, searchTerm]);
 
   // Removed selectAll useEffect - now limiting to 5 mentors max
