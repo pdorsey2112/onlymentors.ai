@@ -382,25 +382,7 @@ class MentorTypeFilteringTester:
 
 
 
-    def run_all_tests(self):
-        """Run all mentor type filtering tests"""
-        print("🚀 Starting Mentor Type Filtering System Testing")
-        print("=" * 70)
-        
-        # Setup (optional - tests can run without authentication)
-        self.setup_test_user()
-        self.setup_test_creator()
-        
-        # Run core tests
-        self.test_search_api_mentor_type_filtering()
-        self.test_ai_mentor_data_structure()
-        self.test_human_mentor_integration()
-        self.test_search_and_filtering_logic()
-        self.test_api_response_format()
-        self.test_error_handling()
-        
-        # Summary
-        self.print_summary()
+
 
     def print_summary(self):
         """Print test summary with focus on critical bug detection"""
