@@ -596,44 +596,39 @@ function MainApp() {
   const [isLoadingMentors, setIsLoadingMentors] = useState(false);
 
   // Fetch mentors based on search term, category, and mentor type filter
-  // Simple function to fetch mentors - no complex React patterns
-  const loadMentors = async () => {
+  // Simple function to load mentors - Amazon-style approach
+  const loadMentors = () => {
     if (!selectedCategory) return;
     
     setIsLoadingMentors(true);
     
-    try {
-      const backendURL = getBackendURL();
-      const params = new URLSearchParams();
-      
-      if (searchTerm) params.append('q', searchTerm);
-      if (selectedCategory.id) params.append('category', selectedCategory.id);
-      if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
-      
-      const response = await fetch(`${backendURL}/api/search/mentors?${params}`);
-      const data = await response.json();
-      
-      if (response.ok) {
-        setFilteredMentors(data.results || []);
-      } else {
-        setFilteredMentors([]);
-      }
-    } catch (error) {
-      setFilteredMentors([]);
-    }
+    const backendURL = getBackendURL();
+    const params = new URLSearchParams();
     
-    setIsLoadingMentors(false);
+    if (searchTerm) params.append('q', searchTerm);
+    if (selectedCategory.id) params.append('category', selectedCategory.id);
+    if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
+    
+    fetch(`${backendURL}/api/search/mentors?${params}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.results) {
+          setFilteredMentors(data.results);
+        } else {
+          setFilteredMentors([]);
+        }
+        setIsLoadingMentors(false);
+      })
+      .catch(() => {
+        setFilteredMentors([]);
+        setIsLoadingMentors(false);
+      });
   };
 
-  // Load mentors when category changes
+  // Load mentors when category or search changes  
   useEffect(() => {
     loadMentors();
-  }, [selectedCategory]);
-
-  // Load mentors when search term changes
-  useEffect(() => {
-    loadMentors();
-  }, [searchTerm]);
+  }, [selectedCategory, searchTerm]);
 
   // Removed selectAll useEffect - now limiting to 5 mentors max
 
