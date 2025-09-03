@@ -226,7 +226,7 @@ function MainApp() {
   // Removed selectAll state - now limiting to 5 mentors max
   
   // Mentor type filter state
-  const [mentorTypeFilter, setMentorTypeFilter] = useState('all'); // 'all', 'ai', 'human'
+  const [mentorTypeFilter, setMentorTypeFilter] = useState('ai'); // Default to AI mentors // 'all', 'ai', 'human'
 
   // Category icons mapping
   const categoryIcons = {
