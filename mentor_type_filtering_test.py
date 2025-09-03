@@ -865,9 +865,9 @@ class MentorTypeFilteringTester:
         self.print_summary()
 
     def print_summary(self):
-        """Print test summary"""
+        """Print test summary with focus on critical bug detection"""
         print("\n" + "=" * 70)
-        print("🎯 MENTOR TYPE FILTERING SYSTEM TESTING SUMMARY")
+        print("🎯 MENTOR TYPE FILTERING API TESTING SUMMARY")
         print("=" * 70)
         
         total_tests = len(self.results)
@@ -881,63 +881,45 @@ class MentorTypeFilteringTester:
         print(f"📈 Success Rate: {success_rate:.1f}%")
         print()
         
-        # Group results by category
-        categories = {
-            "Setup": [],
-            "Search API": [],
-            "AI Mentor Data": [],
-            "Human Mentor Integration": [],
-            "Search Logic": [],
-            "API Response": [],
-            "Error Handling": []
-        }
+        # Check for critical bug indicators
+        critical_bugs = [r for r in self.results if not r["success"] and "CRITICAL BUG DETECTED" in r["test"]]
         
-        for result in self.results:
-            test_name = result["test"]
-            if "Setup" in test_name or "Signup" in test_name or "Login" in test_name:
-                categories["Setup"].append(result)
-            elif "Search API" in test_name:
-                categories["Search API"].append(result)
-            elif "AI Mentor Data" in test_name:
-                categories["AI Mentor Data"].append(result)
-            elif "Human Mentor" in test_name:
-                categories["Human Mentor Integration"].append(result)
-            elif "Search Logic" in test_name:
-                categories["Search Logic"].append(result)
-            elif "API Response" in test_name or "Mentor Data Format" in test_name:
-                categories["API Response"].append(result)
-            elif "Error Handling" in test_name:
-                categories["Error Handling"].append(result)
-        
-        for category, tests in categories.items():
-            if tests:
-                passed = sum(1 for t in tests if t["success"])
-                total = len(tests)
-                print(f"📂 {category}: {passed}/{total} passed")
-                for test in tests:
-                    print(f"   {test['status']}: {test['test']}")
-                print()
-        
-        # Critical issues
-        critical_failures = [r for r in self.results if not r["success"] and 
-                           ("Search API" in r["test"] or "AI Mentor Data Structure - Overall" in r["test"] or 
-                            "API Response Format" in r["test"])]
-        
-        if critical_failures:
-            print("🚨 CRITICAL ISSUES FOUND:")
-            for failure in critical_failures:
-                print(f"   ❌ {failure['test']}: {failure['details']}")
+        if critical_bugs:
+            print("🚨 CRITICAL BUG DETECTED IN BACKEND API!")
+            print("=" * 50)
+            for bug in critical_bugs:
+                print(f"❌ {bug['test']}")
+                print(f"   {bug['details']}")
+            print()
+            print("🔧 DIAGNOSIS: The backend API is returning incorrect mentor types!")
+            print("   - This explains why the frontend dropdown appears 'reversed'")
+            print("   - The issue is in the backend logic, not the frontend")
+            print()
+        else:
+            print("✅ NO CRITICAL BACKEND BUGS DETECTED")
+            print("   - Backend API is correctly filtering mentor types")
+            print("   - If frontend still shows reversed results, the issue is in frontend logic")
             print()
         
-        # Overall assessment
-        if success_rate >= 90:
-            print("🎉 EXCELLENT: Mentor Type Filtering System is working excellently!")
-        elif success_rate >= 75:
-            print("✅ GOOD: Mentor Type Filtering System is working well with minor issues.")
-        elif success_rate >= 50:
-            print("⚠️ MODERATE: Mentor Type Filtering System has some significant issues.")
+        # Detailed results
+        print("📋 DETAILED TEST RESULTS:")
+        for result in self.results:
+            print(f"   {result['status']}: {result['test']}")
+            if result['details']:
+                print(f"      └─ {result['details']}")
+        print()
+        
+        # Final assessment
+        if critical_bugs:
+            print("🚨 CONCLUSION: BACKEND API BUG CONFIRMED")
+            print("   The mentor type filtering logic in the backend is reversed or incorrect.")
+            print("   This is causing the frontend dropdown to show wrong mentors.")
+        elif success_rate >= 90:
+            print("✅ CONCLUSION: BACKEND API IS WORKING CORRECTLY")
+            print("   If users still see reversed results, the issue is in frontend display logic.")
         else:
-            print("🚨 CRITICAL: Mentor Type Filtering System has major issues requiring immediate attention.")
+            print("⚠️ CONCLUSION: BACKEND API HAS SOME ISSUES")
+            print("   Multiple test failures detected. Review individual test results above.")
         
         print("=" * 70)
 
