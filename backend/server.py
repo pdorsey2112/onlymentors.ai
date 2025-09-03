@@ -3848,8 +3848,8 @@ async def get_all_mentors(
                 "subscriber_count": mentor["stats"]["subscriber_count"],
                 "total_earnings": mentor["stats"]["total_earnings"],
                 "verification": {
-                    "id_verified": mentor["verification"]["id_verified"],
-                    "bank_verified": mentor["verification"]["bank_verified"]
+                    "id_verified": mentor["verification"].get("id_verified", mentor["verification"].get("status") == "APPROVED"),
+                    "bank_verified": mentor["verification"].get("bank_verified", mentor["verification"].get("status") == "APPROVED")
                 },
                 "created_at": mentor["created_at"],
                 "last_active": mentor.get("last_active")
