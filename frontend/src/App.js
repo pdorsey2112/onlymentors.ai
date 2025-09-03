@@ -975,53 +975,20 @@ function MainApp() {
           </div>
         ) : filteredMentors.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">
-              {mentorTypeFilter === 'ai' ? '🤖' : 
-               mentorTypeFilter === 'human' ? '👥' : 
-               '🔍'}
-            </div>
+            <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {mentorTypeFilter === 'ai' ? 'No AI Mentors Found' :
-               mentorTypeFilter === 'human' ? 'No Human Mentors Available Yet' :
-               'No Mentors Found'}
+              No Mentors Found
             </h3>
             <p className="text-gray-600 mb-4 max-w-md mx-auto">
-              {mentorTypeFilter === 'ai' ? 
-                searchTerm ? `No AI mentors match "${searchTerm}". Try different keywords or browse all categories.` :
-                'No AI mentors found in this category. Try browsing other categories.' :
-               mentorTypeFilter === 'human' ? 
-                'Human mentors will appear here once professional creators join and get verified. Meanwhile, explore our AI mentors for instant guidance!' :
-                searchTerm ? `No mentors match "${searchTerm}". Try different keywords or clear your search.` :
-                'No mentors found. Try browsing different categories or clearing your search.'
-              }
+              {searchTerm ? `No mentors match "${searchTerm}". Try different keywords or clear your search.` :
+               'No mentors found in this category. Try browsing other categories.'}
             </p>
-            {mentorTypeFilter === 'human' ? (
-              <div className="space-y-3">
-                <button
-                  onClick={() => setMentorTypeFilter('ai')}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  🤖 Explore AI Mentors Instead
-                </button>
-                <div className="text-sm text-gray-500">
-                  <p>Want to become a human mentor? 
-                    <button className="text-purple-600 hover:text-purple-700 underline ml-1">
-                      Join as a Creator
-                    </button>
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setMentorTypeFilter('all');
-                }}
-                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Clear Filters & Show All Mentors
-              </button>
-            )}
+            <button
+              onClick={() => setSearchTerm('')}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Clear Search
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
