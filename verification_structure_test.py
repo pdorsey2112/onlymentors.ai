@@ -122,6 +122,30 @@ def test_mentor_creation_and_verification():
                 mentors = admin_mentors_data.get("mentors", [])
                 print(f"   Retrieved {len(mentors)} mentors")
                 
+                if mentors:
+                    print("📋 Sample admin mentor data structure:")
+                    sample_mentor = mentors[0]
+                    for key in sorted(sample_mentor.keys()):
+                        print(f"   {key}: {sample_mentor[key]}")
+                    print()
+                    
+                    # Check verification structure specifically
+                    verification = sample_mentor.get("verification", {})
+                    print("📋 Verification structure analysis:")
+                    print(f"   Type: {type(verification)}")
+                    print(f"   Keys: {list(verification.keys()) if isinstance(verification, dict) else 'Not a dict'}")
+                    
+                    if isinstance(verification, dict):
+                        has_id_verified = "id_verified" in verification
+                        has_bank_verified = "bank_verified" in verification
+                        print(f"   Has id_verified: {has_id_verified}")
+                        print(f"   Has bank_verified: {has_bank_verified}")
+                        
+                        if not (has_id_verified and has_bank_verified):
+                            print("❌ ISSUE FOUND: Missing expected verification fields!")
+                        else:
+                            print("✅ Verification structure is correct")
+                
         else:
             print(f"❌ Admin login failed: {admin_response.status_code}")
             
