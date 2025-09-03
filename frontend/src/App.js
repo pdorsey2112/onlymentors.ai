@@ -597,7 +597,7 @@ function MainApp() {
 
   // Fetch mentors based on search term, category, and mentor type filter
   // Simple function to load mentors - Amazon-style approach
-  // Simple function to load all mentors when category or search changes
+  // Load all mentors when category or search changes
   useEffect(() => {
     if (!selectedCategory) return;
     
@@ -610,12 +610,10 @@ function MainApp() {
       .then(response => response.json())
       .then(data => {
         setFilteredMentors(data.results || []);
-        setMentorTypeFilter('all');
         setIsLoadingMentors(false);
       })
       .catch(() => {
         setFilteredMentors([]);
-        setMentorTypeFilter('all');
         setIsLoadingMentors(false);
       });
   }, [selectedCategory, searchTerm]);
