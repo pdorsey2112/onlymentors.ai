@@ -973,7 +973,7 @@ function MainApp() {
                 onChange={(e) => {
                   const value = e.target.value || 'all';
                   setMentorTypeFilter(value);
-                  setTimeout(loadMentors, 50);
+                  setTimeout(() => loadMentors(value), 50);
                 }}
                 className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-blue-500"
               >
