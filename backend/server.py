@@ -3848,10 +3848,10 @@ async def get_all_mentors(
                 "subscriber_count": mentor.get("stats", {}).get("subscriber_count", 0),
                 "total_earnings": mentor.get("stats", {}).get("total_earnings", 0.0),
                 "verification": {
-                    "id_verified": mentor["verification"].get("id_verified", mentor["verification"].get("status") == "APPROVED"),
-                    "bank_verified": mentor["verification"].get("bank_verified", mentor["verification"].get("status") == "APPROVED")
+                    "id_verified": mentor.get("verification", {}).get("id_verified", mentor.get("verification", {}).get("status") == "APPROVED"),
+                    "bank_verified": mentor.get("verification", {}).get("bank_verified", mentor.get("verification", {}).get("status") == "APPROVED")
                 },
-                "created_at": mentor["created_at"],
+                "created_at": mentor.get("created_at", datetime.utcnow()),
                 "last_active": mentor.get("last_active")
             })
         
