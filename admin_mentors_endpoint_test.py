@@ -49,7 +49,7 @@ class AdminMentorsEndpointTester:
         print("🔧 Setting up admin authentication...")
         
         try:
-            response = requests.post(f"{BASE_URL}/admin/auth/login", json={
+            response = requests.post(f"{BASE_URL}/admin/login", json={
                 "email": TEST_ADMIN_EMAIL,
                 "password": TEST_ADMIN_PASSWORD
             })
