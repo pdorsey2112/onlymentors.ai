@@ -596,16 +596,10 @@ function MainApp() {
   const [isLoadingMentors, setIsLoadingMentors] = useState(false);
 
   // Fetch mentors based on search term, category, and mentor type filter
-  // Simple ref to track current filter state and avoid stale closures
-  const currentFilterRef = useRef({ mentorTypeFilter, searchTerm, selectedCategory });
+  // Simple request ID tracking to handle race conditions
   const requestIdRef = useRef(0);
 
-  // Update refs whenever state changes
-  useEffect(() => {
-    currentFilterRef.current = { mentorTypeFilter, searchTerm, selectedCategory };
-  }, [mentorTypeFilter, searchTerm, selectedCategory]);
-
-  // Simple, reliable mentor fetching without useCallback complexity
+  // Simple, reliable mentor fetching using state values directly
   useEffect(() => {
     if (!selectedCategory) return;
 
@@ -619,12 +613,10 @@ function MainApp() {
         const backendURL = getBackendURL();
         const params = new URLSearchParams();
         
-        // Use current values from ref to avoid stale closures
-        const { mentorTypeFilter: currentFilter, searchTerm: currentSearch, selectedCategory: currentCategory } = currentFilterRef.current;
-        
-        if (currentSearch) params.append('q', currentSearch);
-        if (currentCategory.id) params.append('category', currentCategory.id);
-        if (currentFilter !== 'all') params.append('mentor_type', currentFilter);
+        // Use state values directly - no ref complexity
+        if (searchTerm) params.append('q', searchTerm);
+        if (selectedCategory.id) params.append('category', selectedCategory.id);
+        if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
         
         const response = await fetch(`${backendURL}/api/search/mentors?${params}`);
         const data = await response.json();
