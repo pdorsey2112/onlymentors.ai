@@ -632,23 +632,8 @@ function MainApp() {
         setFilteredMentors(data.results || []);
       } else {
         console.error('Failed to fetch mentors:', data);
-        // Fallback to category mentors if API fails
-        const categoryMentors = selectedCategory.mentors || [];
-        const filtered = categoryMentors
-          .map(mentor => ({ ...mentor, mentor_type: "ai", is_ai_mentor: true }))
-          .filter(mentor => {
-            const matchesSearch = searchTerm === '' || 
-              mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              mentor.bio.toLowerCase().includes(searchTerm.toLowerCase());
-            
-            const matchesType = mentorTypeFilter === 'all' || 
-              (mentorTypeFilter === 'ai' && mentor.mentor_type === 'ai') ||
-              (mentorTypeFilter === 'human' && mentor.mentor_type === 'human');
-            
-            return matchesSearch && matchesType;
-          });
-        setFilteredMentors(filtered);
+        // Don't fallback - just show empty results for API failures
+        setFilteredMentors([]);
       }
     } catch (error) {
       // Handle AbortError (request cancelled)
