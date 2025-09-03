@@ -362,33 +362,23 @@ class MentorTypeFilteringTester:
             self.log_result("Search + Mentor Type Filtering", False, f"Exception: {str(e)}")
 
     def run_all_tests(self):
-        """Create and authenticate test user"""
-        print("🔧 Setting up test user...")
+        """Run all mentor type filtering tests"""
+        print("🚀 Starting Mentor Type Filtering API Testing")
+        print("🎯 CRITICAL: Testing for mentor sort dropdown reversal issue")
+        print("=" * 70)
         
-        # User signup
-        signup_data = {
-            "email": TEST_USER_EMAIL,
-            "password": TEST_USER_PASSWORD,
-            "full_name": TEST_USER_NAME
-        }
+        # Core tests for the reported bug
+        self.test_ai_mentors_api_call()
+        self.test_human_mentors_api_call()
+        self.test_all_mentors_api_call()
+        self.test_default_behavior()
         
-        try:
-            response = requests.post(f"{BASE_URL}/auth/signup", json=signup_data)
-            if response.status_code in [200, 201]:
-                data = response.json()
-                self.user_token = data.get("token")
-                self.user_id = data.get("user", {}).get("user_id")
-                self.log_result("User Signup", True, f"User ID: {self.user_id}")
-                return True
-            elif response.status_code == 400 and ("already exists" in response.text or "already registered" in response.text):
-                # Try login instead
-                return self.login_test_user()
-            else:
-                self.log_result("User Signup", False, f"Status: {response.status_code}", response.text)
-                return False
-        except Exception as e:
-            self.log_result("User Signup", False, f"Exception: {str(e)}")
-            return False
+        # Additional comprehensive tests
+        self.test_cross_category_consistency()
+        self.test_search_with_mentor_type()
+        
+        # Summary
+        self.print_summary()
 
     def login_test_user(self):
         """Login existing test user"""
