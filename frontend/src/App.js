@@ -600,6 +600,8 @@ function MainApp() {
   const loadMentors = () => {
     if (!selectedCategory) return;
     
+    console.log('🔍 loadMentors called with mentorTypeFilter:', mentorTypeFilter);
+    
     setIsLoadingMentors(true);
     
     const backendURL = getBackendURL();
@@ -609,9 +611,19 @@ function MainApp() {
     if (selectedCategory.id) params.append('category', selectedCategory.id);
     if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
     
-    fetch(`${backendURL}/api/search/mentors?${params}`)
+    const apiUrl = `${backendURL}/api/search/mentors?${params}`;
+    console.log('📡 API call:', apiUrl);
+    
+    fetch(apiUrl)
       .then(response => response.json())
       .then(data => {
+        console.log('📥 API response:', {
+          mentorTypeFilter: data.mentor_type_filter,
+          aiCount: data.ai_count,
+          humanCount: data.human_count,
+          resultsLength: data.results?.length || 0
+        });
+        
         if (data.results) {
           setFilteredMentors(data.results);
         } else {
