@@ -957,16 +957,17 @@ function MainApp() {
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Sort by:</span>
               <select 
-                value={mentorTypeFilter}
+                value={mentorTypeFilter === 'all' ? '' : mentorTypeFilter}
                 onChange={(e) => {
-                  setMentorTypeFilter(e.target.value);
+                  const value = e.target.value || 'all';
+                  setMentorTypeFilter(value);
                   setTimeout(loadMentors, 50);
                 }}
                 className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-blue-500"
               >
+                <option value="">All Mentors</option>
                 <option value="ai">🤖 AI Mentors</option>
                 <option value="human">👥 Human Mentors</option>
-                <option value="all">🌟 All Mentors</option>
               </select>
             </div>
             
