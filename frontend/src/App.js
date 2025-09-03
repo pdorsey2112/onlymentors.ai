@@ -597,10 +597,10 @@ function MainApp() {
 
   // Fetch mentors based on search term, category, and mentor type filter
   // Simple function to load mentors - Amazon-style approach
-  const loadMentors = () => {
+  const loadMentors = (typeFilter = mentorTypeFilter) => {
     if (!selectedCategory) return;
     
-    console.log('🔍 loadMentors called with mentorTypeFilter:', mentorTypeFilter);
+    console.log('🔍 loadMentors called with typeFilter:', typeFilter);
     
     setIsLoadingMentors(true);
     
@@ -609,7 +609,7 @@ function MainApp() {
     
     if (searchTerm) params.append('q', searchTerm);
     if (selectedCategory.id) params.append('category', selectedCategory.id);
-    if (mentorTypeFilter !== 'all') params.append('mentor_type', mentorTypeFilter);
+    if (typeFilter !== 'all') params.append('mentor_type', typeFilter);
     
     const apiUrl = `${backendURL}/api/search/mentors?${params}`;
     console.log('📡 API call:', apiUrl);
