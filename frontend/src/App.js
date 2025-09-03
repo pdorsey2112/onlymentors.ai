@@ -642,23 +642,8 @@ function MainApp() {
       }
       
       console.error('Error fetching mentors:', error);
-      // Fallback to category mentors
-      const categoryMentors = selectedCategory.mentors || [];
-      const filtered = categoryMentors
-        .map(mentor => ({ ...mentor, mentor_type: "ai", is_ai_mentor: true }))
-        .filter(mentor => {
-          const matchesSearch = searchTerm === '' || 
-            mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            mentor.expertise.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            mentor.bio.toLowerCase().includes(searchTerm.toLowerCase());
-          
-          const matchesType = mentorTypeFilter === 'all' || 
-            (mentorTypeFilter === 'ai' && mentor.mentor_type === 'ai') ||
-            (mentorTypeFilter === 'human' && mentor.mentor_type === 'human');
-          
-          return matchesSearch && matchesType;
-        });
-      setFilteredMentors(filtered);
+      // Show empty results for network errors - don't fallback to avoid confusion
+      setFilteredMentors([]);
     } finally {
       setIsLoadingMentors(false);
     }
