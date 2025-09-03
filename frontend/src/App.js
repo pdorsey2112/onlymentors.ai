@@ -958,50 +958,21 @@ function MainApp() {
               />
             </div>
             
-            {/* Mentor Type Filter Toggle Pills */}
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={async () => {
-                  setMentorTypeFilter('ai');
-                  // Wait a moment for state to update, then load mentors
+            {/* Amazon-style Sort Dropdown */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Sort by:</span>
+              <select 
+                value={mentorTypeFilter}
+                onChange={(e) => {
+                  setMentorTypeFilter(e.target.value);
                   setTimeout(loadMentors, 50);
                 }}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  mentorTypeFilter === 'ai'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-blue-500"
               >
-                🤖 AI Mentors
-              </button>
-              <button
-                onClick={async () => {
-                  setMentorTypeFilter('human');
-                  // Wait a moment for state to update, then load mentors
-                  setTimeout(loadMentors, 50);
-                }}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  mentorTypeFilter === 'human'
-                    ? 'bg-green-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                👥 Human Mentors
-              </button>
-              <button
-                onClick={async () => {
-                  setMentorTypeFilter('all');
-                  // Wait a moment for state to update, then load mentors
-                  setTimeout(loadMentors, 50);
-                }}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  mentorTypeFilter === 'all'
-                    ? 'bg-purple-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                🌟 All Mentors
-              </button>
+                <option value="ai">🤖 AI Mentors</option>
+                <option value="human">👥 Human Mentors</option>
+                <option value="all">🌟 All Mentors</option>
+              </select>
             </div>
             
             <div className="text-sm text-gray-600">
