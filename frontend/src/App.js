@@ -486,7 +486,8 @@ function MainApp() {
         body: JSON.stringify({
           category: selectedCategory.id,
           mentor_ids: selectedMentors.map(m => m.id),
-          question: question
+          question: question,
+          department_code: selectedDepartment || user?.department_code
         })
       });
 
