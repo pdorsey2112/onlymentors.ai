@@ -19,17 +19,20 @@ from datetime import datetime
 # Configuration
 BASE_URL = "https://mentor-search.preview.emergentagent.com/api"
 
-# Test Data
+# Test Data - Generate unique data for each test run
+import time
+TIMESTAMP = str(int(time.time()))
+
 TEST_COMPANY_DATA = {
-    "company_name": "TechCorp Solutions",
-    "company_email": "admin@techcorp.com",
+    "company_name": f"TechCorp Solutions {TIMESTAMP}",
+    "company_email": f"admin{TIMESTAMP}@techcorp.com",
     "contact_name": "John Smith",
-    "contact_email": "john.smith@techcorp.com",
+    "contact_email": f"john.smith{TIMESTAMP}@techcorp.com",
     "contact_phone": "+1-555-0123",
     "industry": "Technology",
     "company_size": "50-200",
     "plan_type": "enterprise",
-    "billing_contact": "billing@techcorp.com",
+    "billing_contact": f"billing{TIMESTAMP}@techcorp.com",
     "departments": []
 }
 
