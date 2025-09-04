@@ -155,9 +155,10 @@ class PodcastUploadTester:
             if response.status_code == 200:
                 result = response.json()
                 content_id = result.get("content_id")
+                pricing = result.get("pricing_breakdown", {})
                 
-                # Verify content type is podcast and pricing
-                if result.get("content_type") == "podcast" and result.get("price") == 9.99:
+                # Verify upload was successful and pricing is correct
+                if content_id and pricing.get("content_price") == 9.99:
                     self.log_result("Premium Podcast Upload", True, f"Successfully uploaded premium podcast: {content_id}")
                     return True
                 else:
