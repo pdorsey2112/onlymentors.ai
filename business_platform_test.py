@@ -418,7 +418,7 @@ class BusinessPlatformTester:
 
         # Test 2: Consumer User Signup (no company_id)
         consumer_data = {
-            "email": "consumer@example.com",
+            "email": f"consumer{TIMESTAMP}@example.com",
             "password": "ConsumerPass123!",
             "full_name": "Consumer User"
         }
