@@ -9,7 +9,7 @@ import json
 import time
 
 def test_complete_suspension_workflow():
-    base_url = "https://mentor-search.preview.emergentagent.com"
+    base_url = "https://multi-tenant-ai.preview.emergentagent.com"
     
     print("🎯 FINAL USER SUSPENSION ENDPOINT TEST")
     print("=" * 50)

@@ -8,7 +8,7 @@ import requests
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://mentor-search.preview.emergentagent.com/api"
+BACKEND_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
 
 def test_mentor_creation_and_verification():
     """Test mentor creation to see exact verification structure"""

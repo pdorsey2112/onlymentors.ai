@@ -17,7 +17,7 @@ async def test_pricing_validation():
             'expertise_areas': ['business strategy', 'entrepreneurship']
         }
         
-        async with session.post('https://mentor-search.preview.emergentagent.com/api/creators/signup', json=creator_data) as response:
+        async with session.post('https://multi-tenant-ai.preview.emergentagent.com/api/creators/signup', json=creator_data) as response:
             if response.status == 200:
                 data = await response.json()
                 token = data.get('token')
@@ -35,7 +35,7 @@ async def test_pricing_validation():
                     'preview_available': False
                 }
                 
-                async with session.post('https://mentor-search.preview.emergentagent.com/api/creator/content/upload', 
+                async with session.post('https://multi-tenant-ai.preview.emergentagent.com/api/creator/content/upload', 
                                       json=content_data, headers=headers) as upload_response:
                     print(f'Status: {upload_response.status}')
                     text = await upload_response.text()
@@ -45,7 +45,7 @@ async def test_pricing_validation():
                 print('\nTesting price too high (75.00)...')
                 content_data['price'] = 75.00
                 
-                async with session.post('https://mentor-search.preview.emergentagent.com/api/creator/content/upload', 
+                async with session.post('https://multi-tenant-ai.preview.emergentagent.com/api/creator/content/upload', 
                                       json=content_data, headers=headers) as upload_response:
                     print(f'Status: {upload_response.status}')
                     text = await upload_response.text()
@@ -55,7 +55,7 @@ async def test_pricing_validation():
                 print('\nTesting minimum platform fee (5.00)...')
                 content_data['price'] = 5.00
                 
-                async with session.post('https://mentor-search.preview.emergentagent.com/api/creator/content/upload', 
+                async with session.post('https://multi-tenant-ai.preview.emergentagent.com/api/creator/content/upload', 
                                       json=content_data, headers=headers) as upload_response:
                     print(f'Status: {upload_response.status}')
                     if upload_response.status == 200:

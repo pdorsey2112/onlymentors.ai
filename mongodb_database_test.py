@@ -18,7 +18,7 @@ from datetime import datetime
 class MongoDBDatabaseManagementTester:
     def __init__(self):
         # Get backend URL from environment
-        self.backend_url = os.getenv('REACT_APP_BACKEND_URL', 'https://mentor-search.preview.emergentagent.com')
+        self.backend_url = os.getenv('REACT_APP_BACKEND_URL', 'https://multi-tenant-ai.preview.emergentagent.com')
         self.base_url = f"{self.backend_url}/api"
         
         # Admin credentials for testing

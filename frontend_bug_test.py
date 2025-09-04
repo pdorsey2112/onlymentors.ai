@@ -8,7 +8,7 @@ import requests
 import json
 
 def test_frontend_bug():
-    base_url = "https://mentor-search.preview.emergentagent.com"
+    base_url = "https://multi-tenant-ai.preview.emergentagent.com"
     
     # Get admin token
     login_response = requests.post(f"{base_url}/api/admin/login", json={

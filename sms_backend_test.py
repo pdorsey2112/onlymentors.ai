@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, Any, List
 
 # Test configuration
-BACKEND_URL = "https://mentor-search.preview.emergentagent.com/api"
+BACKEND_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "sms.tester@onlymentors.ai"
 TEST_USER_PASSWORD = "SMSTest2024!"
 TEST_USER_NAME = "SMS Test User"

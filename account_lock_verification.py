@@ -7,7 +7,7 @@ import requests
 import json
 
 # Configuration
-BACKEND_URL = "https://mentor-search.preview.emergentagent.com/api"
+BACKEND_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
 TEST_USER_EMAIL = "pdorsey@dorseyandassociates.com"

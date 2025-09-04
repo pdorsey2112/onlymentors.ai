@@ -34,8 +34,8 @@ user-data-restore.preview.emergentagent.com
 ### Step 4: Update Valid OAuth Redirect URIs
 In the **Facebook Login** > **Settings**, find **Valid OAuth Redirect URIs** and add:
 ```
-https://mentor-search.preview.emergentagent.com
-https://mentor-search.preview.emergentagent.com/auth/facebook
+https://multi-tenant-ai.preview.emergentagent.com
+https://multi-tenant-ai.preview.emergentagent.com/auth/facebook
 https://onlymentors.ai
 https://onlymentors.ai/auth/facebook
 ```
@@ -43,7 +43,7 @@ https://onlymentors.ai/auth/facebook
 ### Step 5: Update Website URL (if present)
 In **Settings** > **Basic**, find **Website** section and add:
 ```
-https://mentor-search.preview.emergentagent.com
+https://multi-tenant-ai.preview.emergentagent.com
 ```
 
 ### Step 6: Save Changes
@@ -53,7 +53,7 @@ https://mentor-search.preview.emergentagent.com
 ## Current Facebook App Details
 - **App ID**: 1119361770050320
 - **App Secret**: ab6e1251f93adaa922c01da381911187 (configured)
-- **Current Redirect URI**: https://mentor-search.preview.emergentagent.com
+- **Current Redirect URI**: https://multi-tenant-ai.preview.emergentagent.com
 
 ## After Making Changes
 Once you've updated the Facebook Developer Console settings:

@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://mentor-search.preview.emergentagent.com/api"
+BASE_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
 
 def debug_mentor_structure():
     """Debug the actual mentor document structure"""
