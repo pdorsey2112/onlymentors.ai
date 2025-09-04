@@ -2435,6 +2435,100 @@ async def stripe_webhook(request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# Business Inquiry System
+class BusinessInquiry(BaseModel):
+    company_name: str
+    contact_name: str
+    contact_email: str
+    phone_number: str = ""
+    company_size: str
+    industry: str = ""
+    use_case: str
+    specific_requirements: str = ""
+    budget_range: str = ""
+    timeline: str = ""
+    submitted_at: str
+
+@app.post("/api/business/inquiry")
+async def submit_business_inquiry(inquiry: BusinessInquiry):
+    """Submit business inquiry for enterprise OnlyMentors.ai"""
+    try:
+        # Create inquiry record
+        inquiry_doc = {
+            "inquiry_id": str(uuid.uuid4()),
+            "company_name": inquiry.company_name,
+            "contact_name": inquiry.contact_name,
+            "contact_email": inquiry.contact_email,
+            "phone_number": inquiry.phone_number,
+            "company_size": inquiry.company_size,
+            "industry": inquiry.industry,
+            "use_case": inquiry.use_case,
+            "specific_requirements": inquiry.specific_requirements,
+            "budget_range": inquiry.budget_range,
+            "timeline": inquiry.timeline,
+            "status": "new",
+            "priority": "medium",
+            "assigned_to": None,
+            "submitted_at": datetime.fromisoformat(inquiry.submitted_at.replace('Z', '+00:00')),
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+            "notes": []
+        }
+        
+        # Store in database
+        await db.business_inquiries.insert_one(inquiry_doc)
+        
+        # Send notification email (you can implement this later)
+        # await send_business_inquiry_notification(inquiry_doc)
+        
+        return {
+            "success": True,
+            "message": "Business inquiry submitted successfully",
+            "inquiry_id": inquiry_doc["inquiry_id"],
+            "next_steps": "Our enterprise team will contact you within 24 hours to discuss your requirements."
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to submit inquiry: {str(e)}")
+
+@app.get("/api/admin/business/inquiries")
+async def get_business_inquiries(
+    limit: int = 50,
+    status: str = "all",
+    current_admin = Depends(get_current_admin)
+):
+    """Get business inquiries for admin review"""
+    try:
+        if not has_permission(AdminRole(current_admin["role"]), "view_reports"):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # Build query
+        query = {}
+        if status != "all":
+            query["status"] = status
+        
+        # Get inquiries
+        inquiries = await db.business_inquiries.find(query).sort("created_at", -1).limit(limit).to_list(None)
+        
+        # Convert ObjectId to string for JSON serialization
+        for inquiry in inquiries:
+            inquiry["_id"] = str(inquiry["_id"])
+            if inquiry.get("submitted_at"):
+                inquiry["submitted_at"] = inquiry["submitted_at"].isoformat()
+            if inquiry.get("created_at"):
+                inquiry["created_at"] = inquiry["created_at"].isoformat()
+            if inquiry.get("updated_at"):
+                inquiry["updated_at"] = inquiry["updated_at"].isoformat()
+        
+        return {
+            "inquiries": inquiries,
+            "total": len(inquiries),
+            "status_filter": status
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get business inquiries: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
