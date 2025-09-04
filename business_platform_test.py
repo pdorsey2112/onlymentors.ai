@@ -177,7 +177,7 @@ class BusinessPlatformTester:
         
         # Create admin user with company_id
         admin_data = {
-            "email": "admin@techcorp.com",
+            "email": f"admin{TIMESTAMP}@techcorp.com",
             "password": "AdminPass123!",
             "full_name": "Admin User",
             "company_id": self.company_id,
