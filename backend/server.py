@@ -2834,6 +2834,14 @@ async def upload_creator_content(
                 max_size = 50 * 1024 * 1024  # 50MB
                 if content_file.content_type not in allowed_types:
                     raise HTTPException(status_code=400, detail="Invalid document file type")
+            elif content_type == "podcast":
+                allowed_types = ["audio/mpeg", "audio/mp3", "audio/aac", "audio/mp4", "audio/wav", "audio/wave", "audio/x-wav"]
+                max_size = 500 * 1024 * 1024  # 500MB for audio files
+                if content_file.content_type not in allowed_types:
+                    # Also check by file extension as fallback
+                    file_ext = content_file.filename.lower().split('.')[-1] if '.' in content_file.filename else ''
+                    if file_ext not in ['mp3', 'aac', 'mp4a', 'wav']:
+                        raise HTTPException(status_code=400, detail="Invalid podcast file type. Supported formats: mp3, aac, mp4a, wav")
             
             if content_file.size > max_size:
                 raise HTTPException(status_code=400, detail=f"File too large. Maximum size is {max_size / 1024 / 1024}MB")
