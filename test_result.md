@@ -170,6 +170,19 @@ backend:
         comment: "✅ PAY-PER-VIEW CONTENT SYSTEM FULLY FUNCTIONAL! Comprehensive testing (20 tests, 95% success rate) confirms: 1) PREMIUM CONTENT UPLOAD: All 5 tests passed - valid content creation with correct pricing calculations (20% commission OR $2.99 minimum), proper price validation ($0.01-$50.00 range), minimum platform fee enforcement ($2.99 for low-priced content), authentication protection working 2) PREMIUM CONTENT DISCOVERY: All 4 tests passed - content retrieval by mentor ID, filtering by content type and category, proper response format without exposing sensitive data (file paths) 3) CONTENT PURCHASE: 2/3 tests passed - Stripe integration endpoint functional (fails as expected without API key), proper authentication protection, minor issue with invalid content ID error handling (returns 500 instead of 404) 4) CONTENT ACCESS: All 3 tests passed - correctly denies access to non-purchased content, handles invalid content IDs, requires authentication 5) CREATOR ANALYTICS: All 3 tests passed - comprehensive analytics with summary metrics, content breakdown by type, revenue calculations accurate, top performing content tracking. System successfully creates premium content, calculates pricing correctly, enforces business rules, and provides complete analytics. Only minor issue: purchase endpoint error handling for invalid content IDs. PPV system is production-ready."
 
 frontend:
+  - task: "Landing Page as Default Route"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js, /app/frontend/public/landing.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Successfully updated routing so landing page is now the default starting page instead of login page. Changes: 1) Updated React Router in App.js - root route (/) now shows LandingRedirect component instead of MainApp, 2) Main app moved to /app route for accessing login/signup functionality, 3) Updated all landing page CTA buttons and navigation links to point to /app instead of /, 4) Updated business CTA buttons to use /app?business-inquiry=true and /app?business-console=true, 5) Updated footer links to point to /app for sign up functionality. Verified: Root URL (/) now shows professional landing page, /app shows main application with login/signup, all CTA buttons properly redirect to application with correct query parameters."
+
+frontend:
   - task: "Mentor Type Filtering Empty State Linting Fix"
     implemented: true
     working: true
