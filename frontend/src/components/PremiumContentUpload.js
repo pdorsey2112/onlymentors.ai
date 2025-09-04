@@ -19,11 +19,11 @@ const PremiumContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
   const [pricingBreakdown, setPricingBreakdown] = useState(null);
 
   const contentTypes = [
-    { id: 'document', name: 'Document', maxSize: '50MB', accept: 'application/pdf,.pdf,.doc,.docx,.txt' },
-    { id: 'video', name: 'Video', maxSize: '200MB', accept: 'video/*,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv' },
-    { id: 'podcast', name: 'Podcast/Audio', maxSize: '500MB', accept: 'audio/*,.mp3,.aac,.m4a,.wav' },
-    { id: 'image', name: 'Image', maxSize: '25MB', accept: 'image/*,.jpg,.jpeg,.png,.gif,.bmp' },
-    { id: 'interactive', name: 'Interactive Content', maxSize: '100MB', accept: '.html,.zip' }
+    { id: 'document', name: 'Document', maxSize: '50MB', accept: '*/*' },
+    { id: 'video', name: 'Video', maxSize: '200MB', accept: '*/*' },
+    { id: 'podcast', name: 'Podcast/Audio', maxSize: '500MB', accept: '*/*' },
+    { id: 'image', name: 'Image', maxSize: '25MB', accept: '*/*' },
+    { id: 'interactive', name: 'Interactive Content', maxSize: '100MB', accept: '*/*' }
   ];
 
   const categories = [
