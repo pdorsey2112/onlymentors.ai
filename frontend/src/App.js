@@ -44,7 +44,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordApp />} />
         <Route path="/reset-password" element={<ResetPasswordApp />} />
         <Route path="/landing" element={<LandingRedirect />} />
-        <Route path="/" element={<MainApp />} />
+        <Route path="/app" element={<MainApp />} />
+        <Route path="/" element={<LandingRedirect />} />
       </Routes>
     </Router>
   );
