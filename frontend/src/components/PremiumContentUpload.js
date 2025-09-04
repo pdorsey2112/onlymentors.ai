@@ -331,7 +331,11 @@ const PremiumContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
                   />
                 </label>
                 <p className="text-gray-500 text-sm mt-2">
-                  {contentTypes.find(type => type.id === uploadData.content_type)?.accept} up to {contentTypes.find(type => type.id === uploadData.content_type)?.maxSize}
+                  {uploadData.content_type === 'video' && 'MP4, AVI, MOV, WMV, FLV, WEBM up to 200MB'}
+                  {uploadData.content_type === 'document' && 'PDF, DOC, DOCX, TXT up to 50MB'}
+                  {uploadData.content_type === 'podcast' && 'MP3, AAC, M4A, WAV up to 500MB'}
+                  {uploadData.content_type === 'image' && 'JPG, PNG, GIF, BMP up to 25MB'}
+                  {uploadData.content_type === 'interactive' && 'HTML, ZIP up to 100MB'}
                 </p>
               </div>
 
