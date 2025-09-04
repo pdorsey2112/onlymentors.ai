@@ -2814,7 +2814,7 @@ async def upload_creator_content(
             tag_list = []
         
         # Validate content type
-        if content_type not in ["video", "document", "article_link"]:
+        if content_type not in ["video", "document", "article_link", "podcast"]:
             raise HTTPException(status_code=400, detail="Invalid content type")
         
         # Handle file upload
