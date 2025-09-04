@@ -1194,6 +1194,13 @@ function MainApp() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Department Selection for Business Users */}
+              <DepartmentSelector 
+                user={user}
+                selectedDepartment={selectedDepartment}
+                onDepartmentSelect={setSelectedDepartment}
+              />
+
               <div>
                 <Label className="text-gray-700 mb-2 block">Your Question</Label>
                 <Textarea
