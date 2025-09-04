@@ -121,6 +121,8 @@ class UserSignup(BaseModel):
     email: str
     password: str
     full_name: str
+    company_id: str = ""  # For business employee signup
+    department_code: str = ""  # For cost tracking
 
 class UserLogin(BaseModel):
     email: str
