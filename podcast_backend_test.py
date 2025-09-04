@@ -278,6 +278,42 @@ class PodcastUploadTester:
         self.log_result("Invalid Format Rejection", success, f"{rejection_count}/{len(invalid_formats)} invalid formats rejected")
         return success
     
+    def test_database_storage_verification(self):
+        """Verify that podcast content is stored correctly in database"""
+        try:
+            if not self.creator_id:
+                self.log_result("Database Storage Verification", False, "No creator ID available")
+                return False
+            
+            # Try to get creator's content to verify storage
+            headers = {"Authorization": f"Bearer {self.creator_token}"}
+            
+            response = requests.get(
+                f"{BACKEND_URL}/creator/content/analytics",
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                analytics = response.json()
+                
+                # Check if podcast content appears in analytics
+                content_breakdown = analytics.get("content_breakdown", {})
+                podcast_count = content_breakdown.get("podcast", 0)
+                
+                if podcast_count > 0:
+                    self.log_result("Database Storage Verification", True, f"Found {podcast_count} podcast content items in database")
+                    return True
+                else:
+                    self.log_result("Database Storage Verification", False, "No podcast content found in database")
+                    return False
+            else:
+                self.log_result("Database Storage Verification", False, f"Failed to retrieve analytics: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Database Storage Verification", False, f"Exception: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all podcast upload tests"""
         print("🎙️ STARTING PODCAST UPLOAD TESTING")
@@ -294,6 +330,7 @@ class PodcastUploadTester:
             self.test_premium_content_podcast_upload,
             self.test_audio_file_formats,
             self.test_invalid_file_format_rejection,
+            self.test_database_storage_verification,
         ]
         
         for test in tests:
