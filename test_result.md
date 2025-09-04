@@ -314,7 +314,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "CRITICAL: Mentor Sort Dropdown Systematic Failure"
+    - "Business Platform Implementation"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
