@@ -21,7 +21,7 @@ const PremiumContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
   const contentTypes = [
     { id: 'document', name: 'Document', maxSize: '50MB', accept: '.pdf,.doc,.docx,.txt' },
     { id: 'video', name: 'Video', maxSize: '200MB', accept: '.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv' },
-    { id: 'audio', name: 'Audio', maxSize: '100MB', accept: '.mp3,.wav,.aac,.ogg,.flac' },
+    { id: 'podcast', name: 'Podcast/Audio', maxSize: '500MB', accept: '.mp3,.aac,.mp4a,.wav' },
     { id: 'image', name: 'Image', maxSize: '25MB', accept: '.jpg,.jpeg,.png,.gif,.bmp' },
     { id: 'interactive', name: 'Interactive Content', maxSize: '100MB', accept: '.html,.zip' }
   ];
