@@ -560,7 +560,7 @@ class BusinessPlatformTester:
         question_data = {
             "question": "How can I improve my leadership skills in a tech environment?",
             "category": "business",
-            "mentor_ids": ["steve-jobs"]  # Assuming this mentor exists
+            "mentor_ids": ["bill_gates"]  # Using a valid mentor ID
         }
         
         try:
