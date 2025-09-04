@@ -253,6 +253,7 @@ const ContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
                   <p className="text-gray-500 text-sm mt-2">
                     {uploadData.content_type === 'video' && 'MP4, AVI, MOV, WMV, FLV, WEBM up to 200MB'}
                     {uploadData.content_type === 'document' && 'PDF, DOC, DOCX, TXT up to 50MB'}
+                    {uploadData.content_type === 'podcast' && 'MP3, AAC, M4A, WAV up to 500MB'}
                   </p>
                 </div>
 
