@@ -2554,6 +2554,235 @@ async def get_business_inquiries(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get business inquiries: {str(e)}")
 
+# Company Registration & Management
+@app.post("/api/business/company/register")
+async def register_company(company: CompanyRegistration):
+    """Register a new business company"""
+    try:
+        # Check if company already exists
+        existing = await db.companies.find_one({"company_email": company.company_email})
+        if existing:
+            raise HTTPException(status_code=400, detail="Company already registered")
+        
+        company_id = str(uuid.uuid4())
+        
+        # Create company record
+        company_doc = {
+            "company_id": company_id,
+            "company_name": company.company_name,
+            "company_email": company.company_email,
+            "contact_name": company.contact_name,
+            "contact_email": company.contact_email,
+            "contact_phone": company.contact_phone,
+            "industry": company.industry,
+            "company_size": company.company_size,
+            "plan_type": company.plan_type,
+            "billing_contact": company.billing_contact,
+            "status": "active",
+            "subscription_status": "trial",  # trial, active, suspended
+            "trial_ends": datetime.utcnow() + timedelta(days=30),
+            "departments": company.departments,
+            "selected_ai_mentors": [],  # Company-selected AI mentors
+            "settings": {
+                "allow_external_mentors": True,
+                "require_department_codes": True,
+                "content_moderation": True,
+                "usage_tracking": True
+            },
+            "usage_stats": {
+                "total_employees": 0,
+                "total_questions": 0,
+                "monthly_usage": 0,
+                "department_usage": {}
+            },
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Store company
+        await db.companies.insert_one(company_doc)
+        
+        return {
+            "success": True,
+            "company_id": company_id,
+            "message": "Company registered successfully",
+            "trial_period": "30 days",
+            "next_steps": "Add departments and invite employees"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to register company: {str(e)}")
+
+@app.post("/api/business/company/{company_id}/departments")
+async def add_department(company_id: str, department: DepartmentCode, current_user = Depends(get_current_user)):
+    """Add department to company"""
+    try:
+        # Verify user has company admin access
+        company = await db.companies.find_one({"company_id": company_id})
+        if not company:
+            raise HTTPException(status_code=404, detail="Company not found")
+        
+        # Check if department code already exists
+        existing_dept = next((d for d in company.get("departments", []) if d["code"] == department.code), None)
+        if existing_dept:
+            raise HTTPException(status_code=400, detail="Department code already exists")
+        
+        # Add department
+        dept_doc = {
+            "code": department.code,
+            "name": department.name,
+            "budget_limit": department.budget_limit,
+            "cost_center": department.cost_center,
+            "created_at": datetime.utcnow(),
+            "usage_stats": {
+                "total_questions": 0,
+                "monthly_spend": 0.0,
+                "employee_count": 0
+            }
+        }
+        
+        await db.companies.update_one(
+            {"company_id": company_id},
+            {
+                "$push": {"departments": dept_doc},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Department added successfully",
+            "department": dept_doc
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add department: {str(e)}")
+
+@app.post("/api/business/company/{company_id}/employees/invite")
+async def invite_employee(company_id: str, employee: EmployeeInvite, current_user = Depends(get_current_user)):
+    """Invite employee to company platform"""
+    try:
+        # Verify company exists
+        company = await db.companies.find_one({"company_id": company_id})
+        if not company:
+            raise HTTPException(status_code=404, detail="Company not found")
+        
+        # Check if user already exists
+        existing_user = await db.users.find_one({"email": employee.email})
+        
+        invite_id = str(uuid.uuid4())
+        
+        if existing_user:
+            # Update existing user to business employee
+            await db.users.update_one(
+                {"email": employee.email},
+                {
+                    "$set": {
+                        "user_type": "business_employee",
+                        "company_id": company_id,
+                        "department_code": employee.department_code,
+                        "business_role": employee.role,
+                        "updated_at": datetime.utcnow()
+                    }
+                }
+            )
+            message = f"Existing user {employee.email} added to company"
+        else:
+            # Create invitation record
+            invite_doc = {
+                "invite_id": invite_id,
+                "company_id": company_id,
+                "email": employee.email,
+                "full_name": employee.full_name,
+                "department_code": employee.department_code,
+                "role": employee.role,
+                "status": "pending",
+                "invited_by": current_user["user_id"],
+                "invited_at": datetime.utcnow(),
+                "expires_at": datetime.utcnow() + timedelta(days=7)
+            }
+            
+            await db.employee_invites.insert_one(invite_doc)
+            message = f"Invitation sent to {employee.email}"
+        
+        # Update company employee count
+        await db.companies.update_one(
+            {"company_id": company_id},
+            {"$inc": {"usage_stats.total_employees": 1}}
+        )
+        
+        return {
+            "success": True,
+            "message": message,
+            "invite_id": invite_id if not existing_user else None
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to invite employee: {str(e)}")
+
+@app.get("/api/business/company/{company_id}/dashboard")
+async def get_company_dashboard(company_id: str, current_user = Depends(get_current_user)):
+    """Get company dashboard data"""
+    try:
+        # Verify access
+        if current_user.get("user_type") != "business_employee" or current_user.get("company_id") != company_id:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Get company data
+        company = await db.companies.find_one({"company_id": company_id})
+        if not company:
+            raise HTTPException(status_code=404, detail="Company not found")
+        
+        # Get employee data
+        employees = await db.users.find({"company_id": company_id}).to_list(None)
+        
+        # Get usage statistics
+        from datetime import timedelta
+        last_30_days = datetime.utcnow() - timedelta(days=30)
+        
+        recent_questions = await db.questions.find({
+            "user_id": {"$in": [emp["user_id"] for emp in employees]},
+            "created_at": {"$gte": last_30_days}
+        }).to_list(None)
+        
+        # Department usage breakdown
+        dept_usage = {}
+        for question in recent_questions:
+            user = next((emp for emp in employees if emp["user_id"] == question["user_id"]), None)
+            if user and user.get("department_code"):
+                dept_code = user["department_code"]
+                if dept_code not in dept_usage:
+                    dept_usage[dept_code] = {"questions": 0, "employees": set()}
+                dept_usage[dept_code]["questions"] += 1
+                dept_usage[dept_code]["employees"].add(user["user_id"])
+        
+        # Convert sets to counts
+        for dept in dept_usage.values():
+            dept["employees"] = len(dept["employees"])
+        
+        dashboard_data = {
+            "company": {
+                "name": company["company_name"],
+                "plan": company["plan_type"],
+                "status": company["status"],
+                "trial_ends": company.get("trial_ends", "").isoformat() if company.get("trial_ends") else None
+            },
+            "stats": {
+                "total_employees": len(employees),
+                "active_employees": len([emp for emp in employees if emp.get("last_login")]),
+                "total_questions_30d": len(recent_questions),
+                "departments": len(company.get("departments", [])),
+                "internal_mentors": len([emp for emp in employees if emp.get("is_internal_mentor")])
+            },
+            "department_usage": dept_usage,
+            "recent_activity": recent_questions[-10:] if recent_questions else []
+        }
+        
+        return dashboard_data
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get dashboard: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
