@@ -16,9 +16,9 @@ const ContentUpload = ({ creatorId, onClose, onUploadSuccess }) => {
   const [errors, setErrors] = useState({});
 
   const contentTypes = [
-    { id: 'video', name: 'Video', maxSize: '200MB', accept: '.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv' },
-    { id: 'document', name: 'Document', maxSize: '50MB', accept: '.pdf,.doc,.docx,.txt' },
-    { id: 'podcast', name: 'Podcast/Audio', maxSize: '500MB', accept: '.mp3,.aac,.m4a,.wav' },
+    { id: 'video', name: 'Video', maxSize: '200MB', accept: 'video/*,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv' },
+    { id: 'document', name: 'Document', maxSize: '50MB', accept: 'application/pdf,.pdf,.doc,.docx,.txt' },
+    { id: 'podcast', name: 'Podcast/Audio', maxSize: '500MB', accept: 'audio/*,.mp3,.aac,.m4a,.wav' },
     { id: 'article_link', name: 'Article Link', maxSize: 'N/A', accept: '' }
   ];
 
