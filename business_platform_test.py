@@ -51,7 +51,7 @@ TEST_BUSINESS_INQUIRY = {
 }
 
 TEST_EMPLOYEE_DATA = {
-    "email": "employee@techcorp.com",
+    "email": f"employee{TIMESTAMP}@techcorp.com",
     "password": "TestPass123!",
     "full_name": "Alice Johnson"
 }
