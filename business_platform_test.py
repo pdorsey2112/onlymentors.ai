@@ -560,7 +560,7 @@ class BusinessPlatformTester:
         }
         
         try:
-            response = requests.post(f"{BASE_URL}/questions", json=question_data, headers=headers)
+            response = requests.post(f"{BASE_URL}/questions/ask", json=question_data, headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
