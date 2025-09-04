@@ -217,6 +217,7 @@ function MainApp() {
   const [selectedMentors, setSelectedMentors] = useState([]);
   const [question, setQuestion] = useState('');
   const [responses, setResponses] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
   const [authMode, setAuthMode] = useState('login');
   
   const [showForgotPassword, setShowForgotPassword] = useState(false);
