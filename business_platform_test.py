@@ -461,8 +461,8 @@ class BusinessPlatformTester:
             if response.status_code == 200:
                 data = response.json()
                 
-                # Verify dashboard data structure
-                required_fields = ["company_info", "usage_stats", "departments", "recent_activity"]
+                # Verify dashboard data structure (updated to match actual response)
+                required_fields = ["company", "stats", "department_usage", "recent_activity"]
                 has_required_fields = all(field in data for field in required_fields)
                 
                 if has_required_fields:
