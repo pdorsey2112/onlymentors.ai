@@ -4742,12 +4742,38 @@ async def upload_premium_content(
                 detail=f"Price must be between $0.01 and $50.00. Provided: ${price}"
             )
         
+        # Validate content type
+        if content_type not in ["video", "document", "article_link", "podcast"]:
+            raise HTTPException(status_code=400, detail="Invalid content type")
+        
         # Calculate pricing breakdown
         pricing = calculate_content_pricing(price)
         
         # Handle file upload if provided
         file_path = None
         if content_file and content_file.size > 0:
+            # Validate file based on content type
+            if content_type == "video":
+                allowed_types = ["video/mp4", "video/avi", "video/mov", "video/wmv", "video/x-flv", "video/webm", "video/x-msvideo"]
+                max_size = 200 * 1024 * 1024  # 200MB
+                if content_file.content_type not in allowed_types:
+                    raise HTTPException(status_code=400, detail="Invalid video file type")
+            elif content_type == "document":
+                allowed_types = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"]
+                max_size = 50 * 1024 * 1024  # 50MB
+                if content_file.content_type not in allowed_types:
+                    raise HTTPException(status_code=400, detail="Invalid document file type")
+            elif content_type == "podcast":
+                allowed_types = ["audio/mpeg", "audio/mp3", "audio/aac", "audio/mp4", "audio/wav", "audio/wave", "audio/x-wav"]
+                max_size = 500 * 1024 * 1024  # 500MB for audio files
+                if content_file.content_type not in allowed_types:
+                    # Also check by file extension as fallback
+                    file_ext = content_file.filename.lower().split('.')[-1] if '.' in content_file.filename else ''
+                    if file_ext not in ['mp3', 'aac', 'mp4a', 'wav']:
+                        raise HTTPException(status_code=400, detail="Invalid podcast file type. Supported formats: mp3, aac, mp4a, wav")
+            
+            if content_file.size > max_size:
+                raise HTTPException(status_code=400, detail=f"File too large. Maximum size is {max_size / 1024 / 1024}MB")
             # Create upload directory if it doesn't exist
             upload_dir = "/app/uploads/premium_content"
             os.makedirs(upload_dir, exist_ok=True)
