@@ -348,7 +348,7 @@ class BusinessPlatformTester:
         try:
             invalid_invite = employee_invite.copy()
             invalid_invite["department_code"] = "INVALID"
-            invalid_invite["email"] = "test2@techcorp.com"
+            invalid_invite["email"] = f"test2{TIMESTAMP}@techcorp.com"
             
             response = requests.post(
                 f"{BASE_URL}/business/company/{self.company_id}/employees/invite",
