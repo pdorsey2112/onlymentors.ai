@@ -1658,6 +1658,12 @@ function MainApp() {
                   onLogout={handleLogout}
                 />
               );
+            case 'business_inquiry':
+              return (
+                <BusinessInquiry 
+                  onBack={() => setCurrentView('categories')}
+                />
+              );
             default:
               return renderCategories();
           }
