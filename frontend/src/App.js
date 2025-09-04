@@ -809,6 +809,17 @@ function MainApp() {
           </div>
           <p className="text-xl text-gray-600 mb-6">Ask questions to history's greatest minds</p>
           
+          {/* Business Inquiry Button */}
+          <div className="mb-8">
+            <button
+              onClick={() => setCurrentView('business_inquiry')}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg"
+            >
+              🏢 Ask how OnlyMentors.ai can work for your business
+            </button>
+            <p className="text-sm text-gray-500 mt-2">Enterprise solutions • Custom mentors • Department tracking</p>
+          </div>
+          
           {user && (
             <div className="bg-purple-50 p-4 rounded-lg mb-8 flex justify-between items-center">
               <div className="text-sm text-gray-700">
