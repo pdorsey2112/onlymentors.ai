@@ -1661,8 +1661,41 @@ function MainApp() {
             case 'business_inquiry':
               return (
                 <BusinessInquiry 
-                  onBack={() => setCurrentView('categories')}
+                  onClose={() => setCurrentView('categories')}
+                  onSuccess={() => setCurrentView('business_success')}
                 />
+              );
+            case 'business_success':
+              return (
+                <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+                  <div className="bg-white rounded-2xl shadow-xl p-12 max-w-2xl mx-4 text-center">
+                    <div className="text-6xl mb-6">🎉</div>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                      Thank You for Your Interest!
+                    </h1>
+                    <p className="text-xl text-gray-600 mb-6">
+                      Your business inquiry has been submitted successfully.
+                    </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                      <h3 className="font-semibold text-blue-900 mb-2">What's Next?</h3>
+                      <p className="text-blue-800 text-sm">
+                        Our enterprise team will review your requirements and contact you within 24 hours 
+                        to schedule a personalized demo and discuss pricing options.
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      <button
+                        onClick={() => setCurrentView('categories')}
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+                      >
+                        Return to OnlyMentors.ai
+                      </button>
+                      <p className="text-sm text-gray-500">
+                        Questions? Email us at <span className="text-blue-600">enterprise@onlymentors.ai</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
               );
             default:
               return renderCategories();
