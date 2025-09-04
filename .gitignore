@@ -88,3 +88,7 @@ frontend/node_modules/.cache/default-development/0.pack
 *.env
 *.env.*
 uploads/content/creator_ace03e6ca51a/medium_file.mp3
+-e 
+# Environment files
+*.env
+*.env.*
