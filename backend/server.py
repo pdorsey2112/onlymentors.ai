@@ -1898,7 +1898,11 @@ async def ask_question(question_data: QuestionRequest, current_user = Depends(ge
             "question": question_data.question,
             "responses": responses,
             "processing_time": processing_time,  # Track performance
-            "created_at": datetime.utcnow()
+            "created_at": datetime.utcnow(),
+            # Business tracking fields
+            "company_id": current_user.get("company_id"),
+            "department_code": getattr(question_data, 'department_code', None) or current_user.get("department_code"),
+            "business_cost": 0.0  # Will be calculated based on mentor usage
         }
         
         await db.questions.insert_one(question_doc)
