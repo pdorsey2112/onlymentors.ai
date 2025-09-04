@@ -1619,6 +1619,20 @@ function MainApp() {
     return renderAuth();
   }
 
+  // Business Admin Console for business users with admin role
+  if (user && user.user_type === 'business_employee' && user.business_role === 'admin') {
+    return (
+      <BusinessAdminConsole 
+        user={user} 
+        onLogout={() => {
+          localStorage.removeItem('token');
+          setUser(null);
+          setCurrentView('categories');
+        }} 
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
