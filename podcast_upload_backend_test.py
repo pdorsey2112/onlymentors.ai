@@ -46,42 +46,29 @@ class PodcastUploadTester:
     def setup_test_creator(self):
         """Create a test creator account for testing"""
         try:
-            # Register a new user who wants to become a mentor
-            signup_data = {
+            # Use the proper creator signup endpoint
+            creator_data = {
                 "email": f"podcast_creator_{int(time.time())}@test.com",
                 "password": "TestPassword123!",
                 "full_name": "Podcast Creator Test",
-                "phone_number": "+1234567890",
-                "communication_preferences": json.dumps({"email": True}),
-                "subscription_plan": "premium",
-                "become_mentor": True
+                "account_name": f"podcast_creator_{int(time.time())}",
+                "description": "A test creator for podcast upload testing",
+                "monthly_price": 29.99,
+                "category": "business",
+                "expertise_areas": ["podcasting", "audio content", "testing"]
             }
             
-            response = requests.post(f"{BACKEND_URL}/auth/register", data=signup_data)
+            response = requests.post(f"{BACKEND_URL}/creators/signup", json=creator_data)
             
             if response.status_code == 200:
                 data = response.json()
-                self.user_token = data["token"]
-                self.user_id = data["user"]["user_id"]
+                self.creator_token = data["token"]
+                self.creator_id = data["creator"]["creator_id"]
                 
-                # Get creator token by becoming a mentor (if not already)
-                headers = {"Authorization": f"Bearer {self.user_token}"}
-                mentor_response = requests.post(f"{BACKEND_URL}/users/become-mentor", headers=headers)
-                
-                if mentor_response.status_code == 200:
-                    mentor_data = mentor_response.json()
-                    self.creator_id = mentor_data["creator_id"]
-                    
-                    # Create creator token
-                    self.creator_token = self.user_token  # Same token for now
-                    
-                    self.log_result("Setup Test Creator", True, f"Created creator with ID: {self.creator_id}")
-                    return True
-                else:
-                    self.log_result("Setup Test Creator", False, f"Failed to become mentor: {mentor_response.text}")
-                    return False
+                self.log_result("Setup Test Creator", True, f"Created creator with ID: {self.creator_id}")
+                return True
             else:
-                self.log_result("Setup Test Creator", False, f"Failed to register: {response.text}")
+                self.log_result("Setup Test Creator", False, f"Failed to create creator: {response.status_code} - {response.text}")
                 return False
                 
         except Exception as e:
