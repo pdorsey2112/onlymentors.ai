@@ -2435,6 +2435,31 @@ async def stripe_webhook(request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# Business Platform Models
+class CompanyRegistration(BaseModel):
+    company_name: str
+    company_email: str
+    contact_name: str
+    contact_email: str
+    contact_phone: str = ""
+    industry: str = ""
+    company_size: str
+    plan_type: str = "enterprise"  # starter, professional, enterprise
+    billing_contact: str = ""
+    departments: list = []
+
+class DepartmentCode(BaseModel):
+    code: str
+    name: str
+    budget_limit: float = 0.0
+    cost_center: str = ""
+
+class EmployeeInvite(BaseModel):
+    email: str
+    full_name: str
+    department_code: str = ""
+    role: str = "employee"  # employee, manager, admin
+
 # Business Inquiry System
 class BusinessInquiry(BaseModel):
     company_name: str
