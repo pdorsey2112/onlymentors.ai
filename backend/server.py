@@ -1060,12 +1060,24 @@ async def signup(user_data: UserSignup):
     user_doc = {
         "user_id": user_id,
         "email": user_data.email,
-        "full_name": user_data.full_name,
         "password_hash": hash_password(user_data.password),
+        "full_name": user_data.full_name,
+        "profile_completed": True,
+        "created_at": datetime.utcnow(),
         "questions_asked": 0,
-        "is_subscribed": False,
-        "subscription_expires": None,
-        "created_at": datetime.utcnow()
+        "is_subscribed": False if not user_data.company_id else True,  # Business users are "subscribed"
+        "subscription_plan": "free" if not user_data.company_id else "business",
+        "user_type": "consumer" if not user_data.company_id else "business_employee",
+        "company_id": user_data.company_id if user_data.company_id else None,
+        "department_code": user_data.department_code if user_data.department_code else None,
+        "business_role": "employee",
+        "last_login": None,
+        "reset_token": None,
+        "reset_token_expires": None,
+        "oauth_provider": None,
+        "oauth_id": None,
+        "phone_number": None,
+        "is_active": True
     }
     
     await db.users.insert_one(user_doc)
