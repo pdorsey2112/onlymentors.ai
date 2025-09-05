@@ -822,6 +822,26 @@ function MainApp() {
           </Card>
         </div>
       </div>
+      
+      {/* Footer links */}
+      <div className="text-center pb-8">
+        <div className="flex justify-center space-x-6 text-sm text-gray-500">
+          <a 
+            href="/privacy-policy.html" 
+            className="hover:text-gray-700 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
+          </a>
+          <a 
+            href="/admin" 
+            className="hover:text-red-600 underline"
+          >
+            Admin Console Login
+          </a>
+        </div>
+      </div>
     </div>
     );
   };
