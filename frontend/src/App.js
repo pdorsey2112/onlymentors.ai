@@ -1742,6 +1742,18 @@ function MainApp() {
                   </div>
                 </div>
               );
+            case 'business_admin':
+              return (
+                <BusinessAdminConsole 
+                  user={user}
+                  onLogout={() => {
+                    setUser(null);
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('user');
+                    setCurrentView('categories');
+                  }}
+                />
+              );
             default:
               return renderCategories();
           }
