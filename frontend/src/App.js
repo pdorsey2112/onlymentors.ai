@@ -1654,7 +1654,8 @@ function MainApp() {
   );
 
   // Main render logic
-  if (!user) {
+  // Allow business inquiry without authentication
+  if (!user && currentView !== 'business_inquiry' && currentView !== 'business_success') {
     return renderAuth();
   }
 
