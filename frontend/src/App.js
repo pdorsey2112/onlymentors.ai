@@ -695,13 +695,6 @@ function MainApp() {
               >
                 Become a Mentor
               </Button>
-              <Button 
-                onClick={() => window.location.href = '/admin'} 
-                variant="outline"
-                className="text-red-600 border-red-600 hover:bg-red-50"
-              >
-                Admin Console
-              </Button>
             </div>
           </div>
         </div>
