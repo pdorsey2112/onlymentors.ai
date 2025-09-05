@@ -288,6 +288,16 @@ function MainApp() {
         setError('Please log in with your business admin credentials to access the Business Console.');
       }
     }
+  }, []); // Remove user dependency for business inquiry
+
+  // Handle business console access when user logs in
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const businessConsole = urlParams.get('business-console');
+    
+    if (businessConsole === 'true' && user && user.role === 'admin') {
+      setCurrentView('business_admin');
+    }
   }, [user]);
 
   // Google OAuth handlers
