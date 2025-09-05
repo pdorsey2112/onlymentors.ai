@@ -1127,7 +1127,11 @@ async def login(login_data: UserLogin):
             "email": user["email"], 
             "full_name": user["full_name"],
             "questions_asked": user.get("questions_asked", 0),
-            "is_subscribed": user.get("is_subscribed", False)
+            "is_subscribed": user.get("is_subscribed", False),
+            "user_type": user.get("user_type", "consumer"),
+            "business_role": user.get("business_role"),
+            "company_id": user.get("company_id"),
+            "department_code": user.get("department_code")
         }
     }
 
