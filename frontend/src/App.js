@@ -271,6 +271,25 @@ function MainApp() {
     checkAuth();
   }, []);
 
+  // Handle business URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const businessInquiry = urlParams.get('business-inquiry');
+    const businessConsole = urlParams.get('business-console');
+    
+    if (businessInquiry === 'true') {
+      setCurrentView('business_inquiry');
+    } else if (businessConsole === 'true') {
+      // For business console, check if user is logged in and has admin role
+      if (user && user.role === 'admin') {
+        setCurrentView('business_admin');
+      } else {
+        // If not logged in or not admin, show login form with message
+        setError('Please log in with your business admin credentials to access the Business Console.');
+      }
+    }
+  }, [user]);
+
   // Google OAuth handlers
   const handleGoogleAuthSuccess = (authData) => {
     try {
