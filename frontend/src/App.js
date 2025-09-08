@@ -309,6 +309,9 @@ function MainApp() {
     const urlParams = new URLSearchParams(window.location.search);
     const businessInquiry = urlParams.get('business-inquiry');
     const businessConsole = urlParams.get('business-console');
+    const businessSignup = urlParams.get('business-signup');
+    const businessPaymentSuccess = urlParams.get('business_payment_success');
+    const businessPaymentCancelled = urlParams.get('business_payment_cancelled');
     
     if (businessInquiry === 'true') {
       setCurrentView('business_inquiry');
@@ -320,6 +323,15 @@ function MainApp() {
         // If not logged in or not admin, show login form with message
         setError('Please log in with your business admin credentials to access the Business Console.');
       }
+    } else if (businessSignup === 'true') {
+      setCurrentView('business_signup');
+    } else if (businessPaymentSuccess) {
+      // Handle successful payment
+      setCurrentView('business_payment_success');
+      setSessionId(businessPaymentSuccess);
+    } else if (businessPaymentCancelled === 'true') {
+      // Handle cancelled payment
+      setCurrentView('business_payment_cancelled');
     }
   }, []); // Remove user dependency for business inquiry
 
