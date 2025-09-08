@@ -1473,6 +1473,7 @@ async def business_employee_signup(signup_data: BusinessEmployeeSignup):
             "department_code": signup_data.department_code,
             "business_role": "employee",
             "phone_verified": True,  # Verified through 2FA
+            "is_mentor": False,  # Can become mentor later
             "last_login": None,
             "is_active": True
         }
