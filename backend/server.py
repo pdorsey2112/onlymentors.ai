@@ -2978,6 +2978,221 @@ async def initialize_default_categories(company_id: str, current_user=Depends(ge
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to initialize categories: {str(e)}")
 
+# =============================================================================
+# BUSINESS MENTOR-CATEGORY ASSIGNMENT ENDPOINTS
+# =============================================================================
+
+@app.get("/api/business/company/{company_id}/mentors")
+async def get_business_mentors(company_id: str, current_user=Depends(get_current_user)):
+    """Get all mentors available for assignment in a business"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Get all mentors (both AI and human) that could be assigned to this business
+        # For now, we'll get from the main mentors collection and business employees who are mentors
+        
+        # Get AI mentors from main categories (these can be assigned to businesses)
+        ai_mentors = await db.mentors.find(
+            {"type": "ai"},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        # Get human mentors who are employees of this business
+        business_mentors = await db.users.find(
+            {
+                "company_id": company_id,
+                "user_type": "business_employee",
+                "is_mentor": True
+            },
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        # Get existing assignments
+        assignments = await db.business_mentor_assignments.find(
+            {"company_id": company_id},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        # Create assignment lookup
+        assignment_lookup = {}
+        for assignment in assignments:
+            mentor_key = f"{assignment['mentor_type']}_{assignment['mentor_id']}"
+            assignment_lookup[mentor_key] = assignment['category_ids']
+        
+        # Format AI mentors
+        formatted_mentors = []
+        for mentor in ai_mentors:
+            mentor_key = f"ai_{mentor['mentor_id']}"
+            formatted_mentors.append({
+                "mentor_id": mentor["mentor_id"],
+                "name": mentor["name"],
+                "description": mentor.get("description", ""),
+                "expertise": mentor.get("expertise", []),
+                "type": "ai",
+                "category_ids": assignment_lookup.get(mentor_key, []),
+                "is_assigned": mentor_key in assignment_lookup
+            })
+        
+        # Format human mentors
+        for mentor in business_mentors:
+            mentor_key = f"human_{mentor['user_id']}"
+            formatted_mentors.append({
+                "mentor_id": mentor["user_id"],
+                "name": mentor["full_name"],
+                "email": mentor["email"],
+                "department": mentor.get("department_code", ""),
+                "type": "human",
+                "category_ids": assignment_lookup.get(mentor_key, []),
+                "is_assigned": mentor_key in assignment_lookup
+            })
+        
+        return formatted_mentors
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get mentors: {str(e)}")
+
+@app.post("/api/business/company/{company_id}/mentors/{mentor_id}/categories")
+async def assign_mentor_to_categories(
+    company_id: str, 
+    mentor_id: str, 
+    assignment_data: dict, 
+    current_user=Depends(get_current_user)
+):
+    """Assign a mentor to specific categories"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        mentor_type = assignment_data.get("mentor_type", "ai")  # ai or human
+        category_ids = assignment_data.get("category_ids", [])
+        
+        # Validate categories exist
+        for category_id in category_ids:
+            category = await db.business_categories.find_one({
+                "category_id": category_id,
+                "company_id": company_id
+            })
+            if not category:
+                raise HTTPException(status_code=400, detail=f"Category {category_id} not found")
+        
+        # Update or create assignment
+        assignment_filter = {
+            "company_id": company_id,
+            "mentor_id": mentor_id,
+            "mentor_type": mentor_type
+        }
+        
+        assignment_data = {
+            "company_id": company_id,
+            "mentor_id": mentor_id,
+            "mentor_type": mentor_type,
+            "category_ids": category_ids,
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Check if assignment exists
+        existing = await db.business_mentor_assignments.find_one(assignment_filter)
+        
+        if existing:
+            # Update existing assignment
+            await db.business_mentor_assignments.update_one(
+                assignment_filter,
+                {"$set": assignment_data}
+            )
+        else:
+            # Create new assignment
+            assignment_data["created_at"] = datetime.utcnow()
+            await db.business_mentor_assignments.insert_one(assignment_data)
+        
+        return {"message": "Mentor assigned to categories successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to assign mentor: {str(e)}")
+
+@app.delete("/api/business/company/{company_id}/mentors/{mentor_id}/categories")
+async def remove_mentor_from_categories(
+    company_id: str, 
+    mentor_id: str, 
+    mentor_type: str, 
+    current_user=Depends(get_current_user)
+):
+    """Remove a mentor from all category assignments"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Remove assignment
+        result = await db.business_mentor_assignments.delete_one({
+            "company_id": company_id,
+            "mentor_id": mentor_id,
+            "mentor_type": mentor_type
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Mentor assignment not found")
+        
+        return {"message": "Mentor removed from categories successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove mentor: {str(e)}")
+
+@app.get("/api/business/company/{company_id}/categories/{category_id}/mentors")
+async def get_mentors_by_category(company_id: str, category_id: str, current_user=Depends(get_current_user)):
+    """Get all mentors assigned to a specific category"""
+    try:
+        # Verify user belongs to this company
+        if current_user.get("company_id") != company_id:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Get assignments for this category
+        assignments = await db.business_mentor_assignments.find(
+            {
+                "company_id": company_id,
+                "category_ids": category_id
+            },
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        mentors = []
+        for assignment in assignments:
+            if assignment["mentor_type"] == "ai":
+                # Get AI mentor details
+                mentor = await db.mentors.find_one(
+                    {"mentor_id": assignment["mentor_id"]},
+                    {"_id": 0}
+                )
+                if mentor:
+                    mentors.append({
+                        "mentor_id": mentor["mentor_id"],
+                        "name": mentor["name"],
+                        "description": mentor.get("description", ""),
+                        "type": "ai",
+                        "expertise": mentor.get("expertise", [])
+                    })
+            else:
+                # Get human mentor details
+                mentor = await db.users.find_one(
+                    {"user_id": assignment["mentor_id"]},
+                    {"_id": 0}
+                )
+                if mentor:
+                    mentors.append({
+                        "mentor_id": mentor["user_id"],
+                        "name": mentor["full_name"],
+                        "email": mentor["email"],
+                        "type": "human",
+                        "department": mentor.get("department_code", "")
+                    })
+        
+        return mentors
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get category mentors: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
