@@ -438,7 +438,7 @@ backend:
         comment: "Implemented business employee registration with email domain validation and 2FA. Added new endpoints: /api/auth/business/pre-signup for email validation and 2FA initiation, /api/auth/business/signup for complete registration with 2FA verification. Enhanced CompanyRegistration model with allowed_email_domains field. Added validate_business_employee_email helper function."
 
   - task: "Business Employee Mentor Search API"
-    implemented: false
+    implemented: true
     working: false
     file: "/app/backend/server.py"
     stuck_count: 0
@@ -448,6 +448,9 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Need to create business-specific mentor search endpoint that only returns mentors assigned to the employee's company. This will replace the generic mentor search for business employees."
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented /api/business/employee/mentors endpoint that returns only mentors assigned to the employee's company. Supports search by query and category filtering. Returns both AI mentors and human mentors (company employees who are also mentors). Includes proper authentication checks for business employees."
 
 frontend:
   - task: "Business Employee App Component"
