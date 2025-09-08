@@ -17,7 +17,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
+BASE_URL = "https://enterprise-coach.preview.emergentagent.com/api"
 TEST_CREATOR_EMAIL = "counter.test@creator.com"
 TEST_CREATOR_PASSWORD = "CounterTest123!"
 TEST_CREATOR_NAME = "Counter Test Creator"

@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
+BASE_URL = "https://enterprise-coach.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "human.mentor.test@example.com"
 TEST_USER_PASSWORD = "TestPass123!"
 TEST_USER_NAME = "Human Mentor Test User"

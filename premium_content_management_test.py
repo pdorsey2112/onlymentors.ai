@@ -17,7 +17,7 @@ import os
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-coach.preview.emergentagent.com/api"
 
 class PremiumContentManagementTester:
     def __init__(self):

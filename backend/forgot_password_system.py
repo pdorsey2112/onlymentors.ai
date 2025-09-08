@@ -48,7 +48,7 @@ class PasswordResetConfig:
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
         
         self.reset_token_expiry_hours = 1  # 1 hour expiry
-        self.frontend_base_url = "https://multi-tenant-ai.preview.emergentagent.com"
+        self.frontend_base_url = "https://enterprise-coach.preview.emergentagent.com"
         
         # Determine email method priority: SMTP2GO > SendGrid > Console
         self.use_smtp = bool(self.smtp_username and self.smtp_password)

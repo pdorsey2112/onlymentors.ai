@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
+BASE_URL = "https://enterprise-coach.preview.emergentagent.com/api"
 
 class AdminMentorDataFixTester:
     def __init__(self):

@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 class UserProfileAPITester:
-    def __init__(self, base_url="https://multi-tenant-ai.preview.emergentagent.com"):
+    def __init__(self, base_url="https://enterprise-coach.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None

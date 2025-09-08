@@ -13,7 +13,7 @@ import os
 from typing import Dict, Any
 
 # Configuration
-BACKEND_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-coach.preview.emergentagent.com/api"
 
 class PremiumContentTester:
     def __init__(self):

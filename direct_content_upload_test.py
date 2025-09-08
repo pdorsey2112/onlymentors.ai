@@ -10,7 +10,7 @@ import os
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://multi-tenant-ai.preview.emergentagent.com"
+BACKEND_URL = "https://enterprise-coach.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def create_test_file(content="Test content", filename="test.txt"):

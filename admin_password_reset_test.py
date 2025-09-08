@@ -12,7 +12,7 @@ import string
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://multi-tenant-ai.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-coach.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
 ADMIN_PASSWORD = "SuperAdmin2024!"
 TARGET_EMAIL = "pdorsey@dorseyandassociates.com"
