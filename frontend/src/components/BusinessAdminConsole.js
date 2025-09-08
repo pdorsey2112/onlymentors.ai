@@ -81,6 +81,70 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
     }
   };
 
+  // Admin load functions
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/admin/users?limit=100`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMentors = async () => {
+    try {
+      setLoading(true);
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/admin/mentors?limit=100`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMentors(data);
+      }
+    } catch (error) {
+      console.error('Error fetching mentors:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUserActivityReport = async () => {
+    try {
+      setLoading(true);
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/admin/reports/user-activity`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUserActivityReport(data);
+      }
+    } catch (error) {
+      console.error('Error fetching user activity report:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadDashboard = async () => {
     try {
       setLoading(true);
