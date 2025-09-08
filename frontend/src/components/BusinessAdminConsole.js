@@ -48,8 +48,38 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
       loadDepartments();
     } else if (activeTab === 'mentors') {
       loadAiMentors();
+    } else if (activeTab === 'admin-users') {
+      loadUsers();
+    } else if (activeTab === 'admin-mentors') {
+      loadMentors();
+    } else if (activeTab === 'user-reports') {
+      loadUserActivityReport();
     }
   }, [activeTab]);
+
+  // Helper functions
+  const formatNumber = (num) => {
+    if (num == null || num === undefined) return '0';
+    return num.toLocaleString();
+  };
+
+  const parseName = (fullName) => {
+    if (!fullName || fullName.trim() === '') {
+      return { firstName: 'N/A', lastName: 'N/A' };
+    }
+    
+    const nameParts = fullName.trim().split(' ');
+    if (nameParts.length === 1) {
+      return { firstName: nameParts[0], lastName: '' };
+    } else if (nameParts.length === 2) {
+      return { firstName: nameParts[0], lastName: nameParts[1] };
+    } else {
+      return { 
+        firstName: nameParts[0], 
+        lastName: nameParts.slice(1).join(' ') 
+      };
+    }
+  };
 
   const loadDashboard = async () => {
     try {
