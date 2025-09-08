@@ -55,6 +55,8 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
       loadEmployees();
     } else if (activeTab === 'departments') {
       loadDepartments();
+    } else if (activeTab === 'categories') {
+      loadCategories();
     } else if (activeTab === 'mentors') {
       loadAiMentors();
     } else if (activeTab === 'admin-users') {
