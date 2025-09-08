@@ -423,7 +423,7 @@ backend:
 
 backend:
   - task: "Business Employee Registration with Email Domain Validation"
-    implemented: false
+    implemented: true
     working: false
     file: "/app/backend/server.py"
     stuck_count: 0
@@ -433,6 +433,9 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Starting implementation of business employee registration with company email domain validation and 2FA integration. Will modify existing registration endpoint to validate company email domains and enforce 2FA for business employees."
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented business employee registration with email domain validation and 2FA. Added new endpoints: /api/auth/business/pre-signup for email validation and 2FA initiation, /api/auth/business/signup for complete registration with 2FA verification. Enhanced CompanyRegistration model with allowed_email_domains field. Added validate_business_employee_email helper function."
 
   - task: "Business Employee Mentor Search API"
     implemented: false
