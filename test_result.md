@@ -322,7 +322,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Phase 6: Business-Specific User & Mentor Experience - COMPLETED"
+    - "Business Employee Mentor Marketplace Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
