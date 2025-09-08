@@ -1077,6 +1077,7 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
               { id: 'dashboard', name: 'Dashboard', icon: '📊' },
               { id: 'employees', name: 'Employees', icon: '👥' },
               { id: 'departments', name: 'Departments', icon: '🏬' },
+              { id: 'categories', name: 'Categories', icon: '🗂️' },
               { id: 'mentors', name: 'AI Mentors', icon: '🤖' },
               { id: 'reports', name: 'Reports', icon: '📈' },
               { id: 'admin-users', name: 'Users', icon: '👤' },
