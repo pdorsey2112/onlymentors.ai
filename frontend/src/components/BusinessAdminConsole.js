@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getBackendURL } from '../config';
+import DatabaseManagement from './DatabaseManagement';
+import EnhancedContextDemo from './EnhancedContextDemo';
 
 const BusinessAdminConsole = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -10,6 +12,16 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
   const [aiMentors, setAiMentors] = useState([]);
   const [selectedMentors, setSelectedMentors] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Admin console features
+  const [users, setUsers] = useState([]);
+  const [mentors, setMentors] = useState([]);
+  const [userActivityReport, setUserActivityReport] = useState(null);
+  const [showContextDemo, setShowContextDemo] = useState(false);
+  
+  // Search functionality
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [mentorSearchTerm, setMentorSearchTerm] = useState('');
 
   // New employee invite form
   const [newEmployee, setNewEmployee] = useState({
