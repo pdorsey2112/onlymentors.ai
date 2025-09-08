@@ -499,6 +499,127 @@ async def get_category_mentors(category_id: str):
         "count": len(ALL_MENTORS[category_id])
     }
 
+@app.get("/api/business/employee/mentors")
+async def get_business_employee_mentors(
+    q: str = "", 
+    category_id: Optional[str] = None,
+    current_user = Depends(get_current_user)
+):
+    """Get mentors assigned to the employee's company"""
+    try:
+        # Verify user is a business employee
+        if current_user.get("user_type") != "business_employee":
+            raise HTTPException(status_code=403, detail="Access denied. Business employee access required.")
+        
+        company_id = current_user.get("company_id")
+        if not company_id:
+            raise HTTPException(status_code=400, detail="No company associated with this account")
+        
+        # Build query for mentor assignments
+        assignment_query = {"company_id": company_id}
+        if category_id:
+            assignment_query["category_ids"] = category_id
+        
+        # Get mentor assignments for this company
+        assignments = await db.business_mentor_assignments.find(
+            assignment_query,
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        if not assignments:
+            return {
+                "results": [],
+                "count": 0,
+                "query": q,
+                "category_filter": category_id,
+                "company_id": company_id
+            }
+        
+        # Collect mentor details
+        results = []
+        search_term = q.lower()
+        
+        for assignment in assignments:
+            mentor = None
+            
+            if assignment["mentor_type"] == "ai":
+                # Get AI mentor from static data or mentors collection
+                mentor = await db.mentors.find_one(
+                    {"mentor_id": assignment["mentor_id"]},
+                    {"_id": 0}
+                )
+                
+                if not mentor:
+                    # Check static mentors data if not in database
+                    for cat_name, cat_mentors in ALL_MENTORS.items():
+                        for ai_mentor in cat_mentors:
+                            if ai_mentor["id"] == assignment["mentor_id"]:
+                                mentor = {
+                                    "mentor_id": ai_mentor["id"],
+                                    "name": ai_mentor["name"],
+                                    "description": ai_mentor.get("bio", ""),
+                                    "expertise": ai_mentor.get("expertise", ""),
+                                    "type": "ai",
+                                    "category": cat_name
+                                }
+                                break
+                        if mentor:
+                            break
+                
+                if mentor and (not search_term or 
+                              search_term in mentor["name"].lower() or 
+                              search_term in mentor.get("description", "").lower() or
+                              search_term in mentor.get("expertise", "").lower()):
+                    
+                    results.append({
+                        "mentor_id": mentor["mentor_id"],
+                        "name": mentor["name"],
+                        "description": mentor.get("description", ""),
+                        "expertise": mentor.get("expertise", ""),
+                        "type": "ai",
+                        "is_ai_mentor": True,
+                        "category_ids": assignment["category_ids"]
+                    })
+            
+            elif assignment["mentor_type"] == "human":
+                # Get human mentor (business employee who is also a mentor)
+                mentor = await db.users.find_one(
+                    {
+                        "user_id": assignment["mentor_id"],
+                        "company_id": company_id,  # Must be from same company
+                        "is_mentor": True
+                    },
+                    {"_id": 0}
+                )
+                
+                if mentor and (not search_term or 
+                              search_term in mentor["full_name"].lower() or 
+                              search_term in mentor.get("department_code", "").lower()):
+                    
+                    results.append({
+                        "mentor_id": mentor["user_id"],
+                        "name": mentor["full_name"],
+                        "description": f"Internal mentor from {mentor.get('department_code', 'company')} department",
+                        "expertise": mentor.get("department_code", "General"),
+                        "type": "human",
+                        "is_ai_mentor": False,
+                        "department": mentor.get("department_code", ""),
+                        "category_ids": assignment["category_ids"]
+                    })
+        
+        return {
+            "results": results,
+            "count": len(results),
+            "query": q,
+            "category_filter": category_id,
+            "company_id": company_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get company mentors: {str(e)}")
+
 @app.get("/api/search/mentors")
 async def search_mentors(
     q: str = "", 
