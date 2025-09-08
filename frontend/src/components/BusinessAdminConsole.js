@@ -28,6 +28,12 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
   });
   const [editingCategory, setEditingCategory] = useState(null);
   
+  // Mentor Assignment
+  const [businessMentors, setBusinessMentors] = useState([]);
+  const [selectedMentor, setSelectedMentor] = useState(null);
+  const [mentorCategories, setMentorCategories] = useState([]);
+  const [showMentorAssignment, setShowMentorAssignment] = useState(false);
+  
   // Search functionality
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const [mentorSearchTerm, setMentorSearchTerm] = useState('');
