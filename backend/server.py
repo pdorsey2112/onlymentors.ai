@@ -131,6 +131,22 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+class BusinessEmployeePreSignup(BaseModel):
+    """Pre-signup validation for business employees"""
+    email: str
+    phone_number: str
+    business_slug: str
+
+class BusinessEmployeeSignup(BaseModel):
+    """Business employee signup with 2FA"""
+    email: str
+    password: str
+    full_name: str
+    phone_number: str
+    two_factor_code: str
+    business_slug: str
+    department_code: str = ""
+
 class UserProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     phone_number: Optional[str] = None
