@@ -1104,6 +1104,119 @@ async def validate_phone_number(phone_request: PhoneValidationRequest):
             "original_phone": phone_request.phone_number
         }
 
+@app.post("/api/auth/business/pre-signup")
+async def business_employee_pre_signup(signup_data: BusinessEmployeePreSignup):
+    """Pre-signup validation and 2FA initiation for business employees"""
+    try:
+        # Validate email domain
+        validation_result = await validate_business_employee_email(
+            signup_data.email, 
+            signup_data.business_slug
+        )
+        
+        if not validation_result["valid"]:
+            raise HTTPException(status_code=400, detail=validation_result["error"])
+        
+        # Check if user already exists
+        existing_user = await db.users.find_one({"email": signup_data.email})
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Validate phone number format
+        if not validate_phone(signup_data.phone_number):
+            raise HTTPException(status_code=400, detail="Invalid phone number format")
+        
+        # Send 2FA code
+        sms_result = await send_2fa(signup_data.phone_number)
+        
+        if not sms_result["success"]:
+            raise HTTPException(status_code=400, detail=sms_result.get("error", "Failed to send verification code"))
+        
+        return {
+            "message": "Verification code sent to your phone",
+            "phone": sms_result.get("phone"),
+            "valid_until": sms_result.get("valid_until"),
+            "company_id": validation_result["company_id"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Pre-signup failed: {str(e)}")
+
+@app.post("/api/auth/business/signup")
+async def business_employee_signup(signup_data: BusinessEmployeeSignup):
+    """Complete business employee signup with 2FA verification"""
+    try:
+        # Validate email domain
+        validation_result = await validate_business_employee_email(
+            signup_data.email, 
+            signup_data.business_slug
+        )
+        
+        if not validation_result["valid"]:
+            raise HTTPException(status_code=400, detail=validation_result["error"])
+        
+        company_id = validation_result["company_id"]
+        
+        # Verify 2FA code
+        verification_result = await verify_2fa(signup_data.phone_number, signup_data.two_factor_code)
+        
+        if not verification_result["success"] or not verification_result.get("valid"):
+            raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+        
+        # Check if user already exists
+        existing_user = await db.users.find_one({"email": signup_data.email})
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Create business employee user
+        user_id = str(uuid.uuid4())
+        user_doc = {
+            "user_id": user_id,
+            "email": signup_data.email,
+            "password_hash": hash_password(signup_data.password),
+            "full_name": signup_data.full_name,
+            "phone_number": signup_data.phone_number,
+            "profile_completed": True,
+            "created_at": datetime.utcnow(),
+            "questions_asked": 0,
+            "is_subscribed": True,  # Business employees are "subscribed"
+            "subscription_plan": "business",
+            "user_type": "business_employee",
+            "company_id": company_id,
+            "department_code": signup_data.department_code,
+            "business_role": "employee",
+            "phone_verified": True,  # Verified through 2FA
+            "last_login": None,
+            "is_active": True
+        }
+        
+        await db.users.insert_one(user_doc)
+        
+        # Create access token
+        token = create_access_token({"user_id": user_id})
+        
+        return {
+            "token": token,
+            "user": {
+                "user_id": user_id,
+                "email": signup_data.email,
+                "full_name": signup_data.full_name,
+                "questions_asked": 0,
+                "is_subscribed": True,
+                "user_type": "business_employee",
+                "company_id": company_id,
+                "department_code": signup_data.department_code,
+                "phone_verified": True
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Business signup failed: {str(e)}")
+
 @app.post("/api/auth/signup")
 async def signup(user_data: UserSignup):
     # Check if user exists
