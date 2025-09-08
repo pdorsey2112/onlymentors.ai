@@ -309,9 +309,10 @@ function MainApp() {
   // Handle business URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    const urlHash = window.location.hash.substring(1); // Remove the # symbol
     const businessInquiry = urlParams.get('business-inquiry');
     const businessConsole = urlParams.get('business-console');
-    const businessSignup = urlParams.get('business-signup');
+    const businessSignup = urlParams.get('business-signup') === 'true' || urlHash === 'business-signup';
     const businessPaymentSuccess = urlParams.get('business_payment_success');
     const businessPaymentCancelled = urlParams.get('business_payment_cancelled');
     
@@ -325,7 +326,7 @@ function MainApp() {
         // If not logged in or not admin, show login form with message
         setError('Please log in with your business admin credentials to access the Business Console.');
       }
-    } else if (businessSignup === 'true') {
+    } else if (businessSignup) {
       setCurrentView('business_signup');
     } else if (businessPaymentSuccess) {
       // Handle successful payment
