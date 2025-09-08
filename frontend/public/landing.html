@@ -1068,7 +1068,9 @@
             modal.classList.remove('hidden');
             
             // Add form submit handler
-            document.getElementById('businessSignupForm').addEventListener('submit', handleBusinessSignup);
+            const form = document.getElementById('businessSignupForm');
+            console.log('Attaching event listener to form:', form); // Debug log
+            form.addEventListener('submit', handleBusinessSignup);
         }
 
         function closeBusinessSignup() {
