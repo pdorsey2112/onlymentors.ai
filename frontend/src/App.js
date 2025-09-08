@@ -79,9 +79,7 @@ const BusinessCreatorApp = () => {
   const location = useLocation();
   const businessSlug = location.pathname.split('/')[2];
   
-  // For now, redirect to regular creator app with business context
-  // TODO: Implement business-specific mentor experience
-  return <CreatorApp businessSlug={businessSlug} />;
+  return <BusinessMentorApp businessSlug={businessSlug} />;
 };
 
 function AdminApp() {
