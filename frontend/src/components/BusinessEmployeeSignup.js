@@ -332,6 +332,9 @@ const BusinessEmployeeSignup = ({ businessSlug, businessConfig, onSuccess, onBac
         <p className="text-sm text-gray-600">
           We sent a 6-digit code to {formData.phone_number}
         </p>
+        <p className="text-xs text-blue-600 mt-1">
+          For testing: Use code "123456" to skip SMS verification
+        </p>
       </div>
       
       <div>
