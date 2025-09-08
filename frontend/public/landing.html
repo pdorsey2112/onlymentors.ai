@@ -772,32 +772,336 @@
                 </div>
             </div>
             
-            <!-- Business CTA -->
+            <!-- Business Pricing & CTA -->
             <div class="text-center">
-                <div class="max-w-3xl mx-auto space-y-8">
-                    <h3 class="text-3xl font-bold text-white">Ready to Transform Your Organization?</h3>
-                    <p class="text-lg text-gray-300">
-                        Join forward-thinking companies already leveraging AI mentorship to enhance employee development, 
-                        boost productivity, and create a culture of continuous learning.
-                    </p>
+                <div class="max-w-6xl mx-auto space-y-12">
+                    <div class="space-y-4">
+                        <h3 class="text-3xl font-bold text-white">Choose Your Business Plan</h3>
+                        <p class="text-lg text-gray-300">
+                            Join forward-thinking companies already leveraging AI mentorship to enhance employee development, 
+                            boost productivity, and create a culture of continuous learning.
+                        </p>
+                    </div>
                     
-                    <div class="flex justify-center">
-                        <a href="/app?business-inquiry=true" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
-                            🏢 Request Enterprise Demo
-                            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                            </svg>
-                        </a>
+                    <!-- Business Pricing Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Starter Plan -->
+                        <div class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-white/40 transition-all duration-300 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10"></div>
+                            <div class="relative">
+                                <div class="text-center mb-8">
+                                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-sm font-medium mb-4">
+                                        🚀 Starter
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="text-4xl font-bold text-white">$99</div>
+                                        <div class="text-gray-300">per month</div>
+                                        <div class="text-sm text-gray-400">Up to 25 employees</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-4 mb-8">
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        AI Mentorship Platform
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Department Management
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Usage Analytics
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        14-Day Free Trial
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Email Support
+                                    </div>
+                                </div>
+                                
+                                <button 
+                                    onclick="startBusinessSignup('starter')"
+                                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold py-4 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                                >
+                                    Choose Starter Plan
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Professional Plan (Popular) -->
+                        <div class="bg-gradient-to-br from-white/15 to-white/10 backdrop-blur-lg rounded-2xl p-8 border-2 border-purple-400/40 hover:border-purple-400/60 transition-all duration-300 relative overflow-hidden transform scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/15 to-pink-600/15"></div>
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full text-sm font-bold">
+                                    Most Popular
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="text-center mb-8 mt-4">
+                                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-sm font-medium mb-4">
+                                        💼 Professional
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="text-4xl font-bold text-white">$150</div>
+                                        <div class="text-gray-300">per month</div>
+                                        <div class="text-sm text-gray-400">26-100 employees</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-4 mb-8">
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Everything in Starter
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Advanced Analytics
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Priority Support
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Custom Integrations
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        14-Day Free Trial
+                                    </div>
+                                </div>
+                                
+                                <button 
+                                    onclick="startBusinessSignup('professional')"
+                                    class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold py-4 hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                                >
+                                    Choose Professional Plan
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Enterprise Plan -->
+                        <div class="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-white/40 transition-all duration-300 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-600/10"></div>
+                            <div class="relative">
+                                <div class="text-center mb-8">
+                                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 text-sm font-medium mb-4">
+                                        🏢 Enterprise
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="text-4xl font-bold text-white">Custom</div>
+                                        <div class="text-gray-300">pricing</div>
+                                        <div class="text-sm text-gray-400">100+ employees</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-4 mb-8">
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Everything in Professional
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        White-label Options
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        SSO Integration
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Dedicated Support
+                                    </div>
+                                    <div class="flex items-center text-gray-300">
+                                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Custom Deployment
+                                    </div>
+                                </div>
+                                
+                                <a href="/app?business-inquiry=true" class="block w-full bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-bold py-4 text-center hover:from-orange-700 hover:to-red-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                                    Contact Sales
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="pt-4">
                         <p class="text-gray-400 text-sm">
-                            ✓ Custom pricing available  ✓ Dedicated support  ✓ White-label options  ✓ SSO integration
+                            ✓ No setup fees  ✓ Cancel anytime  ✓ 14-day free trial  ✓ 24/7 platform access
                         </p>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- Business Signup Modal -->
+    <div id="businessSignupModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Get Started with Business Plan</h3>
+                    <button onclick="closeBusinessSignup()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="signupContent">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = null;
+
+        function startBusinessSignup(plan) {
+            selectedPlan = plan;
+            const modal = document.getElementById('businessSignupModal');
+            const content = document.getElementById('signupContent');
+            
+            const planDetails = {
+                starter: { name: 'Starter Plan', price: '$99/month', employees: 'Up to 25 employees' },
+                professional: { name: 'Professional Plan', price: '$150/month', employees: '26-100 employees' }
+            };
+            
+            const planInfo = planDetails[plan];
+            
+            content.innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-4">
+                        ${planInfo.name}
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900 mb-2">${planInfo.price}</div>
+                    <div class="text-gray-600">${planInfo.employees}</div>
+                    <div class="text-sm text-green-600 font-medium mt-2">✓ 14-Day Free Trial Included</div>
+                </div>
+                
+                <form id="businessSignupForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+                        <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Your Company Name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Contact Name *</label>
+                        <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Your Full Name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Work Email *</label>
+                        <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="you@company.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                        <input type="tel" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+1 (555) 123-4567">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Size *</label>
+                        <select required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select company size</option>
+                            ${plan === 'starter' ? '<option value="1-10">1-10 employees</option><option value="11-25">11-25 employees</option>' : ''}
+                            ${plan === 'professional' ? '<option value="26-50">26-50 employees</option><option value="51-100">51-100 employees</option>' : ''}
+                        </select>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="skipTrial" class="mt-1 mr-3">
+                            <label for="skipTrial" class="text-sm text-gray-700">
+                                <span class="font-medium">Skip free trial</span> and start subscription immediately
+                                <div class="text-xs text-gray-500 mt-1">You can opt out of the 14-day free trial if you prefer to start billing right away</div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold py-4 hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+                        Continue to Payment
+                    </button>
+                    
+                    <p class="text-xs text-gray-500 text-center">
+                        By continuing, you agree to our Terms of Service and Privacy Policy. 
+                        Credit card required but not charged during free trial.
+                    </p>
+                </form>
+            `;
+            
+            modal.classList.remove('hidden');
+            
+            // Add form submit handler
+            document.getElementById('businessSignupForm').addEventListener('submit', handleBusinessSignup);
+        }
+
+        function closeBusinessSignup() {
+            document.getElementById('businessSignupModal').classList.add('hidden');
+        }
+
+        function handleBusinessSignup(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(e.target);
+            const signupData = {
+                plan: selectedPlan,
+                company_name: formData.get('company_name') || e.target.querySelector('input[placeholder="Your Company Name"]').value,
+                contact_name: formData.get('contact_name') || e.target.querySelector('input[placeholder="Your Full Name"]').value,
+                contact_email: formData.get('contact_email') || e.target.querySelector('input[placeholder="you@company.com"]').value,
+                contact_phone: formData.get('contact_phone') || e.target.querySelector('input[placeholder="+1 (555) 123-4567"]').value,
+                company_size: e.target.querySelector('select').value,
+                skip_trial: document.getElementById('skipTrial').checked
+            };
+            
+            // Store in localStorage and redirect to React app for payment processing
+            localStorage.setItem('businessSignupData', JSON.stringify(signupData));
+            window.location.href = '/app?business-signup=true';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('businessSignupModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBusinessSignup();
+            }
+        });
+    </script>
     </section>
 
     <!-- CTA Section -->
