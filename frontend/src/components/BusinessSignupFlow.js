@@ -165,10 +165,40 @@ const BusinessSignupFlow = ({ onComplete, onBack }) => {
   if (!signupData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading signup information...</p>
-        </div>
+        <Card className="max-w-md w-full">
+          <CardHeader className="text-center">
+            <div className="text-4xl mb-4">⚠️</div>
+            <CardTitle className="text-xl text-red-600">Signup Data Missing</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-gray-600">
+              We couldn't find your signup information. This might happen if you navigated directly to this page.
+            </p>
+            <div className="space-y-2">
+              <Button onClick={() => window.location.href = '/'} className="w-full">
+                Return to Landing Page
+              </Button>
+              <Button 
+                onClick={() => {
+                  // Create minimal data to continue
+                  setSignupData({
+                    plan: 'starter',
+                    company_name: '',
+                    contact_name: '',
+                    contact_email: '',
+                    contact_phone: '',
+                    company_size: '',
+                    skip_trial: false
+                  });
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Continue with Manual Entry
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
