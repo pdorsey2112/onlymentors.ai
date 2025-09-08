@@ -327,6 +327,7 @@ function MainApp() {
       }
       
       console.log('URL Hash:', urlHash, 'Business Signup:', businessSignup); // Debug log
+      console.log('Current view before setting:', currentView); // Debug log
       
       if (businessInquiry === 'true') {
         setCurrentView('business_inquiry');
@@ -341,6 +342,7 @@ function MainApp() {
       } else if (businessSignup) {
         console.log('Setting view to business_signup'); // Debug log
         setCurrentView('business_signup');
+        console.log('View set to business_signup'); // Debug log
       } else if (businessPaymentSuccess) {
         // Handle successful payment
         setCurrentView('business_payment_success');
