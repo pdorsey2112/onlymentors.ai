@@ -22,22 +22,23 @@ const BusinessSignupFlow = ({ onComplete, onBack }) => {
   useEffect(() => {
     // Load signup data from localStorage (from landing page modal)
     const savedData = localStorage.getItem('businessSignupData');
+    console.log('BusinessSignupFlow: Checking localStorage for businessSignupData:', savedData);
+    
     if (savedData) {
-      setSignupData(JSON.parse(savedData));
-      localStorage.removeItem('businessSignupData');
+      try {
+        const parsedData = JSON.parse(savedData);
+        console.log('BusinessSignupFlow: Successfully parsed data:', parsedData);
+        setSignupData(parsedData);
+        // Don't remove localStorage data immediately - keep it for debugging
+        // localStorage.removeItem('businessSignupData');
+      } catch (error) {
+        console.error('BusinessSignupFlow: Error parsing localStorage data:', error);
+        setSignupData(null); // This will show loading state
+      }
     } else {
-      // If no saved data, create default data for testing/direct access
-      console.log('No businessSignupData found, creating default data for testing');
-      const defaultData = {
-        plan: 'starter',
-        company_name: 'Test Company',
-        contact_name: 'Test User',
-        contact_email: 'test@example.com',
-        contact_phone: '+1-555-0000',
-        company_size: '11-25',
-        skip_trial: false
-      };
-      setSignupData(defaultData);
+      console.log('BusinessSignupFlow: No businessSignupData found in localStorage');
+      // Don't create default data - let the user know there's an issue
+      setSignupData(null);
     }
   }, []);
 
