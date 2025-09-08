@@ -2806,6 +2806,175 @@ async def get_company_dashboard(company_id: str, current_user = Depends(get_curr
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get dashboard: {str(e)}")
 
+# =============================================================================
+# BUSINESS CATEGORY MANAGEMENT ENDPOINTS
+# =============================================================================
+
+@app.get("/api/business/company/{company_id}/categories")
+async def get_business_categories(company_id: str, current_user=Depends(get_current_user)):
+    """Get all categories for a business"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        categories = await db.business_categories.find({"company_id": company_id, "is_active": True}).to_list(length=None)
+        
+        # Add mentor count for each category
+        for category in categories:
+            mentor_count = await db.business_mentors.count_documents({
+                "company_id": company_id,
+                "category_ids": category["category_id"]
+            })
+            category["mentor_count"] = mentor_count
+        
+        return categories
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get categories: {str(e)}")
+
+@app.post("/api/business/company/{company_id}/categories")
+async def create_business_category(company_id: str, category_data: dict, current_user=Depends(get_current_user)):
+    """Create a new business category"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Create category document
+        category_id = str(uuid.uuid4())
+        category_doc = {
+            "category_id": category_id,
+            "company_id": company_id,
+            "name": category_data["name"],
+            "slug": category_data["name"].lower().replace(" ", "-"),
+            "icon": category_data.get("icon", "📂"),
+            "description": category_data.get("description", ""),
+            "is_active": True,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.business_categories.insert_one(category_doc)
+        return {"message": "Category created successfully", "category_id": category_id}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create category: {str(e)}")
+
+@app.put("/api/business/company/{company_id}/categories/{category_id}")
+async def update_business_category(company_id: str, category_id: str, category_data: dict, current_user=Depends(get_current_user)):
+    """Update a business category"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Update category
+        update_data = {
+            "name": category_data["name"],
+            "slug": category_data["name"].lower().replace(" ", "-"),
+            "icon": category_data.get("icon", "📂"),
+            "description": category_data.get("description", ""),
+            "updated_at": datetime.utcnow()
+        }
+        
+        result = await db.business_categories.update_one(
+            {"category_id": category_id, "company_id": company_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        return {"message": "Category updated successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update category: {str(e)}")
+
+@app.delete("/api/business/company/{company_id}/categories/{category_id}")
+async def delete_business_category(company_id: str, category_id: str, current_user=Depends(get_current_user)):
+    """Delete a business category"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Check if category has mentors assigned
+        mentor_count = await db.business_mentors.count_documents({
+            "company_id": company_id,
+            "category_ids": category_id
+        })
+        
+        if mentor_count > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete category. {mentor_count} mentors are assigned to this category."
+            )
+        
+        # Delete category
+        result = await db.business_categories.delete_one({
+            "category_id": category_id,
+            "company_id": company_id
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        return {"message": "Category deleted successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete category: {str(e)}")
+
+@app.post("/api/business/company/{company_id}/categories/initialize")
+async def initialize_default_categories(company_id: str, current_user=Depends(get_current_user)):
+    """Initialize default categories for a new business"""
+    try:
+        # Verify user belongs to this company and has admin role
+        if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        default_categories = [
+            {"name": "Business Operations", "icon": "⚙️", "description": "Operations, strategy, and process improvement"},
+            {"name": "Sales", "icon": "💼", "description": "Sales strategy, customer relations, and revenue growth"},
+            {"name": "Training", "icon": "📚", "description": "Employee development and skills training"},
+            {"name": "HR", "icon": "👥", "description": "Human resources, recruiting, and employee relations"},
+            {"name": "Payroll", "icon": "💰", "description": "Payroll processing and compensation management"},
+            {"name": "Accounting", "icon": "📊", "description": "Financial management and accounting"},
+            {"name": "Product Development", "icon": "🚀", "description": "Product strategy and development"},
+            {"name": "Technology", "icon": "💻", "description": "IT infrastructure and software development"},
+            {"name": "Technical Support", "icon": "🛠️", "description": "Technical assistance and troubleshooting"}
+        ]
+        
+        categories_created = 0
+        for category_data in default_categories:
+            # Check if category already exists
+            existing = await db.business_categories.find_one({
+                "company_id": company_id,
+                "name": category_data["name"]
+            })
+            
+            if not existing:
+                category_id = str(uuid.uuid4())
+                category_doc = {
+                    "category_id": category_id,
+                    "company_id": company_id,
+                    "name": category_data["name"],
+                    "slug": category_data["name"].lower().replace(" ", "-"),
+                    "icon": category_data["icon"],
+                    "description": category_data["description"],
+                    "is_active": True,
+                    "created_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow()
+                }
+                
+                await db.business_categories.insert_one(category_doc)
+                categories_created += 1
+        
+        return {"message": f"Initialized {categories_created} default categories"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to initialize categories: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
