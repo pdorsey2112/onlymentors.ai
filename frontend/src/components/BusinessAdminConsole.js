@@ -528,6 +528,242 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
     </div>
   );
 
+  // Admin render functions
+  const renderAdminUsers = () => {
+    const filteredUsers = users.filter(user => 
+      user.full_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(userSearchTerm.toLowerCase())
+    );
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900">User Management ({users.length} users)</h2>
+        </div>
+
+        {/* User Search */}
+        <div className="max-w-md">
+          <input
+            type="text"
+            placeholder="Search users by name or email..."
+            value={userSearchTerm}
+            onChange={(e) => setUserSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        {/* Users Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  User
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Questions Asked
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Created
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredUsers.map(user => {
+                const { firstName, lastName } = parseName(user.full_name);
+                return (
+                  <tr key={user.user_id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {firstName} {lastName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">{user.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {user.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatNumber(user.questions_asked || 0)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
+  const renderAdminMentors = () => {
+    const filteredMentors = mentors.filter(mentor => 
+      mentor.full_name?.toLowerCase().includes(mentorSearchTerm.toLowerCase()) ||
+      mentor.email?.toLowerCase().includes(mentorSearchTerm.toLowerCase())
+    );
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900">Mentor Management ({mentors.length} mentors)</h2>
+        </div>
+
+        {/* Mentor Search */}
+        <div className="max-w-md">
+          <input
+            type="text"
+            placeholder="Search mentors by name or email..."
+            value={mentorSearchTerm}
+            onChange={(e) => setMentorSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        {/* Mentors Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Mentor
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Verification
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Created
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredMentors.map(mentor => {
+                const { firstName, lastName } = parseName(mentor.full_name);
+                return (
+                  <tr key={mentor.creator_id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {firstName} {lastName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">{mentor.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        mentor.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {mentor.status || 'Active'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        mentor.verification?.status === 'verified' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {mentor.verification?.status || 'Pending'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {mentor.created_at ? new Date(mentor.created_at).toLocaleDateString() : 'N/A'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
+  const renderUserReports = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">User Activity Reports</h2>
+      </div>
+
+      {userActivityReport ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow border">
+            <div className="text-2xl font-bold text-blue-600">{formatNumber(userActivityReport.total_users)}</div>
+            <div className="text-sm text-gray-600">Total Users</div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow border">
+            <div className="text-2xl font-bold text-green-600">{formatNumber(userActivityReport.active_users)}</div>
+            <div className="text-sm text-gray-600">Active Users</div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow border">
+            <div className="text-2xl font-bold text-purple-600">{formatNumber(userActivityReport.total_questions)}</div>
+            <div className="text-sm text-gray-600">Total Questions</div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow border">
+            <div className="text-2xl font-bold text-orange-600">{formatNumber(userActivityReport.questions_today)}</div>
+            <div className="text-sm text-gray-600">Questions Today</div>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div className="text-2xl text-gray-400 mb-4">📊</div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Reports...</h3>
+          <p className="text-gray-600">Gathering user activity data.</p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderDatabase = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">Database Management</h2>
+      </div>
+      <DatabaseManagement />
+    </div>
+  );
+
+  const renderContentModeration = () => (
+    <div className="space-y-6">
+      <div className="text-center py-12">
+        <div className="text-2xl text-gray-400 mb-4">🛡️</div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Content Moderation</h3>
+        <p className="text-gray-600">Content moderation tools will be available soon.</p>
+      </div>
+    </div>
+  );
+
+  const renderAiAgents = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">AI Agents</h2>
+        <button
+          onClick={() => setShowContextDemo(!showContextDemo)}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          {showContextDemo ? 'Hide Demo' : 'Show Context Demo'}
+        </button>
+      </div>
+      {showContextDemo && <EnhancedContextDemo />}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
