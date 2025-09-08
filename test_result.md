@@ -327,7 +327,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Phase 6: Business-Specific User & Mentor Experience"
+    - "Phase 6: Business-Specific User & Mentor Experience - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -345,6 +345,8 @@ test_plan:
     - "Admin Console Mentor Data Fix"
     - "Critical Mentor Type Filtering Bug Investigation"
     - "Podcast Upload Functionality for Human Mentors"
+    - "Business Employee Registration with Email Domain Validation"
+    - "Business Employee Mentor Search API"
 
 backend:
   - task: "New User Registration with Mentor Option"
