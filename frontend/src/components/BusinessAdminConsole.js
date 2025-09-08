@@ -798,7 +798,13 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
               { id: 'employees', name: 'Employees', icon: '👥' },
               { id: 'departments', name: 'Departments', icon: '🏬' },
               { id: 'mentors', name: 'AI Mentors', icon: '🤖' },
-              { id: 'reports', name: 'Reports', icon: '📈' }
+              { id: 'reports', name: 'Reports', icon: '📈' },
+              { id: 'admin-users', name: 'Users', icon: '👤' },
+              { id: 'admin-mentors', name: 'Mentors', icon: '🎯' },
+              { id: 'database', name: 'Database', icon: '🗄️' },
+              { id: 'content-moderation', name: 'Moderation', icon: '🛡️' },
+              { id: 'user-reports', name: 'User Reports', icon: '📋' },
+              { id: 'ai-agents', name: 'AI Agents', icon: '🤖' }
             ].map(tab => (
               <button
                 key={tab.id}
