@@ -2759,6 +2759,7 @@ class CompanyRegistration(BaseModel):
     plan_type: str = "enterprise"  # starter, professional, enterprise
     billing_contact: str = ""
     departments: list = []
+    allowed_email_domains: list = []  # List of allowed email domains for employee registration
 
 class DepartmentCode(BaseModel):
     code: str
