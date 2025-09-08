@@ -2828,6 +2828,243 @@ async def get_context_system_explanation():
         }
     }
 
+class BusinessCheckoutRequest(BaseModel):
+    plan_id: str
+    company_name: str
+    contact_name: str 
+    contact_email: str
+    contact_phone: str
+    company_size: str
+    skip_trial: bool = False
+    origin_url: str
+
+@app.post("/api/business/create-checkout")
+async def create_business_checkout_session(checkout_data: BusinessCheckoutRequest, request: Request = None):
+    """Create Stripe checkout session for business subscription"""
+    try:
+        if checkout_data.plan_id not in BUSINESS_PACKAGES:
+            raise HTTPException(status_code=400, detail="Invalid business plan")
+        
+        package = BUSINESS_PACKAGES[checkout_data.plan_id]
+        
+        # Get base URL from request for webhook
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        # Initialize Stripe checkout
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        
+        # Determine trial and pricing
+        if checkout_data.skip_trial:
+            trial_period_days = 0
+            immediate_charge = True
+        else:
+            trial_period_days = 14
+            immediate_charge = False
+        
+        # Create checkout session
+        success_url = f"{checkout_data.origin_url}/?business_payment_success={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{checkout_data.origin_url}/?business_payment_cancelled=true"
+        
+        checkout_request = CheckoutSessionRequest(
+            amount=float(package["price"]),
+            currency=package["currency"],
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "type": "business_subscription",
+                "plan_id": checkout_data.plan_id,
+                "company_name": checkout_data.company_name,
+                "contact_name": checkout_data.contact_name,
+                "contact_email": checkout_data.contact_email,
+                "contact_phone": checkout_data.contact_phone,
+                "company_size": checkout_data.company_size,
+                "skip_trial": str(checkout_data.skip_trial),
+                "trial_period_days": str(trial_period_days)
+            }
+        )
+        
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store business payment transaction
+        payment_doc = {
+            "payment_id": str(uuid.uuid4()),
+            "session_id": session.session_id,
+            "payment_type": "business_subscription",
+            "plan_id": checkout_data.plan_id,
+            "company_name": checkout_data.company_name,
+            "contact_name": checkout_data.contact_name,
+            "contact_email": checkout_data.contact_email,
+            "contact_phone": checkout_data.contact_phone,
+            "company_size": checkout_data.company_size,
+            "amount": float(package["price"]),
+            "currency": package["currency"],
+            "skip_trial": checkout_data.skip_trial,
+            "trial_period_days": trial_period_days,
+            "payment_status": "pending",
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.business_payment_transactions.insert_one(payment_doc)
+        
+        return {"url": session.url, "session_id": session.session_id}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create business checkout session: {str(e)}")
+
+@app.get("/api/business/payment-status/{session_id}")
+async def get_business_payment_status(session_id: str):
+    """Check business payment status"""
+    try:
+        # Get payment transaction
+        transaction = await db.business_payment_transactions.find_one({"session_id": session_id})
+        if not transaction:
+            raise HTTPException(status_code=404, detail="Payment not found")
+        
+        # Check Stripe status
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+        status_response = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction status if payment is complete
+        if status_response.payment_status == "paid" and transaction["payment_status"] != "paid":
+            await db.business_payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": {"payment_status": "paid", "updated_at": datetime.utcnow()}}
+            )
+            
+            # Create or update company subscription
+            await handle_business_payment_success(transaction)
+        
+        return {
+            "payment_status": status_response.payment_status,
+            "session_id": session_id,
+            "amount": transaction["amount"],
+            "currency": transaction["currency"],
+            "plan_id": transaction["plan_id"],
+            "company_name": transaction["company_name"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get payment status: {str(e)}")
+
+async def handle_business_payment_success(transaction):
+    """Handle successful business payment and setup company"""
+    try:
+        # Check if company already exists
+        existing_company = await db.companies.find_one({
+            "$or": [
+                {"company_name": transaction["company_name"]},
+                {"contact_email": transaction["contact_email"]}
+            ]
+        })
+        
+        if existing_company:
+            company_id = existing_company["company_id"]
+            
+            # Update existing company with subscription info
+            await db.companies.update_one(
+                {"company_id": company_id},
+                {
+                    "$set": {
+                        "subscription_plan": transaction["plan_id"],
+                        "subscription_status": "active",
+                        "payment_status": "paid",
+                        "billing_cycle": "monthly",
+                        "trial_ends": datetime.utcnow() + timedelta(days=transaction["trial_period_days"]) if not transaction["skip_trial"] else None,
+                        "next_billing_date": datetime.utcnow() + timedelta(days=30),
+                        "updated_at": datetime.utcnow()
+                    }
+                }
+            )
+        else:
+            # Create new company
+            company_id = str(uuid.uuid4())
+            company_doc = {
+                "company_id": company_id,
+                "company_name": transaction["company_name"],
+                "slug": transaction["company_name"].lower().replace(" ", "-").replace(".", ""),
+                "company_email": transaction["contact_email"],
+                "contact_name": transaction["contact_name"],
+                "contact_email": transaction["contact_email"],
+                "contact_phone": transaction["contact_phone"],
+                "company_size": transaction["company_size"],
+                "plan_type": transaction["plan_id"],
+                "subscription_plan": transaction["plan_id"],
+                "subscription_status": "active",
+                "payment_status": "paid",
+                "billing_cycle": "monthly",
+                "trial_ends": datetime.utcnow() + timedelta(days=transaction["trial_period_days"]) if not transaction["skip_trial"] else None,
+                "next_billing_date": datetime.utcnow() + timedelta(days=30),
+                "allowed_email_domains": [],  # To be configured by admin
+                "status": "active",
+                "departments": [],
+                "selected_ai_mentors": [],
+                "settings": {
+                    "allow_external_mentors": True,
+                    "require_department_codes": True,
+                    "content_moderation": True,
+                    "usage_tracking": True
+                },
+                "usage_stats": {
+                    "total_employees": 0,
+                    "total_questions": 0,
+                    "monthly_usage": 0,
+                    "department_usage": {}
+                },
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            }
+            
+            await db.companies.insert_one(company_doc)
+        
+        # Create business admin user account
+        admin_user_id = str(uuid.uuid4())
+        admin_user_doc = {
+            "user_id": admin_user_id,
+            "email": transaction["contact_email"],
+            "password_hash": "",  # Will need to set password on first login
+            "full_name": transaction["contact_name"],
+            "phone_number": transaction["contact_phone"],
+            "profile_completed": False,
+            "created_at": datetime.utcnow(),
+            "questions_asked": 0,
+            "is_subscribed": True,
+            "subscription_plan": "business_admin",
+            "user_type": "business_admin",
+            "company_id": company_id,
+            "business_role": "admin",
+            "phone_verified": False,
+            "is_mentor": False,
+            "last_login": None,
+            "is_active": True,
+            "requires_password_setup": True  # Flag to require password setup
+        }
+        
+        # Check if admin user already exists
+        existing_admin = await db.users.find_one({"email": transaction["contact_email"]})
+        if not existing_admin:
+            await db.users.insert_one(admin_user_doc)
+        else:
+            # Update existing user to be business admin
+            await db.users.update_one(
+                {"email": transaction["contact_email"]},
+                {
+                    "$set": {
+                        "user_type": "business_admin",
+                        "company_id": company_id,
+                        "business_role": "admin",
+                        "is_subscribed": True,
+                        "subscription_plan": "business_admin"
+                    }
+                }
+            )
+        
+        return {"success": True, "company_id": company_id}
+        
+    except Exception as e:
+        print(f"Error handling business payment success: {str(e)}")
+        return {"success": False, "error": str(e)}
+
 @app.post("/api/payments/checkout")
 async def create_checkout_session(checkout_data: CheckoutRequest, current_user = Depends(get_current_user), request: Request = None):
     if checkout_data.package_id not in SUBSCRIPTION_PACKAGES:
