@@ -1092,7 +1092,7 @@
             
             // Store in localStorage and redirect to React app for payment processing
             localStorage.setItem('businessSignupData', JSON.stringify(signupData));
-            window.location.href = '/app?business-signup=true';
+            window.location.href = '/app#business-signup';
         }
 
         // Close modal when clicking outside
