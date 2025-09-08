@@ -2863,8 +2863,8 @@ async def create_business_checkout_session(checkout_data: BusinessCheckoutReques
             immediate_charge = False
         
         # Create checkout session
-        success_url = f"{checkout_data.origin_url}/?business_payment_success={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{checkout_data.origin_url}/?business_payment_cancelled=true"
+        success_url = f"{checkout_data.origin_url}#business_payment_success_{{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{checkout_data.origin_url}#business_payment_cancelled"
         
         checkout_request = CheckoutSessionRequest(
             amount=float(package["price"]),
