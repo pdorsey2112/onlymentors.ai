@@ -156,6 +156,113 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
     }
   };
 
+  // Business Categories Management
+  const loadCategories = async () => {
+    try {
+      setLoading(true);
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/business/company/${user.company_id}/categories`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addCategory = async () => {
+    if (!newCategory.name.trim()) {
+      alert('Please enter a category name');
+      return;
+    }
+
+    try {
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/business/company/${user.company_id}/categories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newCategory)
+      });
+      
+      if (response.ok) {
+        setNewCategory({ name: '', icon: '📂', description: '' });
+        loadCategories();
+        alert('Category added successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Failed to add category: ${error.detail}`);
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    }
+  };
+
+  const updateCategory = async (categoryId, updatedCategory) => {
+    try {
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/business/company/${user.company_id}/categories/${categoryId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedCategory)
+      });
+      
+      if (response.ok) {
+        setEditingCategory(null);
+        loadCategories();
+        alert('Category updated successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Failed to update category: ${error.detail}`);
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    }
+  };
+
+  const deleteCategory = async (categoryId, categoryName) => {
+    if (!window.confirm(`Are you sure you want to delete the "${categoryName}" category? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/business/company/${user.company_id}/categories/${categoryId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        loadCategories();
+        alert('Category deleted successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Failed to delete category: ${error.detail}`);
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    }
+  };
+
   const loadDashboard = async () => {
     try {
       setLoading(true);
