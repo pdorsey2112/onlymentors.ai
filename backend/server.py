@@ -854,6 +854,11 @@ async def become_mentor(current_user = Depends(get_current_user)):
         # Check if user already has a creator profile
         existing_creator = await db.creators.find_one({"user_id": user_id})
         if existing_creator:
+            # Update user to mark as mentor
+            await db.users.update_one(
+                {"user_id": user_id},
+                {"$set": {"is_mentor": True}}
+            )
             return {
                 "success": True,
                 "message": "You are already a mentor!",
@@ -864,6 +869,9 @@ async def become_mentor(current_user = Depends(get_current_user)):
         user = await db.users.find_one({"user_id": user_id})
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+        
+        # Check if it's a business employee
+        is_business_employee = user.get("user_type") == "business_employee"
         
         # Create simplified creator profile
         creator_id = str(uuid.uuid4())
@@ -886,14 +894,14 @@ async def become_mentor(current_user = Depends(get_current_user)):
                 "approved_at": datetime.utcnow(),
                 "approved_by": "system"
             },
-            "monthly_price": 29.99,
+            "monthly_price": 0.0 if is_business_employee else 29.99,  # No revenue for business mentors
             "subscriber_count": 0,
             "tier": "New Mentor",
             "tier_level": "new",
             "tier_badge_color": "#d1d5db",
             "profile_image_url": None,
             "social_links": {},
-            "banking_info": {},
+            "banking_info": {} if is_business_employee else {},  # No banking needed for business mentors
             "id_document": {},
             "profile": {
                 "description": f"Welcome to my mentoring profile! I'm {user['full_name']} and I'm here to help guide you through your challenges and goals.",
@@ -913,8 +921,9 @@ async def become_mentor(current_user = Depends(get_current_user)):
             },
             "settings": {
                 "auto_approve_messages": True,
-                "allow_tips": True,
-                "response_time": "24 hours"
+                "allow_tips": not is_business_employee,  # No tips for business mentors
+                "response_time": "24 hours",
+                "business_mentor": is_business_employee  # Flag for business mentors
             },
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
@@ -923,15 +932,22 @@ async def become_mentor(current_user = Depends(get_current_user)):
         
         await db.creators.insert_one(mentor_doc)
         
+        # Update user to mark as mentor
+        await db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {"is_mentor": True}}
+        )
+        
         return {
             "success": True,
-            "message": "Congratulations! You are now a mentor on OnlyMentors.ai",
+            "message": f"Congratulations! You are now a {'business' if is_business_employee else ''} mentor on OnlyMentors.ai",
             "creator_id": creator_id,
             "mentor_profile": {
                 "name": mentor_doc["account_name"],
                 "title": mentor_doc["title"],
                 "bio": mentor_doc["bio"],
-                "expertise": mentor_doc["expertise"]
+                "expertise": mentor_doc["expertise"],
+                "is_business_mentor": is_business_employee
             }
         }
         
