@@ -1778,6 +1778,8 @@ function MainApp() {
         )}
 
         {(() => {
+          console.log('Rendering main content, currentView:', currentView); // Debug log
+          
           switch (currentView) {
             case 'categories':
               return renderCategories();
