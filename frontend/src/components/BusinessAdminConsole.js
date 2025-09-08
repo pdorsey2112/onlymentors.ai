@@ -882,6 +882,168 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
     </div>
   );
 
+  const renderCategories = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">🗂️ Category Management</h2>
+        <div className="text-sm text-gray-500">
+          {categories.length} categories
+        </div>
+      </div>
+
+      {/* Add New Category */}
+      <div className="bg-white rounded-lg shadow border p-6">
+        <h3 className="text-lg font-semibold mb-4">Add New Category</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
+            <input
+              type="text"
+              value={newCategory.name}
+              onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., Marketing"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+            <select
+              value={newCategory.icon}
+              onChange={(e) => setNewCategory({...newCategory, icon: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="📂">📂 Folder</option>
+              <option value="⚙️">⚙️ Operations</option>
+              <option value="💼">💼 Sales</option>
+              <option value="📚">📚 Training</option>
+              <option value="👥">👥 HR</option>
+              <option value="💰">💰 Payroll</option>
+              <option value="📊">📊 Accounting</option>
+              <option value="🚀">🚀 Product</option>
+              <option value="💻">💻 Technology</option>
+              <option value="🛠️">🛠️ Support</option>
+              <option value="📈">📈 Analytics</option>
+              <option value="🎯">🎯 Strategy</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <input
+              type="text"
+              value={newCategory.description}
+              onChange={(e) => setNewCategory({...newCategory, description: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Brief description..."
+            />
+          </div>
+        </div>
+        <div className="mt-4">
+          <button
+            onClick={addCategory}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Add Category
+          </button>
+        </div>
+      </div>
+
+      {/* Categories List */}
+      <div className="bg-white rounded-lg shadow border">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold">Business Categories</h3>
+        </div>
+        <div className="divide-y divide-gray-200">
+          {categories.map(category => (
+            <div key={category.category_id} className="p-6">
+              {editingCategory === category.category_id ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input
+                      type="text"
+                      defaultValue={category.name}
+                      className="px-3 py-2 border border-gray-300 rounded-md"
+                      onChange={(e) => setEditingCategory({...category, name: e.target.value})}
+                    />
+                    <select
+                      defaultValue={category.icon}
+                      className="px-3 py-2 border border-gray-300 rounded-md"
+                      onChange={(e) => setEditingCategory({...category, icon: e.target.value})}
+                    >
+                      <option value="📂">📂 Folder</option>
+                      <option value="⚙️">⚙️ Operations</option>
+                      <option value="💼">💼 Sales</option>
+                      <option value="📚">📚 Training</option>
+                      <option value="👥">👥 HR</option>
+                      <option value="💰">💰 Payroll</option>
+                      <option value="📊">📊 Accounting</option>
+                      <option value="🚀">🚀 Product</option>
+                      <option value="💻">💻 Technology</option>
+                      <option value="🛠️">🛠️ Support</option>
+                    </select>
+                    <input
+                      type="text"
+                      defaultValue={category.description}
+                      className="px-3 py-2 border border-gray-300 rounded-md"
+                      onChange={(e) => setEditingCategory({...category, description: e.target.value})}
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => updateCategory(category.category_id, editingCategory)}
+                      className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingCategory(null)}
+                      className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-4">
+                    <div className="text-2xl">{category.icon}</div>
+                    <div>
+                      <h4 className="text-lg font-medium text-gray-900">{category.name}</h4>
+                      <p className="text-sm text-gray-600">{category.description}</p>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {category.mentor_count || 0} mentors assigned
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setEditingCategory(category.category_id)}
+                      className="bg-blue-100 text-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteCategory(category.category_id, category.name)}
+                      className="bg-red-100 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+          {categories.length === 0 && (
+            <div className="p-8 text-center">
+              <div className="text-gray-400 text-4xl mb-4">📂</div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Categories Yet</h3>
+              <p className="text-gray-600">Add your first category to organize mentors by expertise area.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
