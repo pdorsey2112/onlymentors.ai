@@ -212,6 +212,43 @@ class ContentUpdateRequest(BaseModel):
     is_featured: Optional[bool] = None
 
 # Helper functions
+async def validate_business_employee_email(email: str, business_slug: str) -> dict:
+    """Validate if email domain matches company's allowed domains"""
+    try:
+        # Get company info by slug
+        company = await db.companies.find_one({"slug": business_slug})
+        if not company:
+            # Try to find by company name converted to slug
+            slug_name = business_slug.replace("-", " ").title()
+            company = await db.companies.find_one(
+                {"company_name": {"$regex": slug_name, "$options": "i"}}
+            )
+        
+        if not company:
+            return {"valid": False, "error": "Company not found"}
+        
+        # Get allowed email domains for this company
+        allowed_domains = company.get("allowed_email_domains", [])
+        
+        # If no domains specified, allow any email (for testing)
+        if not allowed_domains:
+            return {"valid": True, "company_id": company["company_id"]}
+        
+        # Extract domain from email
+        email_domain = email.split("@")[1].lower() if "@" in email else ""
+        
+        # Check if email domain is in allowed list
+        if email_domain in [domain.lower() for domain in allowed_domains]:
+            return {"valid": True, "company_id": company["company_id"]}
+        else:
+            return {
+                "valid": False, 
+                "error": f"Email domain '{email_domain}' is not authorized for {company['company_name']}. Please use a company email address."
+            }
+    
+    except Exception as e:
+        return {"valid": False, "error": f"Email validation failed: {str(e)}"}
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
