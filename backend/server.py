@@ -101,7 +101,39 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
 JWT_SECRET = os.getenv("JWT_SECRET", "onlymentors-jwt-secret-key-2024")
 
-# Subscription packages
+# Business subscription packages
+BUSINESS_PACKAGES = {
+    "starter": {
+        "name": "Business Starter Plan",
+        "price": 99.00,
+        "currency": "usd",
+        "billing_period": "month",
+        "employee_limit": 25,
+        "features": [
+            "AI Mentorship Platform",
+            "Department Management",
+            "Usage Analytics", 
+            "Email Support",
+            "14-Day Free Trial"
+        ]
+    },
+    "professional": {
+        "name": "Business Professional Plan", 
+        "price": 150.00,
+        "currency": "usd",
+        "billing_period": "month",
+        "employee_limit": 100,
+        "features": [
+            "Everything in Starter",
+            "Advanced Analytics",
+            "Priority Support",
+            "Custom Integrations",
+            "14-Day Free Trial"
+        ]
+    }
+}
+
+# Regular subscription packages
 SUBSCRIPTION_PACKAGES = {
     "monthly": {
         "name": "Monthly Unlimited",
