@@ -63,6 +63,7 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
       loadDepartments();
     } else if (activeTab === 'categories') {
       loadCategories();
+      loadBusinessMentors();
     } else if (activeTab === 'mentors') {
       loadAiMentors();
     } else if (activeTab === 'admin-users') {
