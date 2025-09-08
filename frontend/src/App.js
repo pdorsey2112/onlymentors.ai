@@ -260,6 +260,7 @@ function MainApp() {
   const [success, setSuccess] = useState('');
   const [questionHistory, setQuestionHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sessionId, setSessionId] = useState('');
   // Removed selectAll state - now limiting to 5 mentors max
   
   // Mentor type filter state
