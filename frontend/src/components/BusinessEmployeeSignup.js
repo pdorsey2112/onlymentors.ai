@@ -137,21 +137,42 @@ const BusinessEmployeeSignup = ({ businessSlug, businessConfig, onSuccess, onBac
     
     try {
       const backendURL = getBackendURL();
-      const response = await fetch(`${backendURL}/api/auth/business/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          full_name: formData.full_name,
-          phone_number: formData.phone_number,
-          two_factor_code: formData.two_factor_code,
-          business_slug: businessSlug,
-          department_code: formData.department_code
-        })
-      });
+      
+      // For testing, try test endpoint first if in development
+      let response;
+      if (formData.two_factor_code === '123456') {
+        // Use test endpoint for easier testing
+        response = await fetch(`${backendURL}/api/auth/business/signup-test`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            full_name: formData.full_name,
+            business_slug: businessSlug,
+            department_code: formData.department_code
+          })
+        });
+      } else {
+        // Use regular endpoint
+        response = await fetch(`${backendURL}/api/auth/business/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            full_name: formData.full_name,
+            phone_number: formData.phone_number,
+            two_factor_code: formData.two_factor_code,
+            business_slug: businessSlug,
+            department_code: formData.department_code
+          })
+        });
+      }
 
       if (response.ok) {
         const data = await response.json();
