@@ -46,11 +46,11 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordApp />} />
         <Route path="/reset-password" element={<ResetPasswordApp />} />
         <Route path="/landing" element={<LandingRedirect />} />
-        <Route path="/app" element={<MainApp />} />
         {/* Business Landing Pages */}
         <Route path="/:businessSlug.html" element={<BusinessLandingPageWrapper />} />
         <Route path="/app/:businessSlug" element={<BusinessMainApp />} />
         <Route path="/creator/:businessSlug" element={<BusinessCreatorApp />} />
+        <Route path="/app" element={<MainApp />} />
         <Route path="/" element={<LandingRedirect />} />
       </Routes>
     </Router>
