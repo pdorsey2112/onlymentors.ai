@@ -286,7 +286,7 @@ frontend:
     implemented: true
     working: true
     file: "/app/frontend/public/landing.html, /app/frontend/src/components/BusinessSignupFlow.js, /app/frontend/src/App.js"
-    stuck_count: 2
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
