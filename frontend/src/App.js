@@ -1779,6 +1779,27 @@ function MainApp() {
                   onSuccess={() => setCurrentView('business_success')}
                 />
               );
+            case 'business_signup':
+              return (
+                <BusinessSignupFlow 
+                  onComplete={() => setCurrentView('business_payment_success')}
+                  onBack={() => window.location.href = '/'}
+                />
+              );
+            case 'business_payment_success':
+              return (
+                <BusinessPaymentSuccess 
+                  sessionId={sessionId}
+                  onContinue={() => setCurrentView('categories')}
+                />
+              );
+            case 'business_payment_cancelled':
+              return (
+                <BusinessPaymentCancelled 
+                  onRetry={() => setCurrentView('business_signup')}
+                  onBack={() => window.location.href = '/'}
+                />
+              );
             case 'business_success':
               return (
                 <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
