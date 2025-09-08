@@ -327,7 +327,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Business Platform Implementation"
+    - "Phase 6: Business-Specific User & Mentor Experience"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
