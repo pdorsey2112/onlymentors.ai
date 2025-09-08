@@ -20,7 +20,7 @@ import BusinessInquiry from './components/BusinessInquiry';
 import BusinessAdminConsole from './components/BusinessAdminConsole';
 import DepartmentSelector from './components/DepartmentSelector';
 import BusinessLandingPage from './components/BusinessLandingPage';
-import BusinessEmployeeApp from './components/BusinessEmployeeApp';
+import BusinessMentorApp from './components/BusinessMentorApp';
 import DatabaseManagement from './components/DatabaseManagement';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
