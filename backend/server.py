@@ -2818,14 +2818,17 @@ async def get_business_categories(company_id: str, current_user=Depends(get_curr
         if current_user.get("company_id") != company_id or current_user.get("business_role") != "admin":
             raise HTTPException(status_code=403, detail="Access denied")
         
-        categories = await db.business_categories.find({"company_id": company_id, "is_active": True}).to_list(length=None)
+        categories = await db.business_categories.find(
+            {"company_id": company_id, "is_active": True},
+            {"_id": 0}  # Exclude MongoDB ObjectId
+        ).to_list(length=None)
         
         # Add mentor count for each category
         for category in categories:
             mentor_count = await db.business_mentors.count_documents({
                 "company_id": company_id,
                 "category_ids": category["category_id"]
-            })
+            }) if "category_id" in category else 0
             category["mentor_count"] = mentor_count
         
         return categories
