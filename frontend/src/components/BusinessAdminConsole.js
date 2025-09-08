@@ -269,6 +269,85 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
     }
   };
 
+  // Mentor Assignment Functions
+  const loadBusinessMentors = async () => {
+    try {
+      setLoading(true);
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/business/company/${user.company_id}/mentors`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setBusinessMentors(data);
+      }
+    } catch (error) {
+      console.error('Error loading business mentors:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const assignMentorToCategories = async (mentorId, mentorType, categoryIds) => {
+    try {
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/business/company/${user.company_id}/mentors/${mentorId}/categories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          mentor_type: mentorType,
+          category_ids: categoryIds
+        })
+      });
+      
+      if (response.ok) {
+        loadBusinessMentors();
+        loadCategories(); // Refresh category mentor counts
+        alert('Mentor assigned to categories successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Failed to assign mentor: ${error.detail}`);
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    }
+  };
+
+  const removeMentorFromCategories = async (mentorId, mentorType) => {
+    if (!window.confirm('Are you sure you want to remove this mentor from all categories?')) {
+      return;
+    }
+
+    try {
+      const backendURL = getBackendURL();
+      const token = localStorage.getItem('auth_token');
+      
+      const response = await fetch(`${backendURL}/api/business/company/${user.company_id}/mentors/${mentorId}/categories?mentor_type=${mentorType}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        loadBusinessMentors();
+        loadCategories();
+        alert('Mentor removed from categories successfully!');
+      } else {
+        const error = await response.json();
+        alert(`Failed to remove mentor: ${error.detail}`);
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    }
+  };
+
   const loadDashboard = async () => {
     try {
       setLoading(true);
