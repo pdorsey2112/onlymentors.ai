@@ -1309,6 +1309,7 @@ async def business_employee_signup_test(signup_data: dict):
             "department_code": department_code,
             "business_role": "employee",
             "phone_verified": True,  # Skip verification for testing
+            "is_mentor": False,  # Can become mentor later
             "last_login": None,
             "is_active": True
         }
