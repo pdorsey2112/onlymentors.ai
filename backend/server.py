@@ -124,6 +124,8 @@ class UserSignup(BaseModel):
     full_name: str
     company_id: str = ""  # For business employee signup
     department_code: str = ""  # For cost tracking
+    phone_number: str = ""  # For 2FA verification
+    two_factor_code: str = ""  # 2FA verification code for business employees
 
 class UserLogin(BaseModel):
     email: str
