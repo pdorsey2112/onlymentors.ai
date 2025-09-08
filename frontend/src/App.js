@@ -313,8 +313,17 @@ function MainApp() {
     const businessInquiry = urlParams.get('business-inquiry');
     const businessConsole = urlParams.get('business-console');
     const businessSignup = urlParams.get('business-signup') === 'true' || urlHash === 'business-signup';
-    const businessPaymentSuccess = urlParams.get('business_payment_success');
-    const businessPaymentCancelled = urlParams.get('business_payment_cancelled');
+    
+    // Check for hash-based payment results
+    let businessPaymentSuccess = urlParams.get('business_payment_success');
+    let businessPaymentCancelled = urlParams.get('business_payment_cancelled');
+    
+    // Handle hash-based payment results
+    if (urlHash.startsWith('business_payment_success_')) {
+      businessPaymentSuccess = urlHash.replace('business_payment_success_', '');
+    } else if (urlHash === 'business_payment_cancelled') {
+      businessPaymentCancelled = 'true';
+    }
     
     if (businessInquiry === 'true') {
       setCurrentView('business_inquiry');
