@@ -1603,7 +1603,8 @@ async def login(login_data: UserLogin):
             "user_type": user.get("user_type", "consumer"),
             "business_role": user.get("business_role"),
             "company_id": user.get("company_id"),
-            "department_code": user.get("department_code")
+            "department_code": user.get("department_code"),
+            "is_mentor": user.get("is_mentor", False)
         }
     }
 
