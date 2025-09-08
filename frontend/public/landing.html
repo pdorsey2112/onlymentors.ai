@@ -1082,11 +1082,11 @@
             const formData = new FormData(e.target);
             const signupData = {
                 plan: selectedPlan,
-                company_name: formData.get('company_name') || e.target.querySelector('input[placeholder="Your Company Name"]').value,
-                contact_name: formData.get('contact_name') || e.target.querySelector('input[placeholder="Your Full Name"]').value,
-                contact_email: formData.get('contact_email') || e.target.querySelector('input[placeholder="you@company.com"]').value,
-                contact_phone: formData.get('contact_phone') || e.target.querySelector('input[placeholder="+1 (555) 123-4567"]').value,
-                company_size: e.target.querySelector('select').value,
+                company_name: formData.get('company_name'),
+                contact_name: formData.get('contact_name'),
+                contact_email: formData.get('contact_email'),
+                contact_phone: formData.get('contact_phone'),
+                company_size: formData.get('company_size'),
                 skip_trial: document.getElementById('skipTrial').checked
             };
             
