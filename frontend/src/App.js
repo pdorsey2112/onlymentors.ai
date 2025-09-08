@@ -1712,8 +1712,8 @@ function MainApp() {
   );
 
   // Main render logic
-  // Allow business inquiry without authentication
-  if (!user && currentView !== 'business_inquiry' && currentView !== 'business_success') {
+  // Allow business inquiry and business signup without authentication
+  if (!user && currentView !== 'business_inquiry' && currentView !== 'business_success' && currentView !== 'business_signup' && currentView !== 'business_payment_success' && currentView !== 'business_payment_cancelled') {
     return renderAuth();
   }
 
