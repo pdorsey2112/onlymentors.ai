@@ -284,9 +284,9 @@ frontend:
 
   - task: "Business Signup Flow End-to-End Testing"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/public/landing.html, /app/frontend/src/components/BusinessSignupFlow.js, /app/frontend/src/App.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
