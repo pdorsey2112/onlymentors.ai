@@ -1099,8 +1099,20 @@
             localStorage.setItem('businessSignupData', JSON.stringify(signupData));
             console.log('Data stored in localStorage'); // Debug log
             
-            // Use location.replace for more reliable redirect
-            window.location.replace('/app#business-signup');
+            // Close modal first
+            closeBusinessSignup();
+            
+            // Try multiple redirect methods for reliability
+            try {
+                window.location.assign('/app#business-signup');
+            } catch (e) {
+                try {
+                    window.location.href = '/app#business-signup';
+                } catch (e2) {
+                    // Fallback - open in new window if redirect fails
+                    window.open('/app#business-signup', '_self');
+                }
+            }
         }
 
         // Close modal when clicking outside
