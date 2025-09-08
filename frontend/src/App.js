@@ -19,6 +19,7 @@ import UserProfile from './components/UserProfile';
 import BusinessInquiry from './components/BusinessInquiry';
 import BusinessAdminConsole from './components/BusinessAdminConsole';
 import DepartmentSelector from './components/DepartmentSelector';
+import BusinessLandingPage from './components/BusinessLandingPage';
 import DatabaseManagement from './components/DatabaseManagement';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
