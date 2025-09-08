@@ -19,6 +19,15 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
   const [userActivityReport, setUserActivityReport] = useState(null);
   const [showContextDemo, setShowContextDemo] = useState(false);
   
+  // Business Categories
+  const [categories, setCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState({
+    name: '',
+    icon: '📂',
+    description: ''
+  });
+  const [editingCategory, setEditingCategory] = useState(null);
+  
   // Search functionality
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const [mentorSearchTerm, setMentorSearchTerm] = useState('');
