@@ -340,9 +340,9 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Business Pricing and Signup Flow Testing"
+    - "Business Signup Flow End-to-End Testing"
   stuck_tasks:
-    - "Business Signup Form Submission and React App Integration"
+    - "Business Signup Flow End-to-End Testing"
   test_all: false
   test_priority: "high_first"
   completed_tests:
