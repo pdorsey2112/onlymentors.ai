@@ -2979,6 +2979,124 @@ async def initialize_default_categories(company_id: str, current_user=Depends(ge
         raise HTTPException(status_code=500, detail=f"Failed to initialize categories: {str(e)}")
 
 # =============================================================================
+# BUSINESS PUBLIC LANDING PAGE ENDPOINTS (No Auth Required)
+# =============================================================================
+
+@app.get("/api/business/public/{business_slug}")
+async def get_business_public_info(business_slug: str):
+    """Get public business information for landing page"""
+    try:
+        # Find business by slug (we'll use company name as slug for now)
+        company = await db.companies.find_one(
+            {"slug": business_slug},
+            {"_id": 0}
+        )
+        
+        if not company:
+            # Try to find by company name converted to slug
+            slug_name = business_slug.replace("-", " ").title()
+            company = await db.companies.find_one(
+                {"company_name": {"$regex": slug_name, "$options": "i"}},
+                {"_id": 0}
+            )
+        
+        if not company:
+            raise HTTPException(status_code=404, detail="Business not found")
+        
+        # Return public business info
+        return {
+            "company_id": company["company_id"],
+            "company_name": company["company_name"],
+            "slug": business_slug,
+            "industry": company.get("industry", ""),
+            "description": company.get("description", ""),
+            "website": company.get("website", ""),
+            "status": company.get("status", "active")
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get business info: {str(e)}")
+
+@app.get("/api/business/public/{business_slug}/categories")
+async def get_business_public_categories(business_slug: str):
+    """Get public business categories for landing page"""
+    try:
+        # Get business info first
+        business = await get_business_public_info(business_slug)
+        company_id = business["company_id"]
+        
+        # Get categories for this business
+        categories = await db.business_categories.find(
+            {"company_id": company_id, "is_active": True},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        # Add mentor count for each category
+        for category in categories:
+            mentor_count = await db.business_mentor_assignments.count_documents({
+                "company_id": company_id,
+                "category_ids": category["category_id"]
+            })
+            category["mentor_count"] = mentor_count
+        
+        return categories
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get categories: {str(e)}")
+
+@app.get("/api/business/public/{business_slug}/categories/{category_id}/mentors")
+async def get_business_public_category_mentors(business_slug: str, category_id: str):
+    """Get mentors for a specific category on business landing page"""
+    try:
+        # Get business info first
+        business = await get_business_public_info(business_slug)
+        company_id = business["company_id"]
+        
+        # Get assignments for this category
+        assignments = await db.business_mentor_assignments.find(
+            {
+                "company_id": company_id,
+                "category_ids": category_id
+            },
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        mentors = []
+        for assignment in assignments:
+            if assignment["mentor_type"] == "ai":
+                # Get AI mentor details
+                mentor = await db.mentors.find_one(
+                    {"mentor_id": assignment["mentor_id"]},
+                    {"_id": 0}
+                )
+                if mentor:
+                    mentors.append({
+                        "mentor_id": mentor["mentor_id"],
+                        "name": mentor["name"],
+                        "description": mentor.get("description", ""),
+                        "type": "ai",
+                        "expertise": mentor.get("expertise", [])
+                    })
+            else:
+                # Get human mentor details (only show public info)
+                mentor = await db.users.find_one(
+                    {"user_id": assignment["mentor_id"]},
+                    {"_id": 0, "full_name": 1, "department_code": 1}
+                )
+                if mentor:
+                    mentors.append({
+                        "mentor_id": mentor["user_id"],
+                        "name": mentor["full_name"],
+                        "type": "human",
+                        "department": mentor.get("department_code", "")
+                    })
+        
+        return mentors
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get category mentors: {str(e)}")
+
+# =============================================================================
 # BUSINESS MENTOR-CATEGORY ASSIGNMENT ENDPOINTS
 # =============================================================================
 
