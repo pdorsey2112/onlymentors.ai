@@ -1076,6 +1076,7 @@
         }
 
         function handleBusinessSignup(e) {
+            console.log('Form submission triggered'); // Debug log
             e.preventDefault();
             
             // Collect form data
@@ -1090,8 +1091,12 @@
                 skip_trial: document.getElementById('skipTrial').checked
             };
             
+            console.log('Form data collected:', signupData); // Debug log
+            
             // Store in localStorage and redirect to React app for payment processing
             localStorage.setItem('businessSignupData', JSON.stringify(signupData));
+            console.log('Data stored in localStorage'); // Debug log
+            
             window.location.href = '/app#business-signup';
         }
 
