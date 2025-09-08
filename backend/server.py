@@ -1265,6 +1265,170 @@ async def business_employee_pre_signup(signup_data: BusinessEmployeePreSignup):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pre-signup failed: {str(e)}")
 
+@app.post("/api/auth/business/signup-test")
+async def business_employee_signup_test(signup_data: dict):
+    """Test endpoint for business employee signup without 2FA (for testing only)"""
+    try:
+        # Simplified signup for testing - skip 2FA verification
+        email = signup_data.get("email")
+        password = signup_data.get("password")
+        full_name = signup_data.get("full_name")
+        business_slug = signup_data.get("business_slug")
+        department_code = signup_data.get("department_code", "")
+        
+        if not email or not password or not full_name or not business_slug:
+            raise HTTPException(status_code=400, detail="Email, password, full_name, and business_slug are required")
+        
+        # Validate email domain
+        validation_result = await validate_business_employee_email(email, business_slug)
+        if not validation_result["valid"]:
+            raise HTTPException(status_code=400, detail=validation_result["error"])
+        
+        company_id = validation_result["company_id"]
+        
+        # Check if user already exists
+        existing_user = await db.users.find_one({"email": email})
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Create business employee user (skip 2FA for testing)
+        user_id = str(uuid.uuid4())
+        user_doc = {
+            "user_id": user_id,
+            "email": email,
+            "password_hash": hash_password(password),
+            "full_name": full_name,
+            "phone_number": "+12345678901",  # Test phone number
+            "profile_completed": True,
+            "created_at": datetime.utcnow(),
+            "questions_asked": 0,
+            "is_subscribed": True,
+            "subscription_plan": "business",
+            "user_type": "business_employee",
+            "company_id": company_id,
+            "department_code": department_code,
+            "business_role": "employee",
+            "phone_verified": True,  # Skip verification for testing
+            "last_login": None,
+            "is_active": True
+        }
+        
+        await db.users.insert_one(user_doc)
+        
+        # Create access token
+        token = create_access_token({"user_id": user_id})
+        
+        return {
+            "token": token,
+            "user": {
+                "user_id": user_id,
+                "email": email,
+                "full_name": full_name,
+                "questions_asked": 0,
+                "is_subscribed": True,
+                "user_type": "business_employee",
+                "company_id": company_id,
+                "department_code": department_code,
+                "phone_verified": True
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Test signup failed: {str(e)}")
+
+@app.post("/api/business/setup-test-data")
+async def setup_business_test_data():
+    """Setup test data for business employee testing"""
+    try:
+        # Create test company if doesn't exist
+        company_slug = "acme-corp"
+        existing_company = await db.companies.find_one({"slug": company_slug})
+        
+        if not existing_company:
+            company_id = str(uuid.uuid4())
+            company_doc = {
+                "company_id": company_id,
+                "company_name": "ACME Corporation",
+                "slug": company_slug,
+                "company_email": "admin@acme-corp.com",
+                "contact_name": "John Admin",
+                "contact_email": "admin@acme-corp.com",
+                "allowed_email_domains": ["acme-corp.com", "acme.com"],
+                "status": "active",
+                "created_at": datetime.utcnow()
+            }
+            await db.companies.insert_one(company_doc)
+        else:
+            company_id = existing_company["company_id"]
+        
+        # Create test business categories
+        test_categories = [
+            {"name": "Engineering", "icon": "💻", "description": "Software development and technical guidance"},
+            {"name": "Marketing", "icon": "📈", "description": "Marketing strategy and campaign management"},
+            {"name": "Sales", "icon": "💼", "description": "Sales techniques and customer relations"}
+        ]
+        
+        category_ids = []
+        for cat_data in test_categories:
+            existing_cat = await db.business_categories.find_one({
+                "company_id": company_id,
+                "name": cat_data["name"]
+            })
+            
+            if not existing_cat:
+                category_id = str(uuid.uuid4())
+                category_doc = {
+                    "category_id": category_id,
+                    "company_id": company_id,
+                    "name": cat_data["name"],
+                    "slug": cat_data["name"].lower(),
+                    "icon": cat_data["icon"],
+                    "description": cat_data["description"],
+                    "is_active": True,
+                    "created_at": datetime.utcnow()
+                }
+                await db.business_categories.insert_one(category_doc)
+                category_ids.append(category_id)
+            else:
+                category_ids.append(existing_cat["category_id"])
+        
+        # Create test AI mentor assignments
+        test_mentors = [
+            {"id": "steve-jobs", "type": "ai", "categories": [category_ids[0], category_ids[1]]},  # Engineering + Marketing
+            {"id": "elon-musk", "type": "ai", "categories": [category_ids[0]]},  # Engineering
+            {"id": "warren-buffett", "type": "ai", "categories": [category_ids[2]]}  # Sales
+        ]
+        
+        for mentor_data in test_mentors:
+            existing_assignment = await db.business_mentor_assignments.find_one({
+                "company_id": company_id,
+                "mentor_id": mentor_data["id"],
+                "mentor_type": mentor_data["type"]
+            })
+            
+            if not existing_assignment:
+                assignment_doc = {
+                    "company_id": company_id,
+                    "mentor_id": mentor_data["id"],
+                    "mentor_type": mentor_data["type"],
+                    "category_ids": mentor_data["categories"],
+                    "created_at": datetime.utcnow()
+                }
+                await db.business_mentor_assignments.insert_one(assignment_doc)
+        
+        return {
+            "success": True,
+            "message": "Test data setup complete",
+            "company_id": company_id,
+            "categories_created": len(category_ids),
+            "mentor_assignments": len(test_mentors)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Test data setup failed: {str(e)}")
+
 @app.post("/api/auth/business/signup")
 async def business_employee_signup(signup_data: BusinessEmployeeSignup):
     """Complete business employee signup with 2FA verification"""
