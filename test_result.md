@@ -349,6 +349,7 @@ test_plan:
     - "Business Employee Registration with Email Domain Validation"
     - "Business Employee Mentor Search API"
     - "Business Employee Mentor Marketplace Frontend Testing - COMPLETE"
+    - "Business Checkout and Payment System - COMPLETE"
 
 backend:
   - task: "New User Registration with Mentor Option"
