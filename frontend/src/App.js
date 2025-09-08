@@ -46,11 +46,43 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordApp />} />
         <Route path="/landing" element={<LandingRedirect />} />
         <Route path="/app" element={<MainApp />} />
+        {/* Business Landing Pages */}
+        <Route path="/:businessSlug.html" element={<BusinessLandingPageWrapper />} />
+        <Route path="/app/:businessSlug" element={<BusinessMainApp />} />
+        <Route path="/creator/:businessSlug" element={<BusinessCreatorApp />} />
         <Route path="/" element={<LandingRedirect />} />
       </Routes>
     </Router>
   );
 }
+
+// Business Landing Page Wrapper
+const BusinessLandingPageWrapper = () => {
+  const location = useLocation();
+  const businessSlug = location.pathname.replace('.html', '').replace('/', '');
+  
+  return <BusinessLandingPage businessSlug={businessSlug} />;
+};
+
+// Business Main App (Consumer Experience)
+const BusinessMainApp = () => {
+  const location = useLocation();
+  const businessSlug = location.pathname.split('/')[2];
+  
+  // For now, redirect to regular app with business context
+  // TODO: Implement business-specific user experience
+  return <MainApp businessSlug={businessSlug} />;
+};
+
+// Business Creator App (Mentor Experience)  
+const BusinessCreatorApp = () => {
+  const location = useLocation();
+  const businessSlug = location.pathname.split('/')[2];
+  
+  // For now, redirect to regular creator app with business context
+  // TODO: Implement business-specific mentor experience
+  return <CreatorApp businessSlug={businessSlug} />;
+};
 
 function AdminApp() {
   const [admin, setAdmin] = useState(null);
