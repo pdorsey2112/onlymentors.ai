@@ -1094,10 +1094,24 @@
             };
             
             console.log('Form data collected:', signupData); // Debug log
+            console.log('Selected plan:', selectedPlan); // Debug log
+            
+            // Validate that we have the required data
+            if (!signupData.company_name || !signupData.contact_name || !signupData.contact_email) {
+                alert('Please fill in all required fields');
+                return;
+            }
             
             // Store in localStorage and redirect to React app for payment processing
-            localStorage.setItem('businessSignupData', JSON.stringify(signupData));
-            console.log('Data stored in localStorage'); // Debug log
+            try {
+                localStorage.setItem('businessSignupData', JSON.stringify(signupData));
+                console.log('Data stored in localStorage successfully'); // Debug log
+                console.log('Stored data:', localStorage.getItem('businessSignupData')); // Debug log
+            } catch (error) {
+                console.error('Error storing data in localStorage:', error);
+                alert('Error saving your information. Please try again.');
+                return;
+            }
             
             // Close modal first
             closeBusinessSignup();
