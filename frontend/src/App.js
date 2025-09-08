@@ -306,46 +306,63 @@ function MainApp() {
     checkAuth();
   }, []);
 
-  // Handle business URL parameters
+  // Handle business URL parameters and hash changes
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlHash = window.location.hash.substring(1); // Remove the # symbol
-    const businessInquiry = urlParams.get('business-inquiry');
-    const businessConsole = urlParams.get('business-console');
-    const businessSignup = urlParams.get('business-signup') === 'true' || urlHash === 'business-signup';
-    
-    // Check for hash-based payment results
-    let businessPaymentSuccess = urlParams.get('business_payment_success');
-    let businessPaymentCancelled = urlParams.get('business_payment_cancelled');
-    
-    // Handle hash-based payment results
-    if (urlHash.startsWith('business_payment_success_')) {
-      businessPaymentSuccess = urlHash.replace('business_payment_success_', '');
-    } else if (urlHash === 'business_payment_cancelled') {
-      businessPaymentCancelled = 'true';
-    }
-    
-    if (businessInquiry === 'true') {
-      setCurrentView('business_inquiry');
-    } else if (businessConsole === 'true') {
-      // For business console, check if user is logged in and has admin role
-      if (user && user.role === 'admin') {
-        setCurrentView('business_admin');
-      } else {
-        // If not logged in or not admin, show login form with message
-        setError('Please log in with your business admin credentials to access the Business Console.');
+    const handleUrlChange = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlHash = window.location.hash.substring(1); // Remove the # symbol
+      const businessInquiry = urlParams.get('business-inquiry');
+      const businessConsole = urlParams.get('business-console');
+      const businessSignup = urlParams.get('business-signup') === 'true' || urlHash === 'business-signup';
+      
+      // Check for hash-based payment results
+      let businessPaymentSuccess = urlParams.get('business_payment_success');
+      let businessPaymentCancelled = urlParams.get('business_payment_cancelled');
+      
+      // Handle hash-based payment results
+      if (urlHash.startsWith('business_payment_success_')) {
+        businessPaymentSuccess = urlHash.replace('business_payment_success_', '');
+      } else if (urlHash === 'business_payment_cancelled') {
+        businessPaymentCancelled = 'true';
       }
-    } else if (businessSignup) {
-      setCurrentView('business_signup');
-    } else if (businessPaymentSuccess) {
-      // Handle successful payment
-      setCurrentView('business_payment_success');
-      setSessionId(businessPaymentSuccess);
-    } else if (businessPaymentCancelled === 'true') {
-      // Handle cancelled payment
-      setCurrentView('business_payment_cancelled');
-    }
-  }, []); // Remove user dependency for business inquiry
+      
+      console.log('URL Hash:', urlHash, 'Business Signup:', businessSignup); // Debug log
+      
+      if (businessInquiry === 'true') {
+        setCurrentView('business_inquiry');
+      } else if (businessConsole === 'true') {
+        // For business console, check if user is logged in and has admin role
+        if (user && user.role === 'admin') {
+          setCurrentView('business_admin');
+        } else {
+          // If not logged in or not admin, show login form with message
+          setError('Please log in with your business admin credentials to access the Business Console.');
+        }
+      } else if (businessSignup) {
+        console.log('Setting view to business_signup'); // Debug log
+        setCurrentView('business_signup');
+      } else if (businessPaymentSuccess) {
+        // Handle successful payment
+        setCurrentView('business_payment_success');
+        setSessionId(businessPaymentSuccess);
+      } else if (businessPaymentCancelled === 'true') {
+        // Handle cancelled payment
+        setCurrentView('business_payment_cancelled');
+      }
+    };
+    
+    // Run on initial load
+    handleUrlChange();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('popstate', handleUrlChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleUrlChange);
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, [user]); // Add user dependency back for business console check
 
   // Handle business console access when user logs in
   useEffect(() => {
