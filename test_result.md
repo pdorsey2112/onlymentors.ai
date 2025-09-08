@@ -325,8 +325,9 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Business Employee Mentor Marketplace Testing - COMPLETED"
-  stuck_tasks: []
+    - "Business Employee Mentor Marketplace Routing Fix - CRITICAL"
+  stuck_tasks:
+    - "Business Employee Mentor Marketplace Frontend Testing"
   test_all: false
   test_priority: "high_first"
   completed_tests:
