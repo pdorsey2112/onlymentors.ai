@@ -1036,8 +1036,123 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
       {/* Categories List */}
       <div className="bg-white rounded-lg shadow border">
         <div className="p-6 border-b">
-          <h3 className="text-lg font-semibold">Business Categories</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Business Categories</h3>
+            <button
+              onClick={() => setShowMentorAssignment(!showMentorAssignment)}
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+            >
+              {showMentorAssignment ? 'Hide Mentor Assignment' : 'Assign Mentors to Categories'}
+            </button>
+          </div>
         </div>
+
+        {showMentorAssignment && (
+          <div className="p-6 border-b bg-gray-50">
+            <h4 className="text-md font-semibold mb-4">Mentor Assignment</h4>
+            
+            {/* Mentor List for Assignment */}
+            <div className="space-y-4">
+              {businessMentors.map(mentor => (
+                <div key={`${mentor.type}_${mentor.mentor_id}`} className="flex items-center justify-between p-4 bg-white rounded border">
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                      mentor.type === 'ai' ? 'bg-blue-500' : 'bg-green-500'
+                    }`}>
+                      {mentor.type === 'ai' ? '🤖' : '👨‍🏫'}
+                    </div>
+                    <div>
+                      <h5 className="font-medium">{mentor.name}</h5>
+                      <p className="text-sm text-gray-600">
+                        {mentor.type === 'ai' ? 'AI Mentor' : `Human Mentor • ${mentor.email}`}
+                      </p>
+                      {mentor.category_ids.length > 0 && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Assigned to {mentor.category_ids.length} categories
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        setSelectedMentor(mentor);
+                        setMentorCategories(mentor.category_ids);
+                      }}
+                      className="bg-blue-100 text-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-200"
+                    >
+                      {mentor.is_assigned ? 'Edit Categories' : 'Assign Categories'}
+                    </button>
+                    {mentor.is_assigned && (
+                      <button
+                        onClick={() => removeMentorFromCategories(mentor.mentor_id, mentor.type)}
+                        className="bg-red-100 text-red-600 px-3 py-1 rounded text-sm hover:bg-red-200"
+                      >
+                        Remove All
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Category Assignment Modal */}
+            {selectedMentor && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                  <h4 className="text-lg font-semibold mb-4">
+                    Assign Categories to {selectedMentor.name}
+                  </h4>
+                  
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {categories.map(category => (
+                      <label key={category.category_id} className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={mentorCategories.includes(category.category_id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setMentorCategories([...mentorCategories, category.category_id]);
+                            } else {
+                              setMentorCategories(mentorCategories.filter(id => id !== category.category_id));
+                            }
+                          }}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-lg">{category.icon}</span>
+                        <span>{category.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-end space-x-2 mt-6">
+                    <button
+                      onClick={() => {
+                        setSelectedMentor(null);
+                        setMentorCategories([]);
+                      }}
+                      className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        assignMentorToCategories(selectedMentor.mentor_id, selectedMentor.type, mentorCategories);
+                        setSelectedMentor(null);
+                        setMentorCategories([]);
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Save Assignment
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="divide-y divide-gray-200">
           {categories.map(category => (
             <div key={category.category_id} className="p-6">
