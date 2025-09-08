@@ -2883,6 +2883,7 @@ async def register_company(company: CompanyRegistration):
         company_doc = {
             "company_id": company_id,
             "company_name": company.company_name,
+            "slug": company.company_name.lower().replace(" ", "-").replace(".", ""),  # Create slug for URLs
             "company_email": company.company_email,
             "contact_name": company.contact_name,
             "contact_email": company.contact_email,
@@ -2891,6 +2892,7 @@ async def register_company(company: CompanyRegistration):
             "company_size": company.company_size,
             "plan_type": company.plan_type,
             "billing_contact": company.billing_contact,
+            "allowed_email_domains": company.allowed_email_domains,  # For employee email validation
             "status": "active",
             "subscription_status": "trial",  # trial, active, suspended
             "trial_ends": datetime.utcnow() + timedelta(days=30),
