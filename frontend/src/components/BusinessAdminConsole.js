@@ -833,6 +833,13 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
             {activeTab === 'dashboard' && renderDashboard()}
             {activeTab === 'employees' && renderEmployees()}
             {activeTab === 'departments' && renderDepartments()}
+            {activeTab === 'mentors' && (
+              <div className="text-center py-12">
+                <div className="text-2xl text-gray-400 mb-4">🤖</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">AI Mentors Coming Soon</h3>
+                <p className="text-gray-600">AI mentor selection and management features will be available soon.</p>
+              </div>
+            )}
             {activeTab === 'reports' && (
               <div className="text-center py-12">
                 <div className="text-2xl text-gray-400 mb-4">📈</div>
@@ -840,6 +847,12 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
                 <p className="text-gray-600">Advanced analytics and reporting features will be available soon.</p>
               </div>
             )}
+            {activeTab === 'admin-users' && renderAdminUsers()}
+            {activeTab === 'admin-mentors' && renderAdminMentors()}
+            {activeTab === 'database' && renderDatabase()}
+            {activeTab === 'content-moderation' && renderContentModeration()}
+            {activeTab === 'user-reports' && renderUserReports()}
+            {activeTab === 'ai-agents' && renderAiAgents()}
           </>
         )}
       </div>
