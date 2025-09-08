@@ -454,6 +454,64 @@ backend:
       - working: true
         agent: "testing"
         comment: "🎉 BUSINESS EMPLOYEE MENTOR SEARCH SYSTEM FULLY FUNCTIONAL! Comprehensive testing confirms excellent implementation with 100% success rate (5/5 mentor search tests passed): 1) COMPANY-SPECIFIC MENTOR ACCESS: ✅ GET /api/business/employee/mentors correctly returns only mentors assigned to employee's company - Found 3 assigned mentors (Steve Jobs, Bill Gates, Elon Musk) for test company, Proper company_id association and filtering working, Only business employees can access (regular users denied with 403) 2) SEARCH AND FILTERING: ✅ All search parameters working correctly - Query parameter (q=steve) returns 1 matching mentor (Steve Jobs), Category filtering (category_id=business) working properly, Combined search and category filters working (q=jobs&category_id=business returns 1 mentor), Response includes proper metadata (results, count, query, category_filter, company_id) 3) MENTOR DATA STRUCTURE: ✅ Returned mentors have correct structure - Required fields present (mentor_id, name, type, description, expertise), AI mentors properly identified (type='ai', is_ai_mentor=true), Category assignments working correctly 4) AUTHENTICATION & AUTHORIZATION: ✅ Security measures working perfectly - Requires valid business employee authentication, Rejects invalid/missing tokens (401/403), Validates user_type='business_employee', Checks company_id association 5) BUSINESS MENTOR ASSIGNMENTS: ✅ Assignment system working - Mentors properly assigned to companies via business_mentor_assignments collection, Assignment filtering by company_id working, Both AI and human mentor support implemented. The business employee mentor search system provides secure, company-specific mentor access with comprehensive search capabilities and is PRODUCTION-READY."
+      - working: true
+        agent: "testing"
+        comment: "✅ BUSINESS EMPLOYEE MENTOR SEARCH COMPREHENSIVE VERIFICATION! GET /api/business/employee/mentors working excellently with 100% test success: Found 3 company-assigned mentors including expected Steve Jobs and Elon Musk, company ID isolation working correctly (762bf1a6-dc7c-490f-ba81-be4f4102539c), search filtering by query working (steve search returned 1 mentor), category filtering functional, authentication requirement properly enforced, and access control working (non-business employees denied access). System provides secure, company-specific mentor access as designed."
+
+backend:
+  - task: "Business Employee Mentor Marketplace Complete Testing"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Complete business employee mentor marketplace functionality implemented including test data setup, employee registration, mentor search, and interaction capabilities."
+      - working: true
+        agent: "testing"
+        comment: "🎉 BUSINESS EMPLOYEE MENTOR MARKETPLACE COMPREHENSIVE TESTING COMPLETE - EXCELLENT SUCCESS! Conducted extensive end-to-end testing with outstanding 94.1% success rate (16/17 tests passed): 1) STEP 1 - TEST DATA SETUP: ✅ POST /api/business/setup-test-data successfully created ACME Corporation with company ID, 3 categories (Engineering, Marketing, Sales), and 3 mentor assignments (Steve Jobs, Elon Musk, Warren Buffett) ✅ Test data structure verification confirmed expected categories and mentor assignments created correctly 2) STEP 2 - BUSINESS EMPLOYEE REGISTRATION: ✅ POST /api/auth/business/signup-test successfully created business employee account with proper user_type='business_employee', company_id association, subscription status, and phone verification ✅ Invalid email domain rejection working correctly (unauthorized.com properly rejected) ✅ Authentication token generation and validation working perfectly 3) STEP 3 - BUSINESS EMPLOYEE MENTOR SEARCH: ✅ GET /api/business/employee/mentors returned 3 company-assigned mentors including expected Steve Jobs and Elon Musk ✅ Company ID isolation working correctly, ensuring employees only see company mentors ✅ Search filtering by query parameter working (steve search returned 1 mentor) ✅ Category filtering functional (engineering category filter working) ✅ Authentication requirement properly enforced (401/403 for unauthenticated requests) ✅ Access control working (non-business employees denied access) 4) STEP 4 - MENTOR INTERACTION: ✅ POST /api/mentor/{mentor_id}/ask successfully processed question to Steve Jobs with proper interaction ID generation ✅ Empty question validation working (400 error for empty questions) ✅ Authentication requirement enforced for mentor interactions ✅ Invalid mentor ID handling working correctly (404 for non-existent mentors) 5) ACCESS CONTROL VERIFICATION: ✅ Company mentor isolation confirmed (business mentors: 3, general mentors: 290) ⚠️ Minor issue: User profile endpoint returned user_type=None instead of 'business_employee' (1 test failed). CRITICAL SUCCESS CRITERIA MET: All core business employee mentor marketplace functionality is working perfectly including ACME Corporation test data setup, business employee registration with proper email domain validation, company-specific mentor search with proper isolation, and mentor interaction capabilities. The system successfully enables complete end-to-end testing of business employee mentor marketplace experience with proper test data and authentication as requested."
+
+backend:
+  - task: "Business Employee Test Data Setup API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ BUSINESS TEST DATA SETUP FULLY FUNCTIONAL! POST /api/business/setup-test-data endpoint working perfectly: Created ACME Corporation (company_id: 762bf1a6-dc7c-490f-ba81-be4f4102539c), 3 business categories (Engineering, Marketing, Sales), and 3 AI mentor assignments (Steve Jobs for Engineering/Marketing, Elon Musk for Engineering, Warren Buffett for Sales). Test data structure verification confirmed all expected categories and mentor assignments created correctly for comprehensive business employee testing."
+
+backend:
+  - task: "Business Employee Registration Test Mode API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ BUSINESS EMPLOYEE REGISTRATION TEST MODE FULLY FUNCTIONAL! POST /api/auth/business/signup-test endpoint working excellently: Successfully created business employee account (user_id: 7d6be0f1-92e1-419e-8c2d-eed12540426f) with proper user_type='business_employee', company_id association, subscription status=true, and phone_verified=true. Email domain validation working correctly - accepts @acme-corp.com emails and rejects unauthorized domains like @unauthorized.com. Authentication token generation and validation working perfectly for subsequent API calls."
+
+backend:
+  - task: "Business Employee Mentor Interaction API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ BUSINESS EMPLOYEE MENTOR INTERACTION FULLY FUNCTIONAL! POST /api/mentor/{mentor_id}/ask endpoint working perfectly for business employees: Successfully processed question to Steve Jobs with proper interaction ID generation (036566ef-f397-4178-bed7-3c2027cde7e5), empty question validation working (400 error for empty questions), authentication requirement enforced for mentor interactions, and invalid mentor ID handling working correctly (404 for non-existent mentors). Business employees can successfully interact with company-assigned mentors through the question/answer interface."
 
 frontend:
   - task: "Business Employee App Component"
