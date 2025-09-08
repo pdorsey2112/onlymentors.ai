@@ -1114,6 +1114,7 @@ const BusinessAdminConsole = ({ user, onLogout }) => {
             {activeTab === 'dashboard' && renderDashboard()}
             {activeTab === 'employees' && renderEmployees()}
             {activeTab === 'departments' && renderDepartments()}
+            {activeTab === 'categories' && renderCategories()}
             {activeTab === 'mentors' && (
               <div className="text-center py-12">
                 <div className="text-2xl text-gray-400 mb-4">🤖</div>
