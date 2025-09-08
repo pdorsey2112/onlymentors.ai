@@ -26,10 +26,20 @@ const BusinessSignupFlow = ({ onComplete, onBack }) => {
       setSignupData(JSON.parse(savedData));
       localStorage.removeItem('businessSignupData');
     } else {
-      // If no saved data, redirect back
-      onBack && onBack();
+      // If no saved data, create default data for testing/direct access
+      console.log('No businessSignupData found, creating default data for testing');
+      const defaultData = {
+        plan: 'starter',
+        company_name: 'Test Company',
+        contact_name: 'Test User',
+        contact_email: 'test@example.com',
+        contact_phone: '+1-555-0000',
+        company_size: '11-25',
+        skip_trial: false
+      };
+      setSignupData(defaultData);
     }
-  }, [onBack]);
+  }, []);
 
   const planDetails = {
     starter: {
