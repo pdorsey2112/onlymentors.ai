@@ -70,9 +70,7 @@ const BusinessMainApp = () => {
   const location = useLocation();
   const businessSlug = location.pathname.split('/')[2];
   
-  // For now, redirect to regular app with business context
-  // TODO: Implement business-specific user experience
-  return <MainApp businessSlug={businessSlug} />;
+  return <BusinessEmployeeApp businessSlug={businessSlug} />;
 };
 
 // Business Creator App (Mentor Experience)  
