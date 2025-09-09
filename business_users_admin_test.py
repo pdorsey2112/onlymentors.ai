@@ -71,9 +71,9 @@ class BusinessUsersAdminTester:
         """Setup admin authentication"""
         print("🔧 Setting up admin authentication...")
         
-        # Try to login as admin
+        # Try to login as admin using admin endpoint
         try:
-            response = requests.post(f"{BASE_URL}/auth/login", json={
+            response = requests.post(f"{BASE_URL}/admin/login", json={
                 "email": TEST_ADMIN_EMAIL,
                 "password": TEST_ADMIN_PASSWORD
             })
@@ -84,28 +84,8 @@ class BusinessUsersAdminTester:
                 self.log_result("Admin Authentication", True, f"Admin logged in successfully")
                 return True
             else:
-                # Try to create admin user first
-                signup_response = requests.post(f"{BASE_URL}/auth/register", data={
-                    "email": TEST_ADMIN_EMAIL,
-                    "password": TEST_ADMIN_PASSWORD,
-                    "full_name": "Super Admin",
-                    "phone_number": "+1234567890",
-                    "communication_preferences": json.dumps({"email": True}),
-                    "subscription_plan": "premium",
-                    "become_mentor": False
-                })
-                
-                if signup_response.status_code == 200:
-                    signup_data = signup_response.json()
-                    self.admin_token = signup_data.get("token")
-                    
-                    # Update user to admin role (this would normally be done through admin console)
-                    # For testing, we'll assume the user has admin privileges
-                    self.log_result("Admin Account Creation", True, "Admin account created")
-                    return True
-                else:
-                    self.log_result("Admin Authentication", False, f"Failed to create admin: {signup_response.text}")
-                    return False
+                self.log_result("Admin Authentication", False, f"Failed to login as admin: {response.text}")
+                return False
                     
         except Exception as e:
             self.log_result("Admin Authentication", False, f"Exception: {str(e)}")
