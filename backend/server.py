@@ -5417,8 +5417,8 @@ async def manage_business_users(
 ):
     """Manage business users (suspend, activate, delete)"""
     try:
-        # Check if user is admin
-        if current_user.get("role") != "admin":
+        # Check if user is admin (super_admin or admin_manager)
+        if current_user.get("role") not in ["super_admin", "admin_manager"]:
             raise HTTPException(status_code=403, detail="Admin access required")
         
         user_ids = request.get("user_ids", [])
