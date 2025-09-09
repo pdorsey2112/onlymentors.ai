@@ -75,6 +75,14 @@ class BusinessUsersTestSuite:
         try:
             headers = {"Authorization": f"Bearer {self.admin_token}"} if self.admin_token else {}
             
+            # First, let's check what admin info we have
+            async with self.session.get(f"{API_BASE}/admin/dashboard", headers=headers) as dashboard_response:
+                if dashboard_response.status == 200:
+                    dashboard_data = await dashboard_response.json()
+                    print(f"   Debug: Admin dashboard accessible, checking admin role...")
+                else:
+                    print(f"   Debug: Admin dashboard failed with status {dashboard_response.status}")
+            
             async with self.session.get(f"{API_BASE}/admin/business-users", headers=headers) as response:
                 if response.status == 200:
                     data = await response.json()
