@@ -90,10 +90,18 @@ class BusinessUsersAdminTester:
                 data = response.json()
                 self.admin_token = data.get("token")
                 
-                # Now we need to set the admin role in the database
-                # For now, let's assume the user has admin privileges
-                self.log_result("Admin User Creation", True, f"Admin user created: {admin_email}")
-                return True
+                # Set admin role using database script
+                import subprocess
+                result = subprocess.run([
+                    "python", "/app/setup_admin_user.py", admin_email
+                ], capture_output=True, text=True)
+                
+                if "✅ Admin role added" in result.stdout:
+                    self.log_result("Admin User Creation", True, f"Admin user created with role: {admin_email}")
+                    return True
+                else:
+                    self.log_result("Admin User Creation", False, f"Failed to set admin role: {result.stdout}")
+                    return False
             else:
                 self.log_result("Admin User Creation", False, f"Failed to create admin user: {response.text}")
                 return False
