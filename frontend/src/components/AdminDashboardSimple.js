@@ -1435,6 +1435,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         switch (activeTab) {
             case 'overview': return renderOverview();
             case 'users': return renderUsers();
+            case 'business-users': return renderBusinessUsers();
             case 'mentors': return renderMentors();
             case 'database': return <DatabaseManagement />;
             case 'content-moderation': return (
