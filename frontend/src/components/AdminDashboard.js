@@ -566,6 +566,276 @@ const AdminDashboard = ({ admin, onLogout }) => {
         </div>
     );
 
+    const renderBusinessUsers = () => {
+        const filteredBusinessUsers = businessUsers.filter(user => 
+            user.full_name?.toLowerCase().includes(businessUserSearchTerm.toLowerCase()) ||
+            user.email?.toLowerCase().includes(businessUserSearchTerm.toLowerCase()) ||
+            user.company_name?.toLowerCase().includes(businessUserSearchTerm.toLowerCase())
+        );
+
+        return (
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-white">Business Users Management</h2>
+                    <div className="flex items-center space-x-4">
+                        <span className="text-white/70">{businessUsers.length} total users</span>
+                        <button
+                            onClick={() => fetchBusinessUsers()}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                {/* Action Bar */}
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center space-x-4">
+                        <input
+                            type="text"
+                            placeholder="Search business users..."
+                            value={businessUserSearchTerm}
+                            onChange={(e) => setBusinessUserSearchTerm(e.target.value)}
+                            className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-white/70">
+                            {selectedBusinessUsers.length} selected
+                        </span>
+                    </div>
+                    
+                    {selectedBusinessUsers.length > 0 && (
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={() => manageBusinessUsers('suspend')}
+                                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+                            >
+                                Suspend ({selectedBusinessUsers.length})
+                            </button>
+                            <button
+                                onClick={() => manageBusinessUsers('activate')}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                                Activate ({selectedBusinessUsers.length})
+                            </button>
+                            <button
+                                onClick={() => manageBusinessUsers('delete')}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            >
+                                Delete ({selectedBusinessUsers.length})
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Statistics Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                        <h3 className="text-white/70 text-sm font-medium">Total Business Users</h3>
+                        <p className="text-2xl font-bold text-blue-400">{businessUsers.length}</p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                        <h3 className="text-white/70 text-sm font-medium">Business Employees</h3>
+                        <p className="text-2xl font-bold text-green-400">
+                            {businessUsers.filter(user => user.user_type === 'business_employee').length}
+                        </p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                        <h3 className="text-white/70 text-sm font-medium">Business Admins</h3>
+                        <p className="text-2xl font-bold text-purple-400">
+                            {businessUsers.filter(user => user.user_type === 'business_admin').length}
+                        </p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20">
+                        <h3 className="text-white/70 text-sm font-medium">Business Mentors</h3>
+                        <p className="text-2xl font-bold text-orange-400">
+                            {businessUsers.filter(user => user.is_mentor === true).length}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Business Users Table */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-white/20">
+                            <thead className="bg-white/5">
+                                <tr>
+                                    <th className="px-6 py-3 text-left">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedBusinessUsers.length === filteredBusinessUsers.length && filteredBusinessUsers.length > 0}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedBusinessUsers(filteredBusinessUsers.map(user => user.user_id));
+                                                } else {
+                                                    setSelectedBusinessUsers([]);
+                                                }
+                                            }}
+                                            className="rounded"
+                                        />
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                        User
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                        Company
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                        Type
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                        Department
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                        Joined
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/10">
+                                {filteredBusinessUsers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="8" className="px-6 py-12 text-center">
+                                            <div className="text-white/70">
+                                                <div className="text-4xl mb-4">🏢</div>
+                                                <h3 className="text-lg font-medium mb-2">No Business Users Found</h3>
+                                                <p className="text-sm">
+                                                    {businessUserSearchTerm 
+                                                        ? 'No users match your search criteria' 
+                                                        : 'No business users have registered yet'
+                                                    }
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredBusinessUsers.map(user => (
+                                        <tr key={user.user_id} className="hover:bg-white/5">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedBusinessUsers.includes(user.user_id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedBusinessUsers([...selectedBusinessUsers, user.user_id]);
+                                                        } else {
+                                                            setSelectedBusinessUsers(selectedBusinessUsers.filter(id => id !== user.user_id));
+                                                        }
+                                                    }}
+                                                    className="rounded"
+                                                />
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center">
+                                                    <div className="flex-shrink-0 h-10 w-10">
+                                                        <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                                                            <span className="text-white font-medium">
+                                                                {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="ml-4">
+                                                        <div className="text-sm font-medium text-white">
+                                                            {user.full_name || 'N/A'}
+                                                        </div>
+                                                        <div className="text-sm text-white/70">
+                                                            {user.email}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-white">{user.company_name || 'N/A'}</div>
+                                                <div className="text-sm text-white/70">{user.company_id}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    user.user_type === 'business_admin' 
+                                                        ? 'bg-purple-100 text-purple-800' 
+                                                        : user.user_type === 'business_employee'
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : 'bg-gray-100 text-gray-800'
+                                                }`}>
+                                                    {user.user_type === 'business_admin' ? '👨‍💼 Admin' :
+                                                     user.user_type === 'business_employee' ? '👤 Employee' :
+                                                     user.user_type}
+                                                </span>
+                                                {user.is_mentor && (
+                                                    <div className="mt-1">
+                                                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
+                                                            🎯 Mentor
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                                {user.department_code || 'N/A'}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    user.is_active !== false
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {user.is_active !== false ? 'Active' : 'Suspended'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
+                                                {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                <div className="flex space-x-2">
+                                                    <button
+                                                        onClick={() => resetBusinessUserPassword(user.user_id, user.email)}
+                                                        className="text-blue-400 hover:text-blue-300 font-medium"
+                                                        title="Reset Password"
+                                                    >
+                                                        🔑 Reset
+                                                    </button>
+                                                    <button
+                                                        onClick={() => manageBusinessUsers(user.is_active !== false ? 'suspend' : 'activate')}
+                                                        className={`font-medium ${
+                                                            user.is_active !== false 
+                                                                ? 'text-yellow-400 hover:text-yellow-300' 
+                                                                : 'text-green-400 hover:text-green-300'
+                                                        }`}
+                                                        title={user.is_active !== false ? 'Suspend User' : 'Activate User'}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setSelectedBusinessUsers([user.user_id]);
+                                                            manageBusinessUsers(user.is_active !== false ? 'suspend' : 'activate');
+                                                        }}
+                                                    >
+                                                        {user.is_active !== false ? '⏸️ Suspend' : '▶️ Activate'}
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setSelectedBusinessUsers([user.user_id]);
+                                                            manageBusinessUsers('delete');
+                                                        }}
+                                                        className="text-red-400 hover:text-red-300 font-medium"
+                                                        title="Delete User"
+                                                    >
+                                                        🗑️ Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return renderOverview();
