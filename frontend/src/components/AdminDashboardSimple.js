@@ -198,6 +198,7 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
     const tabs = [
         { id: 'overview', name: 'Overview' },
         { id: 'users', name: 'Users' },
+        { id: 'business-users', name: '🏢 Business Users' },
         { id: 'mentors', name: 'Mentors' },
         { id: 'database', name: 'Database' },
         { id: 'content-moderation', name: 'Content Moderation' },
