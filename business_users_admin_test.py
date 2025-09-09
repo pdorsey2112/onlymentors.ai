@@ -12,7 +12,7 @@ from datetime import datetime
 
 # Configuration
 BASE_URL = "https://enterprise-coach.preview.emergentagent.com/api"
-TEST_ADMIN_EMAIL = "testadmin@onlymentors.ai"
+TEST_ADMIN_EMAIL = f"testadmin{int(time.time())}@onlymentors.ai"
 TEST_ADMIN_PASSWORD = "TestAdmin123!"
 
 # Test business users data
