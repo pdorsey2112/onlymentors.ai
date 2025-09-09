@@ -730,6 +730,7 @@ class BusinessUsersAdminTester:
             "Business Users Retrieval",
             "Business User Suspend Action", 
             "Business User Activate Action",
+            "Business User Delete Action",
             "Password Reset Generation",
             "No Auth - Business Users Endpoint",
             "User Type Filtering"
