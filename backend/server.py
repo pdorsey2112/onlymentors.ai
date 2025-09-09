@@ -5413,7 +5413,7 @@ async def get_business_users(current_user = Depends(get_current_admin)):
 @app.post("/api/admin/business-users/manage")
 async def manage_business_users(
     request: dict,
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_admin)
 ):
     """Manage business users (suspend, activate, delete)"""
     try:
