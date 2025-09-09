@@ -945,6 +945,289 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
         </div>
     );
 
+    const renderBusinessUsers = () => {
+        const filteredBusinessUsers = businessUsers.filter(user => {
+            if (!businessUserSearchTerm.trim()) return true;
+            
+            const term = businessUserSearchTerm.toLowerCase();
+            const { firstName, lastName } = parseName(user.full_name);
+            return (
+                user.email?.toLowerCase().includes(term) ||
+                user.full_name?.toLowerCase().includes(term) ||
+                user.company_name?.toLowerCase().includes(term) ||
+                firstName.toLowerCase().includes(term) ||
+                lastName.toLowerCase().includes(term)
+            );
+        });
+
+        return (
+            <div style={{ padding: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h2 style={{ color: '#333', fontSize: '28px', margin: 0 }}>Business Users Management ({businessUsers.length} users)</h2>
+                </div>
+
+                {/* Business User Search */}
+                <div style={{ marginBottom: '20px' }}>
+                    <div style={{ position: 'relative', maxWidth: '400px' }}>
+                        <input
+                            type="text"
+                            placeholder="Search business users by name, email, or company..."
+                            value={businessUserSearchTerm}
+                            onChange={(e) => setBusinessUserSearchTerm(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '12px 40px 12px 16px',
+                                border: '2px solid #e5e7eb',
+                                borderRadius: '8px',
+                                fontSize: '14px',
+                                backgroundColor: 'white',
+                                outline: 'none',
+                                transition: 'border-color 0.2s',
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                        />
+                        <div style={{
+                            position: 'absolute',
+                            right: '12px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            color: '#9ca3af',
+                            pointerEvents: 'none'
+                        }}>
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        {businessUserSearchTerm && (
+                            <div style={{
+                                position: 'absolute',
+                                right: '40px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                color: '#6b7280',
+                                cursor: 'pointer',
+                                padding: '2px'
+                            }}
+                            onClick={() => setBusinessUserSearchTerm('')}
+                            >
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                        )}
+                    </div>
+                    {businessUserSearchTerm && (
+                        <div style={{ marginTop: '8px', color: '#6b7280', fontSize: '14px' }}>
+                            Showing {filteredBusinessUsers.length} of {businessUsers.length} business users
+                        </div>
+                    )}
+                </div>
+
+                {/* Bulk Actions */}
+                {selectedBusinessUsers.length > 0 && (
+                    <div style={{
+                        background: '#f3f4f6',
+                        padding: '15px',
+                        borderRadius: '8px',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '15px'
+                    }}>
+                        <span style={{ color: '#374151', fontWeight: '600' }}>
+                            {selectedBusinessUsers.length} user(s) selected
+                        </span>
+                        <button
+                            onClick={() => manageBusinessUsers('suspend')}
+                            style={{
+                                padding: '8px 16px',
+                                backgroundColor: '#f59e0b',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Suspend Selected
+                        </button>
+                        <button
+                            onClick={() => manageBusinessUsers('activate')}
+                            style={{
+                                padding: '8px 16px',
+                                backgroundColor: '#10b981',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Activate Selected
+                        </button>
+                        <button
+                            onClick={() => manageBusinessUsers('delete')}
+                            style={{
+                                padding: '8px 16px',
+                                backgroundColor: '#dc2626',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Delete Selected
+                        </button>
+                        <button
+                            onClick={() => setSelectedBusinessUsers([])}
+                            style={{
+                                padding: '8px 16px',
+                                backgroundColor: '#6b7280',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Clear Selection
+                        </button>
+                    </div>
+                )}
+
+                <div style={{
+                    background: 'white',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                    overflow: 'auto',
+                    maxWidth: '100%'
+                }}>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600', width: '50px' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedBusinessUsers.length === filteredBusinessUsers.length && filteredBusinessUsers.length > 0}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedBusinessUsers(filteredBusinessUsers.map(user => user.user_id));
+                                                } else {
+                                                    setSelectedBusinessUsers([]);
+                                                }
+                                            }}
+                                            style={{ cursor: 'pointer' }}
+                                        />
+                                    </th>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Email</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Full Name</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Company</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>User Type</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Status</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Created</th>
+                                    <th style={{ padding: '15px', textAlign: 'left', color: '#374151', fontWeight: '600' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredBusinessUsers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="8" style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
+                                            {businessUserSearchTerm ? 
+                                                `No business users found matching "${businessUserSearchTerm}"` : 
+                                                'No business users found. Business users will appear here when companies sign up for enterprise plans.'
+                                            }
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredBusinessUsers.slice(0, 50).map((user, index) => {
+                                        const isSelected = selectedBusinessUsers.includes(user.user_id);
+                                        return (
+                                            <tr key={user.user_id} style={{ 
+                                                borderTop: index > 0 ? '1px solid #e5e7eb' : 'none',
+                                                backgroundColor: isSelected ? '#f3f4f6' : 'transparent'
+                                            }}>
+                                                <td style={{ padding: '15px' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setSelectedBusinessUsers([...selectedBusinessUsers, user.user_id]);
+                                                            } else {
+                                                                setSelectedBusinessUsers(selectedBusinessUsers.filter(id => id !== user.user_id));
+                                                            }
+                                                        }}
+                                                        style={{ cursor: 'pointer' }}
+                                                    />
+                                                </td>
+                                                <td style={{ padding: '15px', color: '#374151' }}>{user.email}</td>
+                                                <td style={{ padding: '15px', color: '#374151' }}>{user.full_name || 'N/A'}</td>
+                                                <td style={{ padding: '15px', color: '#374151' }}>{user.company_name || 'N/A'}</td>
+                                                <td style={{ padding: '15px' }}>
+                                                    <span style={{
+                                                        padding: '4px 12px',
+                                                        borderRadius: '20px',
+                                                        fontSize: '12px',
+                                                        fontWeight: '600',
+                                                        background: user.user_type === 'business_admin' ? '#dbeafe' : '#f3f4f6',
+                                                        color: user.user_type === 'business_admin' ? '#1d4ed8' : '#374151'
+                                                    }}>
+                                                        {user.user_type === 'business_admin' ? '👔 Admin' : '👤 Employee'}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '15px' }}>
+                                                    <span style={{
+                                                        padding: '4px 12px',
+                                                        borderRadius: '20px',
+                                                        fontSize: '12px',
+                                                        fontWeight: '600',
+                                                        background: user.status === 'active' ? '#dcfce7' : '#fee2e2',
+                                                        color: user.status === 'active' ? '#166534' : '#b91c1c'
+                                                    }}>
+                                                        {user.status === 'active' ? '✅ Active' : '🚫 Inactive'}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '15px', color: '#6b7280' }}>
+                                                    {new Date(user.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td style={{ padding: '15px' }}>
+                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                        <button
+                                                            onClick={() => resetBusinessUserPassword(user.user_id, user.email)}
+                                                            style={{
+                                                                padding: '6px 12px',
+                                                                backgroundColor: '#3b82f6',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '6px',
+                                                                fontSize: '12px',
+                                                                fontWeight: '600',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            Reset Password
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderMentors = () => (
         <div style={{ padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
