@@ -12,8 +12,8 @@ from datetime import datetime
 
 # Configuration
 BASE_URL = "https://enterprise-coach.preview.emergentagent.com/api"
-TEST_ADMIN_EMAIL = "admin@onlymentors.ai"
-TEST_ADMIN_PASSWORD = "SuperAdmin2024!"
+TEST_ADMIN_EMAIL = "testadmin@onlymentors.ai"
+TEST_ADMIN_PASSWORD = "TestAdmin123!"
 
 # Test business users data
 TEST_BUSINESS_USERS = [
