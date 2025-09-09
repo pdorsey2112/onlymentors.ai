@@ -253,7 +253,8 @@ const AdminDashboardSimple = ({ admin, onLogout }) => {
                 fetchUsers(),
                 fetchMentors(),
                 fetchUserActivityReport(),
-                fetchFinancialReport()
+                fetchFinancialReport(),
+                fetchBusinessUsers()
             ]);
             setLoading(false);
         };
