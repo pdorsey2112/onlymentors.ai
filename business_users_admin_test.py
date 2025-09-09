@@ -345,6 +345,38 @@ class BusinessUsersAdminTester:
         except Exception as e:
             self.log_result("Business User Activate Action", False, f"Exception: {str(e)}")
         
+        # Test delete action (use a separate user for this)
+        if len(self.test_user_ids) >= 3:
+            try:
+                delete_data = {
+                    "user_ids": [self.test_user_ids[2]],  # Use third user for delete test
+                    "action": "delete",
+                    "reason": "Test deletion"
+                }
+                
+                response = requests.post(f"{BASE_URL}/admin/business-users/manage", 
+                                       json=delete_data, headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    success = data.get("success", False)
+                    results = data.get("results", [])
+                    
+                    if success and len(results) > 0 and results[0].get("status") == "deleted":
+                        self.log_result("Business User Delete Action", True, 
+                                      f"Successfully deleted user {self.test_user_ids[2]}")
+                        # Remove from test_user_ids since it's deleted
+                        self.test_user_ids.remove(self.test_user_ids[2])
+                    else:
+                        self.log_result("Business User Delete Action", False, 
+                                      f"Delete failed: {data}")
+                else:
+                    self.log_result("Business User Delete Action", False, 
+                                  f"HTTP {response.status_code}: {response.text}")
+                    
+            except Exception as e:
+                self.log_result("Business User Delete Action", False, f"Exception: {str(e)}")
+        
         # Test bulk operations with multiple users
         if len(self.test_user_ids) >= 2:
             try:
