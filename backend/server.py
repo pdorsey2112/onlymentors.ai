@@ -5375,8 +5375,8 @@ async def get_admin_dashboard(current_admin = Depends(get_current_admin)):
 async def get_business_users(current_user = Depends(get_current_admin)):
     """Get all business users for admin management"""
     try:
-        # Check if user is admin
-        if current_user.get("role") != "admin":
+        # Check if user is admin (super_admin or admin_manager)
+        if current_user.get("role") not in ["super_admin", "admin_manager"]:
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Get all business users (users with company_id)
