@@ -570,6 +570,7 @@ const AdminDashboard = ({ admin, onLogout }) => {
         switch (activeTab) {
             case 'overview': return renderOverview();
             case 'users': return renderUsers();
+            case 'business-users': return renderBusinessUsers();
             case 'mentors': return renderMentors();
             case 'content-moderation': return renderContentModeration();
             case 'payouts': return renderPayouts();
