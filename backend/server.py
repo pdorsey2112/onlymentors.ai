@@ -5499,7 +5499,7 @@ async def manage_business_users(
 @app.post("/api/admin/business-users/reset-password")
 async def reset_business_user_password(
     request: dict,
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_admin)
 ):
     """Reset password for a business user"""
     try:
