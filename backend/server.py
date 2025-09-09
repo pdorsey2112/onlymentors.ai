@@ -5379,9 +5379,9 @@ async def get_business_users(current_user = Depends(get_current_admin)):
         if current_user.get("role") != "admin":
             raise HTTPException(status_code=403, detail="Admin access required")
         
-        # Get all business users (business_employee, business_admin, business_mentor)
+        # Get all business users (users with company_id)
         business_users = await db.users.find({
-            "user_type": {"$in": ["business_employee", "business_admin"]}
+            "company_id": {"$exists": True, "$ne": None, "$ne": ""}
         }, {"_id": 0}).to_list(length=None)
         
         # Enrich with company information
