@@ -52,7 +52,7 @@ class BusinessUsersTestSuite:
             # Try to login as super admin
             login_data = {
                 "email": "admin@onlymentors.ai",
-                "password": "SuperAdmin123!"
+                "password": "SuperAdmin2024!"
             }
             
             async with self.session.post(f"{API_BASE}/admin/login", json=login_data) as response:
