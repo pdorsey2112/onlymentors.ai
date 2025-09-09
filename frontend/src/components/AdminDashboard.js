@@ -10,6 +10,9 @@ const AdminDashboard = ({ admin, onLogout }) => {
     const [financialReport, setFinancialReport] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedMentors, setSelectedMentors] = useState([]);
+    const [businessUsers, setBusinessUsers] = useState([]);
+    const [selectedBusinessUsers, setSelectedBusinessUsers] = useState([]);
+    const [businessUserSearchTerm, setBusinessUserSearchTerm] = useState('');
 
     const getAuthHeaders = () => ({
         'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
