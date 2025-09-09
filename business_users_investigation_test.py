@@ -13,7 +13,7 @@ from datetime import datetime
 # Configuration
 BASE_URL = "https://enterprise-coach.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@onlymentors.ai"
-ADMIN_PASSWORD = "AdminPass123!"
+ADMIN_PASSWORD = "SuperAdmin2024!"
 
 class BusinessUsersInvestigator:
     def __init__(self):
