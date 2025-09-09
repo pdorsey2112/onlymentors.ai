@@ -5372,7 +5372,7 @@ async def get_admin_dashboard(current_admin = Depends(get_current_admin)):
         raise HTTPException(status_code=500, detail=f"Failed to get dashboard: {str(e)}")
 
 @app.get("/api/admin/business-users")
-async def get_business_users(current_user = Depends(get_current_user)):
+async def get_business_users(current_user = Depends(get_current_admin)):
     """Get all business users for admin management"""
     try:
         # Check if user is admin
