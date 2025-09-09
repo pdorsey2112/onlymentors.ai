@@ -750,7 +750,6 @@ async def register_user_with_profile(
             raise HTTPException(status_code=400, detail="Email already registered")
         
         # Parse communication preferences
-        import json
         comm_prefs = json.loads(communication_preferences) if communication_preferences else {}
         
         # Parse payment info if provided
