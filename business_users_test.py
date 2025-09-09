@@ -55,7 +55,7 @@ class BusinessUsersTestSuite:
                 "password": "SuperAdmin123!"
             }
             
-            async with self.session.post(f"{API_BASE}/admin/auth/login", json=login_data) as response:
+            async with self.session.post(f"{API_BASE}/admin/login", json=login_data) as response:
                 if response.status == 200:
                     data = await response.json()
                     self.admin_token = data.get("token")
