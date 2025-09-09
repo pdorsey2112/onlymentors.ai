@@ -12,7 +12,7 @@ from datetime import datetime
 import sys
 
 # Configuration
-BACKEND_URL = os.getenv("REACT_APP_BACKEND_URL", "https://enterprise-coach.preview.emergentagent.com")
+BACKEND_URL = "http://localhost:8001"
 API_BASE = f"{BACKEND_URL}/api"
 
 class BusinessUsersTestSuite:
