@@ -111,8 +111,34 @@ class BusinessUsersAdminTester:
             return False
 
     def setup_test_business_users(self):
-        """Create test business users and companies"""
+        """Create test business users and companies or use existing ones"""
         print("🔧 Setting up test business users...")
+        
+        # First, let's get existing business users to test with
+        if self.admin_token:
+            try:
+                headers = {"Authorization": f"Bearer {self.admin_token}"}
+                response = requests.get(f"{BASE_URL}/admin/business-users", headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    existing_users = data.get("users", [])
+                    
+                    # Use first few existing users for testing
+                    for user in existing_users[:3]:
+                        if user.get("user_id"):
+                            self.test_user_ids.append(user["user_id"])
+                    
+                    if len(self.test_user_ids) > 0:
+                        self.log_result("Using Existing Business Users", True, 
+                                      f"Found {len(self.test_user_ids)} existing business users for testing")
+                        return
+                        
+            except Exception as e:
+                self.log_result("Get Existing Users", False, f"Exception: {str(e)}")
+        
+        # If no existing users or admin token not available, try to create new ones
+        timestamp = int(time.time())
         
         # Create test companies first
         for i, user_data in enumerate(TEST_BUSINESS_USERS):
@@ -131,13 +157,15 @@ class BusinessUsersAdminTester:
             # Store company ID for cleanup
             self.test_company_ids.append(company_id)
             
-            # Create business user
+            # Create business user with unique email
+            unique_email = f"{timestamp}_{user_data['email']}"
+            
             try:
                 response = requests.post(f"{BASE_URL}/auth/register", data={
-                    "email": user_data["email"],
+                    "email": unique_email,
                     "password": user_data["password"],
                     "full_name": user_data["full_name"],
-                    "phone_number": f"+123456789{i}",
+                    "phone_number": f"+123456789{timestamp}{i}",
                     "communication_preferences": json.dumps({"email": True}),
                     "subscription_plan": "business",
                     "become_mentor": False
@@ -149,7 +177,7 @@ class BusinessUsersAdminTester:
                     self.test_user_ids.append(user_id)
                     
                     self.log_result(f"Test User Creation - {user_data['full_name']}", True, 
-                                  f"Created business user: {user_data['email']}")
+                                  f"Created business user: {unique_email}")
                 else:
                     self.log_result(f"Test User Creation - {user_data['full_name']}", False, 
                                   f"Failed to create user: {response.text}")
@@ -162,12 +190,15 @@ class BusinessUsersAdminTester:
         """Setup regular user for authorization testing"""
         print("🔧 Setting up regular user...")
         
+        timestamp = int(time.time())
+        unique_email = f"regular{timestamp}@test.com"
+        
         try:
             response = requests.post(f"{BASE_URL}/auth/register", data={
-                "email": "regular@test.com",
+                "email": unique_email,
                 "password": "TestPass123!",
                 "full_name": "Regular User",
-                "phone_number": "+1987654321",
+                "phone_number": f"+198765432{timestamp}",
                 "communication_preferences": json.dumps({"email": True}),
                 "subscription_plan": "free",
                 "become_mentor": False
