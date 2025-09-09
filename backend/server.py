@@ -5503,8 +5503,8 @@ async def reset_business_user_password(
 ):
     """Reset password for a business user"""
     try:
-        # Check if user is admin
-        if current_user.get("role") != "admin":
+        # Check if user is admin (super_admin or admin_manager)
+        if current_user.get("role") not in ["super_admin", "admin_manager"]:
             raise HTTPException(status_code=403, detail="Admin access required")
         
         user_id = request.get("user_id")
