@@ -118,6 +118,69 @@ const AdminDashboard = ({ admin, onLogout }) => {
         }
     };
 
+    const manageBusinessUsers = async (action) => {
+        if (selectedBusinessUsers.length === 0) {
+            alert('Please select users to manage');
+            return;
+        }
+
+        const confirmAction = confirm(`Are you sure you want to ${action} ${selectedBusinessUsers.length} business user(s)?`);
+        if (!confirmAction) return;
+
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/business-users/manage`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    user_ids: selectedBusinessUsers,
+                    action: action,
+                    reason: `Admin ${action} action`
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                alert(`Successfully ${action}ed ${selectedBusinessUsers.length} business user(s)`);
+                setSelectedBusinessUsers([]);
+                fetchBusinessUsers();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.detail || `Failed to ${action} users`}`);
+            }
+        } catch (error) {
+            console.error('Error managing business users:', error);
+            alert('Network error occurred while managing users');
+        }
+    };
+
+    const resetBusinessUserPassword = async (userId, userEmail) => {
+        const confirmReset = confirm(`Are you sure you want to reset the password for ${userEmail}?`);
+        if (!confirmReset) return;
+
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/business-users/reset-password`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    user_id: userId
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                alert(`Password reset successful. New temporary password: ${data.temporary_password}\n\nPlease provide this to the user and ask them to change it on first login.`);
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.detail || 'Failed to reset password'}`);
+            }
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            alert('Network error occurred while resetting password');
+        }
+    };
+
     useEffect(() => {
         const loadData = async () => {
             setLoading(true);
