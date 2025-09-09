@@ -129,6 +129,7 @@ const AdminDashboard = ({ admin, onLogout }) => {
     const tabs = [
         { id: 'overview', name: 'Overview', icon: '📊' },
         { id: 'users', name: 'Users', icon: '👥' },
+        { id: 'business-users', name: 'Business Users', icon: '🏢' },
         { id: 'mentors', name: 'Mentors', icon: '🎓' },
         { id: 'content-moderation', name: 'Content Moderation', icon: '🔍' },
         { id: 'payouts', name: 'Payouts', icon: '💰' },
