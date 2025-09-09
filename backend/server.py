@@ -5372,6 +5372,178 @@ async def get_admin_dashboard(current_admin = Depends(get_current_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get dashboard: {str(e)}")
 
+@app.get("/api/admin/business-users")
+async def get_business_users(current_user = Depends(get_current_user)):
+    """Get all business users for admin management"""
+    try:
+        # Check if user is admin
+        if current_user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Get all business users (business_employee, business_admin, business_mentor)
+        business_users = await db.users.find({
+            "user_type": {"$in": ["business_employee", "business_admin"]}
+        }, {"_id": 0}).to_list(length=None)
+        
+        # Enrich with company information
+        enriched_users = []
+        for user in business_users:
+            company_info = None
+            if user.get("company_id"):
+                company_info = await db.companies.find_one(
+                    {"company_id": user["company_id"]},
+                    {"_id": 0, "company_name": 1}
+                )
+            
+            user_data = {
+                **user,
+                "company_name": company_info.get("company_name") if company_info else None
+            }
+            enriched_users.append(user_data)
+        
+        return {
+            "users": enriched_users,
+            "total_count": len(enriched_users)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get business users: {str(e)}")
+
+@app.post("/api/admin/business-users/manage")
+async def manage_business_users(
+    request: dict,
+    current_user = Depends(get_current_user)
+):
+    """Manage business users (suspend, activate, delete)"""
+    try:
+        # Check if user is admin
+        if current_user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        user_ids = request.get("user_ids", [])
+        action = request.get("action")
+        reason = request.get("reason", "Admin action")
+        
+        if not user_ids or not action:
+            raise HTTPException(status_code=400, detail="user_ids and action are required")
+        
+        if action not in ["suspend", "activate", "delete"]:
+            raise HTTPException(status_code=400, detail="Invalid action. Must be suspend, activate, or delete")
+        
+        results = []
+        
+        for user_id in user_ids:
+            try:
+                if action == "delete":
+                    # Delete user
+                    result = await db.users.delete_one({"user_id": user_id})
+                    if result.deleted_count > 0:
+                        results.append({"user_id": user_id, "status": "deleted"})
+                    else:
+                        results.append({"user_id": user_id, "status": "not_found"})
+                        
+                elif action == "suspend":
+                    # Suspend user
+                    result = await db.users.update_one(
+                        {"user_id": user_id},
+                        {
+                            "$set": {
+                                "is_active": False,
+                                "suspended_at": datetime.utcnow(),
+                                "suspension_reason": reason,
+                                "updated_at": datetime.utcnow()
+                            }
+                        }
+                    )
+                    if result.modified_count > 0:
+                        results.append({"user_id": user_id, "status": "suspended"})
+                    else:
+                        results.append({"user_id": user_id, "status": "not_found"})
+                        
+                elif action == "activate":
+                    # Activate user
+                    result = await db.users.update_one(
+                        {"user_id": user_id},
+                        {
+                            "$set": {
+                                "is_active": True,
+                                "updated_at": datetime.utcnow()
+                            },
+                            "$unset": {
+                                "suspended_at": "",
+                                "suspension_reason": ""
+                            }
+                        }
+                    )
+                    if result.modified_count > 0:
+                        results.append({"user_id": user_id, "status": "activated"})
+                    else:
+                        results.append({"user_id": user_id, "status": "not_found"})
+                        
+            except Exception as e:
+                results.append({"user_id": user_id, "status": "error", "error": str(e)})
+        
+        return {
+            "success": True,
+            "action": action,
+            "results": results,
+            "total_processed": len(results)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to manage business users: {str(e)}")
+
+@app.post("/api/admin/business-users/reset-password")
+async def reset_business_user_password(
+    request: dict,
+    current_user = Depends(get_current_user)
+):
+    """Reset password for a business user"""
+    try:
+        # Check if user is admin
+        if current_user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        user_id = request.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+        
+        # Generate temporary password
+        import secrets
+        import string
+        temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+        
+        # Update user password
+        result = await db.users.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "password_hash": hash_password(temp_password),
+                    "requires_password_reset": True,
+                    "password_reset_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return {
+            "success": True,
+            "temporary_password": temp_password,
+            "message": "Password reset successfully. User must change password on next login."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reset password: {str(e)}")
+
 @app.get("/api/admin/users")
 async def get_all_users(
     current_admin = Depends(get_current_admin),
