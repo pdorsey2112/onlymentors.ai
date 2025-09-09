@@ -79,6 +79,21 @@ const AdminDashboard = ({ admin, onLogout }) => {
         }
     };
 
+    const fetchBusinessUsers = async () => {
+        try {
+            const backendURL = getBackendURL();
+            const response = await fetch(`${backendURL}/api/admin/business-users`, {
+                headers: getAuthHeaders()
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setBusinessUsers(data.users || []);
+            }
+        } catch (error) {
+            console.error('Error fetching business users:', error);
+        }
+    };
+
     const manageMentors = async (action) => {
         if (selectedMentors.length === 0) return;
 
