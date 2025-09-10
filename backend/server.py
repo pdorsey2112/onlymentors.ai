@@ -3733,6 +3733,58 @@ async def initialize_default_categories(company_id: str, current_user=Depends(ge
 # BUSINESS PUBLIC LANDING PAGE ENDPOINTS (No Auth Required)
 # =============================================================================
 
+@app.post("/api/business/portal/customize")
+async def customize_business_portal(
+    customization_data: dict,
+    current_user = Depends(get_current_user)
+):
+    """Allow business admins to customize their portal appearance"""
+    try:
+        # Check if user is business admin
+        if current_user.get("user_type") != "business_admin":
+            raise HTTPException(status_code=403, detail="Business admin access required")
+        
+        company_id = current_user.get("company_id")
+        if not company_id:
+            raise HTTPException(status_code=400, detail="No company associated with this account")
+        
+        # Validate customization data
+        allowed_fields = [
+            "primary_color", "secondary_color", "layout", 
+            "show_mentor_showcase", "show_categories", "custom_message",
+            "logo_url", "hero_title", "hero_subtitle"
+        ]
+        
+        customization = {}
+        for field in allowed_fields:
+            if field in customization_data:
+                customization[field] = customization_data[field]
+        
+        # Update company portal customization
+        result = await db.companies.update_one(
+            {"company_id": company_id},
+            {
+                "$set": {
+                    "portal_customization": customization,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Company not found")
+        
+        return {
+            "success": True,
+            "message": "Portal customization updated successfully",
+            "customization": customization
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update portal customization: {str(e)}")
+
 @app.get("/api/business/portal/{company_slug}")
 async def get_business_portal_data(company_slug: str):
     """Get business portal configuration and data for landing page"""
