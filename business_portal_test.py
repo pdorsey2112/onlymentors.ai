@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://enterprise-coach.preview.emergentagent.com/api"
+BACKEND_URL = "http://localhost:8001/api"
 
 class BusinessPortalTester:
     def __init__(self):
