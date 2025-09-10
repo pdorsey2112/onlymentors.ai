@@ -53,6 +53,7 @@ function App() {
         <Route path="/landing" element={<LandingRedirect />} />
         {/* Business Landing Pages */}
         <Route path="/:businessSlug.html" element={<BusinessLandingPageWrapper />} />
+        <Route path="/business/:companySlug" element={<BusinessPortalLanding />} />
         <Route path="/app/:businessSlug" element={<BusinessMainApp />} />
         <Route path="/creator/:businessSlug" element={<BusinessCreatorApp />} />
         <Route path="/app" element={<MainApp />} />
