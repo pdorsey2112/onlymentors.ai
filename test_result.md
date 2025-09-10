@@ -132,7 +132,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the new Business Users management endpoints in the super admin console."
+user_problem_statement: "Test the complete Auto-Generated Business Portal Landing Page System."
 
 backend:
   - task: "Auto-Generated Business Portal Landing Page System"
