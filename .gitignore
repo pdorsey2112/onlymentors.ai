@@ -116,3 +116,7 @@ uploads/content/creator_ace03e6ca51a/medium_file.mp3
 # Environment files
 *.env
 *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
