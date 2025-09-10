@@ -3725,6 +3725,117 @@ async def initialize_default_categories(company_id: str, current_user=Depends(ge
 # BUSINESS PUBLIC LANDING PAGE ENDPOINTS (No Auth Required)
 # =============================================================================
 
+@app.get("/api/business/portal/{company_slug}")
+async def get_business_portal_data(company_slug: str):
+    """Get business portal configuration and data for landing page"""
+    try:
+        # Get company info by slug
+        company = await db.companies.find_one({"slug": company_slug})
+        if not company:
+            # Try to find by company name converted to slug
+            slug_name = company_slug.replace("-", " ").title()
+            company = await db.companies.find_one(
+                {"company_name": {"$regex": slug_name, "$options": "i"}}
+            )
+        
+        if not company:
+            raise HTTPException(status_code=404, detail="Business portal not found")
+        
+        company_id = company["company_id"]
+        
+        # Get business categories
+        categories = await db.business_categories.find(
+            {"company_id": company_id, "is_active": True},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        # Get assigned mentors
+        mentor_assignments = await db.business_mentor_assignments.find(
+            {"company_id": company_id},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        # Collect mentor details
+        mentors = []
+        for assignment in mentor_assignments[:8]:  # Limit to 8 for landing page
+            mentor = None
+            
+            if assignment["mentor_type"] == "ai":
+                # Get AI mentor from static data
+                for cat_name, cat_mentors in ALL_MENTORS.items():
+                    for ai_mentor in cat_mentors:
+                        if ai_mentor["id"] == assignment["mentor_id"]:
+                            mentor = {
+                                "mentor_id": ai_mentor["id"],
+                                "name": ai_mentor["name"],
+                                "description": ai_mentor.get("bio", ""),
+                                "expertise": ai_mentor.get("expertise", ""),
+                                "type": "ai",
+                                "category": cat_name
+                            }
+                            break
+                    if mentor:
+                        break
+            
+            elif assignment["mentor_type"] == "human":
+                # Get human mentor (business employee who is also a mentor)
+                mentor_user = await db.users.find_one(
+                    {
+                        "user_id": assignment["mentor_id"],
+                        "company_id": company_id,
+                        "is_mentor": True
+                    },
+                    {"_id": 0}
+                )
+                
+                if mentor_user:
+                    mentor = {
+                        "mentor_id": mentor_user["user_id"],
+                        "name": mentor_user["full_name"],
+                        "description": f"Internal mentor from {mentor_user.get('department_code', 'company')} department",
+                        "expertise": mentor_user.get("department_code", "General"),
+                        "type": "human",
+                        "department": mentor_user.get("department_code", "")
+                    }
+            
+            if mentor:
+                mentors.append(mentor)
+        
+        # Get company stats
+        employee_count = await db.users.count_documents({"company_id": company_id})
+        total_questions = company.get("usage_stats", {}).get("total_questions", 0)
+        
+        # Prepare business configuration
+        business_config = {
+            "company_id": company_id,
+            "company_name": company["company_name"],
+            "slug": company.get("slug", company_slug),
+            "logo_url": company.get("logo_url"),
+            "description": company.get("description", f"Professional mentorship for {company['company_name']} employees"),
+            "employee_count": employee_count,
+            "total_questions": total_questions,
+            "customization": company.get("portal_customization", {
+                "primary_color": "#2563eb",
+                "secondary_color": "#64748b",
+                "layout": "default"
+            }),
+            "created_at": company.get("created_at"),
+            "status": company.get("status", "active")
+        }
+        
+        return {
+            "business": business_config,
+            "mentors": mentors,
+            "categories": categories,
+            "total_mentors": len(mentors),
+            "total_categories": len(categories)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get business portal data: {str(e)}")
+
 @app.get("/api/business/public/{business_slug}")
 async def get_business_public_info(business_slug: str):
     """Get public business information for landing page"""
