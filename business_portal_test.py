@@ -45,7 +45,7 @@ class BusinessPortalTester:
                 "password": "SuperAdmin2024!"
             }
             
-            response = self.session.post(f"{BACKEND_URL}/admin/auth/login", json=admin_data)
+            response = self.session.post(f"{BACKEND_URL}/admin/login", json=admin_data)
             
             if response.status_code == 200:
                 data = response.json()
