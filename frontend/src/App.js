@@ -25,6 +25,7 @@ import BusinessMentorApp from './components/BusinessMentorApp';
 import BusinessSignupFlow from './components/BusinessSignupFlow';
 import BusinessPaymentSuccess from './components/BusinessPaymentSuccess';
 import BusinessPaymentCancelled from './components/BusinessPaymentCancelled';
+import BusinessPortalLanding from './components/BusinessPortalLanding';
 import DatabaseManagement from './components/DatabaseManagement';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
