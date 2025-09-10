@@ -2066,8 +2066,9 @@ backend:
 
 test_plan:
   current_focus:
-    - "Auto-Generated Business Portal Landing Page System - COMPLETED SUCCESSFULLY"
-  stuck_tasks: []
+    - "Auto-Generated Business Portal Landing Page System Frontend"
+  stuck_tasks:
+    - "Auto-Generated Business Portal Landing Page System Frontend"
   test_all: false
   test_priority: "high_first"
 
