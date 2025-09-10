@@ -250,16 +250,17 @@ const BusinessPaymentSuccess = ({ sessionId, onContinue }) => {
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
             <Button 
-              onClick={onContinue}
+              onClick={() => window.location.href = `/business/${paymentData?.company_name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
               variant="outline"
               size="lg"
             >
-              Explore Platform
+              View Your Business Portal
             </Button>
           </div>
           
           <div className="text-sm text-gray-600">
-            <p>Need help? Contact our support team at <a href="mailto:business@onlymentors.ai" className="text-blue-600 hover:underline">business@onlymentors.ai</a></p>
+            <p>Your business portal: <span className="font-mono text-blue-600">/business/{paymentData?.company_name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}</span></p>
+            <p className="mt-1">Need help? Contact our support team at <a href="mailto:business@onlymentors.ai" className="text-blue-600 hover:underline">business@onlymentors.ai</a></p>
           </div>
         </div>
       </div>
