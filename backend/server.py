@@ -2998,6 +2998,14 @@ async def handle_business_payment_success(transaction):
                 "status": "active",
                 "departments": [],
                 "selected_ai_mentors": [],
+                "portal_customization": {  # Default portal customization
+                    "primary_color": "#2563eb",
+                    "secondary_color": "#64748b", 
+                    "layout": "default",
+                    "show_mentor_showcase": True,
+                    "show_categories": True,
+                    "custom_message": f"Welcome to {transaction['company_name']}'s mentorship portal"
+                },
                 "settings": {
                     "allow_external_mentors": True,
                     "require_department_codes": True,
